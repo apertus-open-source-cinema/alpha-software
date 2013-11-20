@@ -1,0 +1,21 @@
+
+vhdl work ps7_stub_sim.vhd
+vhdl work axi_lite.vhd
+vhdl work axi_split.vhd
+vhdl work reg_file_sim.vhd
+vhdl work reg_pll.vhd
+vhdl work async_div.vhd
+vhdl work pmod_debug_sim.vhd
+vhdl work addr_gen.vhd
+vhdl work scan_gen.vhd
+vhdl work fifo_reset.vhd
+vhdl work axi_dsrc.vhd
+vhdl work axihp_reader.vhd
+vhdl work axihp_slave.vhd
+
+vhdl work axi3_pkg.vhd
+vhdl work axi3_lite_pkg.vhd
+vhdl work fifo_pkg.vhd
+vhdl work top.vhd
+
+vhdl work sim_tb.vhd
