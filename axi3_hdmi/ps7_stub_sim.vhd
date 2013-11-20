@@ -605,12 +605,12 @@ begin
 
     reset_proc : process
     begin
-	ps_reset_n <= "1111";
-	wait for 1000ns;
-
-	ps_reset_n <= "0000";	-- reset all @ 1us
+	ps_reset_n <= "0000";
 	wait for 100ns;
-	ps_reset_n <= "1111";	-- @ 1.1us
+
+	ps_reset_n <= "0001";	-- @ 100ns enable PLL
+	wait for 900ns;
+	ps_reset_n <= "1111";	-- @ 1us enable rest
 	wait;
     end process;
 
