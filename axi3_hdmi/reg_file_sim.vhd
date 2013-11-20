@@ -35,6 +35,7 @@ use work.reg_array_pkg.ALL;
 
 entity reg_file is
     generic (
+	NAME : string := "RegisterFile";
 	REG_MASK : unsigned (31 downto 0) := x"000000F";
 	OREG_SIZE : natural := 8;
 	IREG_SIZE : natural := 8
@@ -57,25 +58,47 @@ end entity reg_file;
 architecture RTL of reg_file is
 begin
 
-    oreg <= (
-	std_logic_vector(to_unsigned(  64, 32)),	-- 2480
-	std_logic_vector(to_unsigned(  32, 32)),	-- 1170
-	std_logic_vector(to_unsigned(   8, 32)),	--  280
-	std_logic_vector(to_unsigned(  40, 32)),	-- 2200
-	std_logic_vector(to_unsigned(   8, 32)),	--   45
-	std_logic_vector(to_unsigned(  24, 32)),	-- 1125
-	std_logic_vector(to_unsigned(   0, 32)),	-- 2400
-	std_logic_vector(to_unsigned(   4, 32)),	-- 2460
+    SCANGEN : if NAME = "ScanGen" generate
+	oreg <= (
+	    std_logic_vector(to_unsigned(  64, 32)),	    -- 2480
+	    std_logic_vector(to_unsigned(  32, 32)),	    -- 1170
+	    std_logic_vector(to_unsigned(   8, 32)),	    --	280
+	    std_logic_vector(to_unsigned(  40, 32)),	    -- 2200
+	    std_logic_vector(to_unsigned(   8, 32)),	    --	 45
+	    std_logic_vector(to_unsigned(  24, 32)),	    -- 1125
+	    std_logic_vector(to_unsigned(   0, 32)),	    -- 2400
+	    std_logic_vector(to_unsigned(   4, 32)),	    -- 2460
 
-	std_logic_vector(to_unsigned(   0, 32)),	-- 1160
-	std_logic_vector(to_unsigned(   2, 32)),	-- 1165
-	std_logic_vector(to_unsigned(   4, 32)),	--    5
-	std_logic_vector(to_unsigned(   6, 32)),	--    6
-	std_logic_vector(to_unsigned(   8, 32)),	--  512
-	std_logic_vector(to_unsigned(  40, 32)),	-- 1536
-	std_logic_vector(to_unsigned(   8, 32)),	--  256
-	std_logic_vector(to_unsigned(  24, 32)) );	--  768
+	    std_logic_vector(to_unsigned(   0, 32)),	    -- 1160
+	    std_logic_vector(to_unsigned(   2, 32)),	    -- 1165
+	    std_logic_vector(to_unsigned(   4, 32)),	    --	  5
+	    std_logic_vector(to_unsigned(   6, 32)),	    --	  6
+	    std_logic_vector(to_unsigned(   8, 32)),	    --	512
+	    std_logic_vector(to_unsigned(  40, 32)),	    -- 1536
+	    std_logic_vector(to_unsigned(   8, 32)),	    --	256
+	    std_logic_vector(to_unsigned(  24, 32)) );	    --	768
+    end generate;
 
+    ADDRGEN : if NAME = "AddrGen" generate
+	oreg <= (
+	    std_logic_vector(to_unsigned( 16#000000#, 32)),
+	    std_logic_vector(to_unsigned( 16#000080#, 32)),
+	    std_logic_vector(to_unsigned(    	   1, 32)),
+	    std_logic_vector(to_unsigned(    	 256, 32)),
+	    std_logic_vector(to_unsigned( 16#FFF000#, 32)),
+	    std_logic_vector(to_unsigned(    	   0, 32)),
+	    std_logic_vector(to_unsigned(    	   0, 32)),
+	    std_logic_vector(to_unsigned(    	   0, 32)),
+
+	    std_logic_vector(to_unsigned( 16#000000#, 32)),
+	    std_logic_vector(to_unsigned( 16#000080#, 32)),
+	    std_logic_vector(to_unsigned(    	   1, 32)),
+	    std_logic_vector(to_unsigned(    	 256, 32)),
+	    std_logic_vector(to_unsigned( 16#FFF000#, 32)),
+	    std_logic_vector(to_unsigned(    	   0, 32)),
+	    std_logic_vector(to_unsigned(    	   0, 32)),
+	    std_logic_vector(to_unsigned(    	   0, 32)) );
+    end generate;
 	
 end RTL;
 

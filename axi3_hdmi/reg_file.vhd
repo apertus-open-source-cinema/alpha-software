@@ -35,6 +35,7 @@ use work.reg_array_pkg.ALL;
 
 entity reg_file is
     generic (
+	NAME : string := "RegisterFile";
 	REG_MASK : unsigned (31 downto 0) := x"0000000F";
 	OREG_SIZE : natural := 8;
 	IREG_SIZE : natural := 8
