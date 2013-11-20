@@ -49,10 +49,10 @@ architecture RTL of axihp_slave is
 	variable data_v : unsigned(63 downto 0);
     begin
 	addr_v := unsigned(addr);
-	data_v := addr_v(27 downto 24) & addr_v(14 downto 5) & "00" &
-		  addr_v(27 downto 24) & addr_v(14 downto 5) & "01" &
-		  addr_v(27 downto 24) & addr_v(14 downto 5) & "10" &
-		  addr_v(27 downto 24) & addr_v(14 downto 5) & "11";
+	data_v := addr_v(27 downto 24) & addr_v(12 downto 3) & "00" &
+		  addr_v(27 downto 24) & addr_v(12 downto 3) & "01" &
+		  addr_v(27 downto 24) & addr_v(12 downto 3) & "10" &
+		  addr_v(27 downto 24) & addr_v(12 downto 3) & "11";
 	return std_logic_vector(data_v);
 	
     end function;
