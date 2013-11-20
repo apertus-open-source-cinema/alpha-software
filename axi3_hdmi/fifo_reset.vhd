@@ -34,7 +34,7 @@ begin
 
     reset_proc : process(clk, reset)
 
-	variable shift_v : std_logic_vector(9 downto 0) :=
+	variable shift_v : std_logic_vector(11 downto 0) :=
 	    (others => '0');
 
     begin
@@ -48,7 +48,7 @@ begin
 	end if;
 
 	fifo_rdy <= shift_v(shift_v'high);
-	fifo_rst <= shift_v(1) xor shift_v(6);
+	fifo_rst <= shift_v(1) xor shift_v(7);
 
     end process;
 
