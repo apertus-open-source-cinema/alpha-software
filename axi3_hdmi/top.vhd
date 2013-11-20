@@ -283,6 +283,8 @@ architecture RTL of top is
 
     signal hdmi_clk : std_logic;
 
+    signal addr_clk : std_logic;
+
     --------------------------------------------------------------------
     -- HDMI Signals
     --------------------------------------------------------------------
@@ -365,8 +367,6 @@ architecture RTL of top is
     -- attribute DONT_TOUCH of reader_data : signal is "TRUE";
     -- attribute DONT_TOUCH of reader_addr : signal is "TRUE";
     -- attribute DONT_TOUCH of reader_clk : signal is "TRUE";
-
-    signal data_clk : std_logic;
 
     --------------------------------------------------------------------
     -- Debug Signals
@@ -720,7 +720,7 @@ begin
 	port map (
 	    I => pll_clkout(1),
 	    CE => pll_locked,
-	    O => data_clk );
+	    O => addr_clk );
 
     BUFG_inst2 : BUFGCE
 	port map (
@@ -957,7 +957,7 @@ begin
 		--
 		addr => raddr_in(I) );
 
-	addr_gen_clk(I) <= clk_100;
+	addr_gen_clk(I) <= addr_clk;
 	-- addr_gen_reset(I) <= swi(4);
 	addr_gen_reset(I) <= scan_vc_on;
 	addr_gen_auto(I) <= swi(4);
@@ -1071,7 +1071,7 @@ begin
 	generic map (
 	    STAGES => 28 )
 	port map (
-	    clk_in => data_clk,
+	    clk_in => addr_clk,
 	    clk_out => led(3) );
 
 
