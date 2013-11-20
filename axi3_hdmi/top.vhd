@@ -759,6 +759,7 @@ begin
 
     reg_file_inst0 : entity work.reg_file
 	generic map (
+	    NAME => "ScanGen",
 	    REG_MASK => x"000000FF",
 	    OREG_SIZE => 16,
 	    IREG_SIZE => 4 )
@@ -920,6 +921,7 @@ begin
 
     reg_file_inst1 : entity work.reg_file
 	generic map (
+	    NAME => "AddrGen",
 	    REG_MASK => x"000000FF",
 	    OREG_SIZE => 16,
 	    IREG_SIZE => 4 )
