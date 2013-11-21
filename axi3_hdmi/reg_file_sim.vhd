@@ -60,65 +60,46 @@ begin
 
     SCANGEN : if NAME = "ScanGen" generate
 	oreg <= (
-	    std_logic_vector(to_unsigned(  64, 32)),	    -- 2480
-	    std_logic_vector(to_unsigned(  32, 32)),	    -- 1170
-	    std_logic_vector(to_unsigned(   8, 32)),	    --	280
-	    std_logic_vector(to_unsigned(  40, 32)),	    -- 2200
-	    std_logic_vector(to_unsigned(   8, 32)),	    --	 45
-	    std_logic_vector(to_unsigned(  24, 32)),	    -- 1125
-	    std_logic_vector(to_unsigned(   0, 32)),	    -- 2400
-	    std_logic_vector(to_unsigned(   4, 32)),	    -- 2460
-
-	    std_logic_vector(to_unsigned(   0, 32)),	    -- 1160
-	    std_logic_vector(to_unsigned(   2, 32)),	    -- 1165
-	    std_logic_vector(to_unsigned(   4, 32)),	    --	  5
-	    std_logic_vector(to_unsigned(   6, 32)),	    --	  6
-	    std_logic_vector(to_unsigned(   8, 32)),	    --	512
-	    std_logic_vector(to_unsigned(  40, 32)),	    -- 1536
-	    std_logic_vector(to_unsigned(   8, 32)),	    --	256
-	    std_logic_vector(to_unsigned(  24, 32)) );	    --	768
+	    std_logic_vector(to_unsigned(	2200, 32)),	--  2200   64
+	    std_logic_vector(to_unsigned(	1125, 32)),	--  1125   32
+	    std_logic_vector(to_unsigned(	   0, 32)),	--     0    8
+	    std_logic_vector(to_unsigned(	1920, 32)),	--  1920   40
+	    std_logic_vector(to_unsigned(	  41, 32)),	--    41    8
+	    std_logic_vector(to_unsigned(	1121, 32)),	--  1121   24
+	    std_logic_vector(to_unsigned(	2000, 32)),	--  2000    0
+	    std_logic_vector(to_unsigned(	2044, 32)),	--  2044    4
+	
+	    std_logic_vector(to_unsigned(	   0, 32)),	--     0    0
+	    std_logic_vector(to_unsigned(	   5, 32)),	--     5    2
+	    std_logic_vector(to_unsigned(	  10, 32)),	--    10    4
+	    std_logic_vector(to_unsigned(	  20, 32)),	--    20    6
+	    std_logic_vector(to_unsigned(	   0, 32)),	--     0    8
+	    std_logic_vector(to_unsigned(	1920, 32)),	--  1920   40
+	    std_logic_vector(to_unsigned(	  41, 32)),	--    41    8
+	    std_logic_vector(to_unsigned(	1121, 32)) );	--  1121   24
     end generate;
+
 
     ADDRGEN : if NAME = "AddrGen" generate
 	oreg <= (
 	    std_logic_vector(to_unsigned( 16#000000#, 32)),
 	    std_logic_vector(to_unsigned( 16#000080#, 32)),
-	    std_logic_vector(to_unsigned(    	   1, 32)),
-	    std_logic_vector(to_unsigned(    	 256, 32)),
+	    std_logic_vector(to_unsigned(	  29, 32)),
+	    std_logic_vector(to_unsigned( 16#001180#, 32)),
 	    std_logic_vector(to_unsigned( 16#FFF000#, 32)),
-	    std_logic_vector(to_unsigned(    	   0, 32)),
-	    std_logic_vector(to_unsigned(    	   0, 32)),
-	    std_logic_vector(to_unsigned(    	   0, 32)),
+	    std_logic_vector(to_unsigned(	   0, 32)),
+	    std_logic_vector(to_unsigned(	   0, 32)),
+	    std_logic_vector(to_unsigned(	   0, 32)),
 
 	    std_logic_vector(to_unsigned( 16#000000#, 32)),
 	    std_logic_vector(to_unsigned( 16#000080#, 32)),
-	    std_logic_vector(to_unsigned(    	   1, 32)),
-	    std_logic_vector(to_unsigned(    	 256, 32)),
+	    std_logic_vector(to_unsigned(	  29, 32)),
+	    std_logic_vector(to_unsigned( 16#001180#, 32)),
 	    std_logic_vector(to_unsigned( 16#FFF000#, 32)),
-	    std_logic_vector(to_unsigned(    	   0, 32)),
-	    std_logic_vector(to_unsigned(    	   0, 32)),
-	    std_logic_vector(to_unsigned(    	   0, 32)) );
+	    std_logic_vector(to_unsigned(	   0, 32)),
+	    std_logic_vector(to_unsigned(	   0, 32)),
+	    std_logic_vector(to_unsigned(	   0, 32)) );
     end generate;
 	
 end RTL;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
