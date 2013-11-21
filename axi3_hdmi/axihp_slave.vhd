@@ -105,6 +105,12 @@ begin
 		state := addr_s;
 
 	    else
+
+		arready_v := '0';
+		rvalid_v := '0';
+		rlast_v := '0';
+		rdata_v := (others => '0');
+		 
 		case state is
 
 		--  ARVALID ---> RVALID		    Master
@@ -197,6 +203,15 @@ begin
 		state := addr_s;
 
 	    else
+		 
+		awready_v := '0';
+		wready_v := '0';
+		bvalid_v := '0';
+
+		wdata_v := (others => '0');
+		wstrb_v := (others => '0');
+
+		 
 		case state is
 
 		--  AWVALID ---> WVALID	 _	       BREADY	    Master
