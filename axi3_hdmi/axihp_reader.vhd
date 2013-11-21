@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --  axihp_reader.vhd
 --	AXIHP Reader (No In Flight)
---	Version 1.2
+--	Version 1.3
 --
 --  Copyright (C) 2013 H.Poetzl
 --
@@ -69,8 +69,6 @@ architecture RTL of axihp_reader is
     attribute KEEP_HIERARCHY : string;
     attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
 	
-    signal sgn_data_enable  : std_logic;
-
 begin
 
     read_proc : process (m_axi_aclk)
@@ -90,19 +88,16 @@ begin
 	if rising_edge(m_axi_aclk) then
 	
 	    if m_axi_areset_n = '0' then
-
 		arvalid_v := '0';
 		rready_v := '0';
 
 		state := idle_s;
 
 	    else
-
 		arvalid_v := '0';
 		rready_v := '0';
 
 		addr_enable <= '0';
-		sgn_data_enable <= '0';
 
 		--  ARVALID ---> RVALID		    Master
 		--     \	 /`   \
@@ -127,12 +122,13 @@ begin
 
 			    else				-- go ahead
 				arvalid_v := '1';
+
 			    end if;
 			end if;
 			    
 			if arvalid_v = '1' then
 			    if m_axi_ri.arready = '1' then	-- slave ready
-					state := data_s;
+				state := data_s;
 			    end if;
 			end if;
 
@@ -148,10 +144,6 @@ begin
 
 				state := addr_s;
 			    end if;
-
-			    sgn_data_enable <= '1';			-- store data
-			else
-			    sgn_data_enable <= '0';			-- no data
 			end if;
 
 		    when hold_s =>
@@ -185,26 +177,13 @@ begin
 
 	m_axi_ro.arvalid <= arvalid_v;
 	m_axi_ro.rready <= rready_v;
-	data_enable <= rready_v AND m_axi_ri.rvalid;
-    end process;
-    
---     DELAY_WRITE_ENABLE_PROC:process(m_axi_aclk)
---     begin
---         if rising_edge(m_axi_aclk) then
---			 if m_axi_areset_n = '0' then
---				 data_enable <= '0';
---			 else
-					
---				 data_enable <= sgn_data_enable;
---			 end if;
---         end if;
---     end process;
 
-	
+	data_enable <= rready_v and m_axi_ri.rvalid;
+
+    end process;
 
     data_out <= m_axi_ri.rdata(DATA_WIDTH - 1 downto 0);
     m_axi_ro.araddr <= (addr_in and ADDR_MASK) or ADDR_DATA;
-
 
     m_axi_ro.arlen <=
 	std_logic_vector(to_unsigned(DATA_COUNT - 1, 4));
@@ -213,7 +192,6 @@ begin
     m_axi_ro.arsize <= "11";
 
     m_axi_ro.arprot <= "000";
-
 
     data_clk <= m_axi_aclk;
     addr_clk <= m_axi_aclk;
