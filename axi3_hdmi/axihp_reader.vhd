@@ -91,6 +91,7 @@ begin
 		rready_v := '0';
 
 		state := idle_s;
+		addr_enable <= '0';
 
 	    else
 		addr_enable <= '0';

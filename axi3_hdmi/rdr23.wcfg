@@ -24,7 +24,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="4" />
+   <WVObjectSize size="6" />
    <wave_markers>
       <marker time="4242671000" label="" />
    </wave_markers>
@@ -126,17 +126,9 @@
          <obj_property name="ElementShortName">addr_clk</obj_property>
          <obj_property name="ObjectShortName">addr_clk</obj_property>
       </wvobject>
-      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_enable" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">addr_enable</obj_property>
-         <obj_property name="ObjectShortName">addr_enable</obj_property>
-      </wvobject>
       <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_full" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">addr_full</obj_property>
          <obj_property name="ObjectShortName">addr_full</obj_property>
-      </wvobject>
-      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_in" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">addr_in[31:0]</obj_property>
-         <obj_property name="ObjectShortName">addr_in[31:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/data_clk" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">data_clk</obj_property>
@@ -169,6 +161,15 @@
       <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/rdata_clk" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">rdata_clk</obj_property>
          <obj_property name="ObjectShortName">rdata_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_enable</obj_property>
+         <obj_property name="ObjectShortName">addr_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_in[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addr_in[31:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/rdata_enable" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">rdata_enable</obj_property>
@@ -411,6 +412,7 @@
       <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/addr_in" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">addr_in[31:0]</obj_property>
          <obj_property name="ObjectShortName">addr_in[31:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data_clk" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">data_clk</obj_property>
@@ -427,6 +429,7 @@
       <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data_out" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">data_out[15:0]</obj_property>
          <obj_property name="ObjectShortName">data_out[15:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/reader_data" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">reader_data[63:0]</obj_property>
@@ -467,6 +470,7 @@
       <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data64_out" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">data64_out[63:0]</obj_property>
          <obj_property name="ObjectShortName">data64_out[63:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_in" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">fifo_data_in[63:0]</obj_property>
@@ -640,5 +644,13 @@
          <obj_property name="ElementShortName">addr_cwidth</obj_property>
          <obj_property name="ObjectShortName">addr_cwidth</obj_property>
       </wvobject>
+   </wvobject>
+   <wvobject fp_name="/testbench/uut_inst/scan_hdisp" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">scan_hdisp</obj_property>
+      <obj_property name="ObjectShortName">scan_hdisp</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/uut_inst/scan_hdata" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">scan_hdata</obj_property>
+      <obj_property name="ObjectShortName">scan_hdata</obj_property>
    </wvobject>
 </wave_config>
