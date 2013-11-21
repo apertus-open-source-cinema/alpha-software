@@ -201,36 +201,38 @@ begin
 
 
     data_proc : process(data_clk, reset, data_enable, data64_out)
-	variable cnt_v : unsigned(2 downto 0) := "000";
+	variable cnt_v : unsigned(1 downto 0) := "00";
 	variable pos_v : natural range 0 to 255 := 0;
 
     begin
 	if reset = '1' then
-	    cnt_v := "000";
+	    cnt_v := "00";
 
 	elsif rising_edge(data_clk) then
 	    if data_enable = '1' then
-		pos_v := to_integer(cnt_v(2 downto 1)) * 16;
+		pos_v := to_integer(cnt_v(1 downto 1)) * 32;
 		cnt_v := cnt_v + "1";
 
 	    end if;
 	end if;
 
-	data_out <= data64_out(pos_v + 15 downto pos_v);
+	data_out <=
+	    data64_out(pos_v + 31 downto pos_v + 24) &
+	    data64_out(pos_v + 15 downto pos_v + 8);
 
     end process;
 
     data64_proc : process(data_clk, reset, data_enable)
-	variable cnt_v : unsigned(2 downto 0) := "000";
+	variable cnt_v : unsigned(1 downto 0) := "00";
 	variable ren_v : std_logic := '0';
     begin
 	if reset = '1' then
-	    cnt_v := "000";
+	    cnt_v := "00";
 	    ren_v := '0';
 
 	elsif rising_edge(data_clk) then
 	    if data_enable = '1' then
-		if cnt_v = "111" then
+		if cnt_v = "11" then
 		    ren_v := '1';
 		else
 		    ren_v := '0';
