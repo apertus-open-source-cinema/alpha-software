@@ -93,9 +93,6 @@ begin
 		state := idle_s;
 
 	    else
-		arvalid_v := '0';
-		rready_v := '0';
-
 		addr_enable <= '0';
 
 		--  ARVALID ---> RVALID		    Master
