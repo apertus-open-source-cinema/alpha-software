@@ -188,16 +188,16 @@ begin
 
     end process;
     
---     DELAY_WRITE_ENABLE_PROC:process(m_axi_aclk)
---     begin
---         if rising_edge(m_axi_aclk) then
---			 if m_axi_areset_n = '0' then
---				 data_enable <= '0';
---			 else
+     DELAY_WRITE_ENABLE_PROC:process(m_axi_aclk)
+     begin
+         if rising_edge(m_axi_aclk) then
+			 if m_axi_areset_n = '0' then
+				 data_enable <= '0';
+			 else
 				 data_enable <= sgn_data_enable;
---			 end if;
---         end if;
---     end process;
+			 end if;
+         end if;
+     end process;
 
 	
 
