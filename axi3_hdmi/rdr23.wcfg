@@ -24,10 +24,77 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="2" />
+   <WVObjectSize size="4" />
    <wave_markers>
       <marker time="4242671000" label="" />
    </wave_markers>
+   <wvobject fp_name="group172" type="group">
+      <obj_property name="label">scan_gen</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/testbench/uut_inst/scan_gen_inst/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_gen_inst/reset_n" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset_n</obj_property>
+         <obj_property name="ObjectShortName">reset_n</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_gen_inst/total_w" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">total_w[11:0]</obj_property>
+         <obj_property name="ObjectShortName">total_w[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_gen_inst/total_h" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">total_h[11:0]</obj_property>
+         <obj_property name="ObjectShortName">total_h[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_gen_inst/hcnt" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">hcnt[11:0]</obj_property>
+         <obj_property name="ObjectShortName">hcnt[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_gen_inst/vcnt" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">vcnt[11:0]</obj_property>
+         <obj_property name="ObjectShortName">vcnt[11:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group171" type="group">
+      <obj_property name="label">scan_vconf</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/testbench/uut_inst/scan_vconf_inst/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_vconf_inst/reset_n" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset_n</obj_property>
+         <obj_property name="ObjectShortName">reset_n</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_vconf_inst/counter" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">counter[11:0]</obj_property>
+         <obj_property name="ObjectShortName">counter[11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_vconf_inst/cval_on" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cval_on[11:0]</obj_property>
+         <obj_property name="ObjectShortName">cval_on[11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_vconf_inst/cval_off" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cval_off[11:0]</obj_property>
+         <obj_property name="ObjectShortName">cval_off[11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_vconf_inst/match_on" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">match_on</obj_property>
+         <obj_property name="ObjectShortName">match_on</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_vconf_inst/match_off" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">match_off</obj_property>
+         <obj_property name="ObjectShortName">match_off</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/scan_vconf_inst/match" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">match</obj_property>
+         <obj_property name="ObjectShortName">match</obj_property>
+      </wvobject>
+   </wvobject>
    <wvobject fp_name="group88" type="group">
       <obj_property name="label">rdr2</obj_property>
       <obj_property name="DisplayName">label</obj_property>

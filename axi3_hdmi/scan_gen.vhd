@@ -120,7 +120,7 @@ begin
 	    total_h_v := unsigned(total_h);
 
 	    hcnt_v := (others => '0');
-	    vcnt_v := (others => '0');
+	    vcnt_v := to_unsigned(5,vcnt_v'length);--(others => '0');
 
 	elsif rising_edge(clk) then
 	    -- traverse total area
