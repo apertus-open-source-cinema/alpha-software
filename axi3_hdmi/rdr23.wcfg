@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="C:/Proyectos_Xilinx/HDL/axi3_hdmi_ise/testbench_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="axi3m_pkg" />
+            <top_module name="axi3ml_pkg" />
+            <top_module name="axi3s_pkg" />
+            <top_module name="fifo_pkg" />
+            <top_module name="numeric_std" />
+            <top_module name="reg_array_pkg" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_signed" />
+            <top_module name="testbench" />
+            <top_module name="textio" />
+            <top_module name="vcomponents" />
+            <top_module name="vcomponents" />
+            <top_module name="vital_primitives" />
+            <top_module name="vital_timing" />
+            <top_module name="vpkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="2" />
+   <wave_markers>
+      <marker time="4242671000" label="" />
+   </wave_markers>
+   <wvobject fp_name="group88" type="group">
+      <obj_property name="label">rdr2</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/m_axi_aclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">m_axi_aclk</obj_property>
+         <obj_property name="ObjectShortName">m_axi_aclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/m_axi_areset_n" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">m_axi_areset_n</obj_property>
+         <obj_property name="ObjectShortName">m_axi_areset_n</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">enable</obj_property>
+         <obj_property name="ObjectShortName">enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/m_axi_ro" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">m_axi_ro</obj_property>
+         <obj_property name="ObjectShortName">m_axi_ro</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/m_axi_ri" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">m_axi_ri</obj_property>
+         <obj_property name="ObjectShortName">m_axi_ri</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_clk</obj_property>
+         <obj_property name="ObjectShortName">addr_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_enable</obj_property>
+         <obj_property name="ObjectShortName">addr_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_full</obj_property>
+         <obj_property name="ObjectShortName">addr_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_in[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addr_in[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/data_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">data_clk</obj_property>
+         <obj_property name="ObjectShortName">data_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/data_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">data_enable</obj_property>
+         <obj_property name="ObjectShortName">data_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/data_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">data_empty</obj_property>
+         <obj_property name="ObjectShortName">data_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/data_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data_out[15:0]</obj_property>
+         <obj_property name="ObjectShortName">data_out[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/reader_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reader_data[63:0]</obj_property>
+         <obj_property name="ObjectShortName">reader_data[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/reader_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reader_addr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">reader_addr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/reader_state" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reader_state[7:0]</obj_property>
+         <obj_property name="ObjectShortName">reader_state[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/rdata_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">rdata_clk</obj_property>
+         <obj_property name="ObjectShortName">rdata_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/rdata_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">rdata_enable</obj_property>
+         <obj_property name="ObjectShortName">rdata_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/rdata_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">rdata_out[63:0]</obj_property>
+         <obj_property name="ObjectShortName">rdata_out[63:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/rdata_full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">rdata_full</obj_property>
+         <obj_property name="ObjectShortName">rdata_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/data64_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">data64_enable</obj_property>
+         <obj_property name="ObjectShortName">data64_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/data64_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">data64_empty</obj_property>
+         <obj_property name="ObjectShortName">data64_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/data64_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data64_out[63:0]</obj_property>
+         <obj_property name="ObjectShortName">data64_out[63:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_in[63:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_in[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_out[63:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_out[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_rdcount" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_rdcount[8:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_rdcount[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_wrcount" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_wrcount[8:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_wrcount[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_wclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_wclk</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_wclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_wen" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_wen</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_wen</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_high" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_high</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_high</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_full</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_wrerr" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_wrerr</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_wrerr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_rclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_rclk</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_rclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_ren" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_ren</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_ren</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_low" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_low</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_low</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_empty</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_rderr" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_rderr</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_rderr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_rst" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_rst</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_data_rdy" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_rdy</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_rdy</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/raddr_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">raddr_clk</obj_property>
+         <obj_property name="ObjectShortName">raddr_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/raddr_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">raddr_enable</obj_property>
+         <obj_property name="ObjectShortName">raddr_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/raddr_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raddr_in[31:0]</obj_property>
+         <obj_property name="ObjectShortName">raddr_in[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/raddr_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">raddr_empty</obj_property>
+         <obj_property name="ObjectShortName">raddr_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_in[31:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_in[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_out[31:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_out[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_rdcount" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_rdcount[8:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_rdcount[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_wrcount" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_wrcount[8:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_wrcount[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_wclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_wclk</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_wclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_wen" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_wen</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_wen</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_full</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_wrerr" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_wrerr</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_wrerr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_rclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_rclk</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_rclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_ren" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_ren</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_ren</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_empty</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_rderr" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_rderr</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_rderr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_rst" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_rst</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/fifo_addr_rdy" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_rdy</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_rdy</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/reader_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reader_enable</obj_property>
+         <obj_property name="ObjectShortName">reader_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/div_wclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">div_wclk</obj_property>
+         <obj_property name="ObjectShortName">div_wclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/div_rclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">div_rclk</obj_property>
+         <obj_property name="ObjectShortName">div_rclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_mask" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_mask[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addr_mask[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addr_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/data_width" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">data_width</obj_property>
+         <obj_property name="ObjectShortName">data_width</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/data_cwidth" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">data_cwidth</obj_property>
+         <obj_property name="ObjectShortName">data_cwidth</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_width" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_width</obj_property>
+         <obj_property name="ObjectShortName">addr_width</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(2)\/rdr2/AXI_DSRC_inst/addr_cwidth" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_cwidth</obj_property>
+         <obj_property name="ObjectShortName">addr_cwidth</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group181" type="group">
+      <obj_property name="label">rdr3</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/m_axi_aclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">m_axi_aclk</obj_property>
+         <obj_property name="ObjectShortName">m_axi_aclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/m_axi_areset_n" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">m_axi_areset_n</obj_property>
+         <obj_property name="ObjectShortName">m_axi_areset_n</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">enable</obj_property>
+         <obj_property name="ObjectShortName">enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/m_axi_ro" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">m_axi_ro</obj_property>
+         <obj_property name="ObjectShortName">m_axi_ro</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/m_axi_ri" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">m_axi_ri</obj_property>
+         <obj_property name="ObjectShortName">m_axi_ri</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/addr_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_clk</obj_property>
+         <obj_property name="ObjectShortName">addr_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/addr_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_enable</obj_property>
+         <obj_property name="ObjectShortName">addr_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/addr_full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_full</obj_property>
+         <obj_property name="ObjectShortName">addr_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/addr_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_in[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addr_in[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">data_clk</obj_property>
+         <obj_property name="ObjectShortName">data_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">data_enable</obj_property>
+         <obj_property name="ObjectShortName">data_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">data_empty</obj_property>
+         <obj_property name="ObjectShortName">data_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data_out[15:0]</obj_property>
+         <obj_property name="ObjectShortName">data_out[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/reader_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reader_data[63:0]</obj_property>
+         <obj_property name="ObjectShortName">reader_data[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/reader_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reader_addr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">reader_addr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/reader_state" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reader_state[7:0]</obj_property>
+         <obj_property name="ObjectShortName">reader_state[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/rdata_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">rdata_clk</obj_property>
+         <obj_property name="ObjectShortName">rdata_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/rdata_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">rdata_enable</obj_property>
+         <obj_property name="ObjectShortName">rdata_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/rdata_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">rdata_out[63:0]</obj_property>
+         <obj_property name="ObjectShortName">rdata_out[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/rdata_full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">rdata_full</obj_property>
+         <obj_property name="ObjectShortName">rdata_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data64_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">data64_enable</obj_property>
+         <obj_property name="ObjectShortName">data64_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data64_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">data64_empty</obj_property>
+         <obj_property name="ObjectShortName">data64_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data64_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data64_out[63:0]</obj_property>
+         <obj_property name="ObjectShortName">data64_out[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_in[63:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_in[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_out[63:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_out[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_rdcount" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_rdcount[8:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_rdcount[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_wrcount" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_wrcount[8:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_wrcount[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_wclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_wclk</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_wclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_wen" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_wen</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_wen</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_high" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_high</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_high</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_full</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_wrerr" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_wrerr</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_wrerr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_rclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_rclk</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_rclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_ren" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_ren</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_ren</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_low" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_low</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_low</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_empty</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_rderr" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_rderr</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_rderr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_rst" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_rst</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_data_rdy" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_data_rdy</obj_property>
+         <obj_property name="ObjectShortName">fifo_data_rdy</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/raddr_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">raddr_clk</obj_property>
+         <obj_property name="ObjectShortName">raddr_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/raddr_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">raddr_enable</obj_property>
+         <obj_property name="ObjectShortName">raddr_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/raddr_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raddr_in[31:0]</obj_property>
+         <obj_property name="ObjectShortName">raddr_in[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/raddr_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">raddr_empty</obj_property>
+         <obj_property name="ObjectShortName">raddr_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_in[31:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_in[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_out[31:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_out[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_rdcount" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_rdcount[8:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_rdcount[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_wrcount" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_wrcount[8:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_wrcount[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_wclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_wclk</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_wclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_wen" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_wen</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_wen</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_full</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_wrerr" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_wrerr</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_wrerr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_rclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_rclk</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_rclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_ren" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_ren</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_ren</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_empty</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_rderr" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_rderr</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_rderr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_rst" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_rst</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/fifo_addr_rdy" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">fifo_addr_rdy</obj_property>
+         <obj_property name="ObjectShortName">fifo_addr_rdy</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/reader_enable" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reader_enable</obj_property>
+         <obj_property name="ObjectShortName">reader_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/div_wclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">div_wclk</obj_property>
+         <obj_property name="ObjectShortName">div_wclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/div_rclk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">div_rclk</obj_property>
+         <obj_property name="ObjectShortName">div_rclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/addr_mask" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_mask[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addr_mask[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/addr_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addr_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data_width" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">data_width</obj_property>
+         <obj_property name="ObjectShortName">data_width</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/data_cwidth" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">data_cwidth</obj_property>
+         <obj_property name="ObjectShortName">data_cwidth</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/addr_width" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_width</obj_property>
+         <obj_property name="ObjectShortName">addr_width</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/uut_inst/\gen_data(3)\/rdr3/AXI_DSRC_inst/addr_cwidth" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">addr_cwidth</obj_property>
+         <obj_property name="ObjectShortName">addr_cwidth</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
