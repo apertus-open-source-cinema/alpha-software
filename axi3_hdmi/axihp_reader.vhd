@@ -70,13 +70,14 @@ architecture RTL of axihp_reader is
     attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
 	
     signal sgn_data_enable  : std_logic;
+    signal rvalid  : std_logic;
 
 begin
 
     read_proc : process (m_axi_aclk)
 
 	constant dcnt_c : natural := DATA_COUNT - 1;
-	variable dcnt_v : integer range DATA_COUNT - 1 downto -1;
+	variable dcnt_v : integer range DATA_COUNT - 1 downto -2;
 
 	variable arvalid_v : std_logic := '0';
 	variable rready_v : std_logic := '0';
@@ -88,6 +89,8 @@ begin
     begin
 
 	if rising_edge(m_axi_aclk) then
+		rvalid <= m_axi_ri.rvalid;
+	
 	    if m_axi_areset_n = '0' then
 
 		arvalid_v := '0';
@@ -128,7 +131,8 @@ begin
 			    
 			if arvalid_v = '1' then
 			    if m_axi_ri.arready = '1' then	-- slave ready
-				state := data_s;
+					state := data_s;
+					rready_v := '1';
 			    end if;
 			end if;
 
@@ -184,17 +188,18 @@ begin
 
     end process;
     
-    DELAY_WRITE_ENABLE_PROC:process(m_axi_aclk)
-    begin
-        if rising_edge(m_axi_aclk) then
-			if m_axi_areset_n = '0' then
-				data_enable <= '0';
-			else
-				data_enable <= sgn_data_enable;
-			end if;
-        end if;
-    end process;
+--     DELAY_WRITE_ENABLE_PROC:process(m_axi_aclk)
+--     begin
+--         if rising_edge(m_axi_aclk) then
+--			 if m_axi_areset_n = '0' then
+--				 data_enable <= '0';
+--			 else
+				 data_enable <= sgn_data_enable;
+--			 end if;
+--         end if;
+--     end process;
 
+	
 
     data_out <= m_axi_ri.rdata(DATA_WIDTH - 1 downto 0);
     m_axi_ro.araddr <= (addr_in and ADDR_MASK) or ADDR_DATA;
