@@ -68,6 +68,8 @@ architecture RTL of axihp_reader is
 
     attribute KEEP_HIERARCHY : string;
     attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
+	
+    signal sgn_data_enable  : std_logic;
 
 begin
 
@@ -96,7 +98,7 @@ begin
 	    else
 
 		addr_enable <= '0';
-		data_enable <= '0';
+		sgn_data_enable <= '0';
 
 		--  ARVALID ---> RVALID		    Master
 		--     \	 /`   \
@@ -143,9 +145,9 @@ begin
 				state := addr_s;
 			    end if;
 
-			    data_enable <= '1';			-- store data
+			    sgn_data_enable <= '1';			-- store data
 			else
-			    data_enable <= '0';			-- no data
+			    sgn_data_enable <= '0';			-- no data
 			end if;
 
 		    when hold_s =>
@@ -180,6 +182,17 @@ begin
 	m_axi_ro.arvalid <= arvalid_v;
 	m_axi_ro.rready <= rready_v;
 
+    end process;
+    
+    DELAY_WRITE_ENABLE_PROC:process(m_axi_aclk)
+    begin
+        if rising_edge(m_axi_aclk) then
+			if m_axi_areset_n = '0' then
+				data_enable <= '0';
+			else
+				data_enable <= sgn_data_enable;
+			end if;
+        end if;
     end process;
 
 
