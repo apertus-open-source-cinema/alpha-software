@@ -68,13 +68,13 @@ architecture RTL of axihp_reader is
 
     attribute KEEP_HIERARCHY : string;
     attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
-	
+
 begin
 
     read_proc : process (m_axi_aclk)
 
 	constant dcnt_c : natural := DATA_COUNT - 1;
-	variable dcnt_v : integer range DATA_COUNT - 1 downto -2;
+	variable dcnt_v : integer range DATA_COUNT - 1 downto -1;
 
 	variable arvalid_v : std_logic := '0';
 	variable rready_v : std_logic := '0';
