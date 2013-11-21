@@ -86,7 +86,6 @@ begin
     begin
 
 	if rising_edge(m_axi_aclk) then
-	
 	    if m_axi_areset_n = '0' then
 		arvalid_v := '0';
 		rready_v := '0';
@@ -105,11 +104,10 @@ begin
 		--	 ARREADY     RREADY	    Slave
 
 		case state is
-
 		    when addr_s =>
 			rready_v := '0';
 			dcnt_v := dcnt_c;
-			
+
 			if arvalid_v = '0' then
 			    if enable = '0' then		-- disable reader
 				state := hold_s;
