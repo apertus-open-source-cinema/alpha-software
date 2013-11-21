@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --  axihp_slave.vhd
 --	AXIHP Slave (for simulation)
---	Version 1.0
+--	Version 1.1
 --
 --  Copyright (C) 2013 H.Poetzl
 --
@@ -49,10 +49,10 @@ architecture RTL of axihp_slave is
 	variable data_v : unsigned(63 downto 0);
     begin
 	addr_v := unsigned(addr);
-	data_v := addr_v(27 downto 24) & addr_v(12 downto 3) & "00" &
-		  addr_v(27 downto 24) & addr_v(12 downto 3) & "01" &
+	data_v := addr_v(27 downto 24) & addr_v(12 downto 3) & "11" &
 		  addr_v(27 downto 24) & addr_v(12 downto 3) & "10" &
-		  addr_v(27 downto 24) & addr_v(12 downto 3) & "11";
+		  addr_v(27 downto 24) & addr_v(12 downto 3) & "01" &
+		  addr_v(27 downto 24) & addr_v(12 downto 3) & "00";
 	return std_logic_vector(data_v);
 	
     end function;
@@ -105,19 +105,17 @@ begin
 		state := addr_s;
 
 	    else
-
 		arready_v := '0';
 		rvalid_v := '0';
 		rlast_v := '0';
 		rdata_v := (others => '0');
-		 
-		case state is
 
 		--  ARVALID ---> RVALID		    Master
 		--     \	 /`   \
 		--	\,	/      \,
 		--	 ARREADY     RREADY	    Slave
 
+		case state is
 		    when addr_s =>
 			arready_v := '1';		-- ready for transfer
 			rlast_v := '0';
@@ -203,7 +201,6 @@ begin
 		state := addr_s;
 
 	    else
-		 
 		awready_v := '0';
 		wready_v := '0';
 		bvalid_v := '0';
@@ -211,14 +208,12 @@ begin
 		wdata_v := (others => '0');
 		wstrb_v := (others => '0');
 
-		 
-		case state is
-
 		--  AWVALID ---> WVALID	 _	       BREADY	    Master
 		--     \    --__ /`   \	  --__		/`
 		--	\,	/--__  \,     --_      /
 		--	 AWREADY     -> WREADY ---> BVALID	    Slave
 
+		case state is
 		    when addr_s =>
 			awready_v := '1';		-- ready for transfer
 			bvalid_v := '0';
@@ -243,7 +238,7 @@ begin
 			    if dcnt_v < 0 then		-- last read
 				state := resp_s;
 			    else
-				addr_v := addr_v;	-- use wrap/inc
+				addr_v := addr_next(addr_v);
 
 				state := data_s;
 			    end if;
