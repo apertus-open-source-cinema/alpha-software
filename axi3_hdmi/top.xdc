@@ -32,12 +32,13 @@ set_property PACKAGE_PIN M15 [get_ports {swi[7]}]
 
 set_property IOSTANDARD LVCMOS25 [get_ports {swi[*]}]
 
-set_false_path -from [get_pins -filter {IS_CLOCK} reg_file_inst*/oreg*/*]
-
-set_false_path -from [get_pins scan_vconf_inst/match*/C]
+# set_false_path -from [get_pins -filter {IS_CLOCK} reg_file_inst*/oreg*/*]
 
 set_multicycle_path 2 -from [get_pins */FIFO_addr_reset/*/C]
 set_multicycle_path 1 -from [get_pins */FIFO_addr_reset/*/C] -hold
 
 set_multicycle_path 2 -from [get_pins */FIFO_data_reset/*/C]
 set_multicycle_path 1 -from [get_pins */FIFO_data_reset/*/C] -hold
+
+set_multicycle_path 2 -from [get_pins scan_gen_inst/vconf*/C]
+set_multicycle_path 1 -from [get_pins scan_gen_inst/vconf*/C] -hold

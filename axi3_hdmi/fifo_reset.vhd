@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --  fifo_reset.vhd
 --	FIFO Reset Manager
---	Version 1.2
+--	Version 1.3
 --
 --  Copyright (C) 2013 H.Poetzl
 --  Based on a suggestion by L.M. Capossio 
@@ -30,25 +30,26 @@ end entity fifo_reset;
 
 architecture RTL of fifo_reset is
 
+    attribute KEEP_HIERARCHY : string;
+    attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
+
+    signal shift : std_logic_vector(11 downto 0);
+
 begin
 
     reset_proc : process(clk, reset)
-
-	variable shift_v : std_logic_vector(11 downto 0) :=
-	    (others => '0');
-
     begin
 
 	if reset = '1' then
-	    shift_v := (others => '0');
+	    shift <= (others => '0');
 
 	elsif rising_edge(clk) then
-	    shift_v := shift_v(shift_v'high - 1 downto 0) & '1';
+	    shift <= shift(shift'high - 1 downto 0) & '1';
 
 	end if;
 
-	fifo_rdy <= shift_v(shift_v'high);
-	fifo_rst <= shift_v(1) xor shift_v(7);
+	fifo_rdy <= shift(shift'high);
+	fifo_rst <= shift(1) xor shift(7);
 
     end process;
 

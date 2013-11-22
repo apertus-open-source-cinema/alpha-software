@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --  scan_gen.vhd
 --	Scan Generator
---	Version 1.1
+--	Version 1.2
 --
 --  Copyright (C) 2013 H.Poetzl
 --
@@ -41,41 +41,31 @@ begin
 	variable cval_off_v : std_logic_vector(11 downto 0)
 	    := (others => '0');
 
-	variable match_on_v : std_logic := '0';
-	variable match_off_v : std_logic := '0';
-	variable match_v : std_logic := '0';
-
     begin
 
 	if reset_n = '0' then
 	    cval_on_v := cval_on;
 	    cval_off_v := cval_off;
 
-	    match_v := '0';
-	    match_on_v := '0';
-	    match_off_v := '0';
+	    match <= '0';
+	    match_on <= '0';
+	    match_off <= '0';
 
 	elsif rising_edge(clk) then
 	    if counter = cval_on_v then
-		match_on_v := '1';
-		match_off_v := '0';
-		match_v := '1';
-
-	    elsif counter = cval_off_v then
-		match_on_v := '0';
-		match_off_v := '1';
-		match_v := '0';
-
+		match <= '1';
+		match_on <= '1';
 	    else
-		match_on_v := '0';
-		match_off_v := '0';
-
+		match_on <= '0';
+	    end if;
+	    
+	    if counter = cval_off_v then
+		match <= '0';
+		match_off <= '1';
+	    else
+		match_off <= '0';
 	    end if;
 	end if;
-
-	match <= match_v;
-	match_on <= match_on_v;
-	match_off <= match_off_v;
 
     end process;
 
@@ -120,7 +110,7 @@ begin
 	    total_h_v := unsigned(total_h);
 
 	    hcnt_v := (others => '0');
-	    vcnt_v := to_unsigned(7,vcnt_v'length);--(others => '0');
+	    vcnt_v := (others => '0');
 
 	elsif rising_edge(clk) then
 	    -- traverse total area

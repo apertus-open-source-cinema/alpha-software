@@ -71,12 +71,18 @@ begin
 	
 	    std_logic_vector(to_unsigned(	   0, 32)),	--     0    0
 	    std_logic_vector(to_unsigned(	   5, 32)),	--     5    2
-	    std_logic_vector(to_unsigned(	  10, 32)),	--    10    4
-	    std_logic_vector(to_unsigned(	  20, 32)),	--    20    6
 	    std_logic_vector(to_unsigned(	   0, 32)),	--     0    8
 	    std_logic_vector(to_unsigned(	1920, 32)),	--  1920   40
 	    std_logic_vector(to_unsigned(	  41, 32)),	--    41    8
-	    std_logic_vector(to_unsigned(	1121, 32)) );	--  1121   24
+	    std_logic_vector(to_unsigned(	1121, 32)),	--  1121   24
+	    std_logic_vector(to_unsigned(	  10, 32)),	--    10    4
+	    std_logic_vector(to_unsigned(	  32, 32)),	--    20    6
+
+	    std_logic_vector(to_unsigned(	 256, 32)),	--     0    0
+	    std_logic_vector(to_unsigned(	 512, 32)),	--     5    2
+	    std_logic_vector(to_unsigned(	   0, 32)),	--    30    7
+	    std_logic_vector(to_unsigned(	   0, 32)) );	--    30    7
+	
     end generate;
 
 

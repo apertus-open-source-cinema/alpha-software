@@ -18,12 +18,14 @@ read_vhdl ../axi_split.vhd
 read_vhdl ../reg_file.vhd
 read_vhdl ../reg_pll.vhd
 read_vhdl ../async_div.vhd
+read_vhdl ../synchronizer.vhd
 read_vhdl ../pmod_debug.vhd
 # read_vhdl ../pmod_encode.vhd
 # read_vhdl ../hdmi_pll.vhd
 # read_vhdl ../combiner.vhd
 read_vhdl ../addr_gen.vhd
 read_vhdl ../scan_gen.vhd
+read_vhdl ../scan_hdmi.vhd
 read_vhdl ../fifo_reset.vhd
 read_vhdl ../axi_dsrc.vhd
 read_vhdl ../axihp_reader.vhd

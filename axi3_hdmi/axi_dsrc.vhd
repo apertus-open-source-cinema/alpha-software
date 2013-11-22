@@ -35,7 +35,7 @@ entity axi_dsrc is
 	m_axi_aclk	: in std_logic;
 	m_axi_areset_n	: in std_logic;
 	enable		: in std_logic;
-	reset		: in std_logic;
+	reset		: in std_logic;		-- async
 	--
 	m_axi_ro	: out axi3s_read_in_r;
 	m_axi_ri	: in axi3s_read_out_r;
@@ -63,9 +63,12 @@ architecture RTL of axi_dsrc is
     attribute KEEP_HIERARCHY : string;
     attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
 
-
     attribute DONT_TOUCH : string;
     attribute MARK_DEBUG : string;
+
+    signal reset_axi : std_logic;
+    signal reset_addr : std_logic;
+    signal reset_data : std_logic;
 
     --------------------------------------------------------------------
     -- Data FIFO Signals
@@ -153,6 +156,28 @@ architecture RTL of axi_dsrc is
 begin
 
     --------------------------------------------------------------------
+    -- Reset Synchronizers
+    --------------------------------------------------------------------
+
+    sync_aclk_inst : entity work.synchronizer
+	port map (
+	    clk => m_axi_aclk,
+	    async_in => reset,
+	    sync_out => reset_axi );
+
+    sync_addr_inst : entity work.synchronizer
+	port map (
+	    clk => addr_clk,
+	    async_in => reset,
+	    sync_out => reset_addr );
+
+    sync_data_inst : entity work.synchronizer
+	port map (
+	    clk => data_clk,
+	    async_in => reset,
+	    sync_out => reset_data );
+
+    --------------------------------------------------------------------
     -- Data FIFO
     --------------------------------------------------------------------
 
@@ -184,7 +209,7 @@ begin
     FIFO_data_reset : entity work.fifo_reset
 	port map (
 	    clk => fifo_data_rclk,		-- assumed slower
-	    reset => reset,
+	    reset => reset_data,
 	    --
 	    fifo_rst => fifo_data_rst,
 	    fifo_rdy => fifo_data_rdy );
@@ -200,12 +225,12 @@ begin
     data64_out <= fifo_data_out;
 
 
-    data_proc : process(data_clk, reset, data_enable, data64_out)
+    data_proc : process(data_clk, reset_data, data_enable, data64_out)
 	variable cnt_v : unsigned(1 downto 0) := "00";
 	variable pos_v : natural range 0 to 255 := 0;
 
     begin
-	if reset = '1' then
+	if reset_data = '1' then
 	    cnt_v := "00";
 
 	elsif rising_edge(data_clk) then
@@ -222,11 +247,11 @@ begin
 
     end process;
 
-    data64_proc : process(data_clk, reset, data_enable)
+    data64_proc : process(data_clk, reset_data, data_enable)
 	variable cnt_v : unsigned(1 downto 0) := "00";
 	variable ren_v : std_logic := '0';
     begin
-	if reset = '1' then
+	if reset_data = '1' then
 	    cnt_v := "00";
 	    ren_v := '0';
 
@@ -282,7 +307,7 @@ begin
     FIFO_addr_reset : entity work.fifo_reset
 	port map (
 	    clk => fifo_addr_wclk,		-- assumed slower
-	    reset => reset,
+	    reset => reset_addr,
 	    --
 	    fifo_rst => fifo_addr_rst,
 	    fifo_rdy => fifo_addr_rdy );

@@ -167,7 +167,7 @@ architecture RTL of top is
     -- Register File Signals
     --------------------------------------------------------------------
 
-    signal reg_oreg : reg_array(0 to 15);
+    signal reg_oreg : reg_array(0 to 19);
     signal reg_ireg : reg_array(0 to 3);
 
     --------------------------------------------------------------------
@@ -226,56 +226,6 @@ architecture RTL of top is
     signal pll_pwrdwn : std_logic;
 
     --------------------------------------------------------------------
-    -- Scan Signals
-    --------------------------------------------------------------------
-
-    signal scan_clk : std_logic;
-    signal scan_reset_n : std_logic;
-
-    signal scan_total_w : std_logic_vector(11 downto 0);
-    signal scan_total_h : std_logic_vector(11 downto 0);
-
-    signal scan_hcnt : std_logic_vector(11 downto 0);
-    signal scan_vcnt : std_logic_vector(11 downto 0);
-
-    signal scan_hdisp_s : std_logic_vector(11 downto 0);
-    signal scan_hdisp_e : std_logic_vector(11 downto 0);
-
-    signal scan_hdisp : std_logic;
-
-    signal scan_vdisp_s : std_logic_vector(11 downto 0);
-    signal scan_vdisp_e : std_logic_vector(11 downto 0);
-
-    signal scan_vdisp : std_logic;
-
-    signal scan_hsync_s : std_logic_vector(11 downto 0);
-    signal scan_hsync_e : std_logic_vector(11 downto 0);
-
-    signal scan_hsync : std_logic;
-
-    signal scan_vsync_s : std_logic_vector(11 downto 0);
-    signal scan_vsync_e : std_logic_vector(11 downto 0);
-
-    signal scan_vsync : std_logic;
-
-
-    signal scan_vconf_s : std_logic_vector(11 downto 0);
-    signal scan_vconf_e : std_logic_vector(11 downto 0);
-    signal scan_vconf : std_logic;
-    signal scan_vc_on : std_logic;
-    signal scan_vcoff : std_logic;
-
-    signal scan_hdata_s : std_logic_vector(11 downto 0);
-    signal scan_hdata_e : std_logic_vector(11 downto 0);
-
-    signal scan_hdata : std_logic;
-
-    signal scan_vdata_s : std_logic_vector(11 downto 0);
-    signal scan_vdata_e : std_logic_vector(11 downto 0);
-
-    signal scan_vdata : std_logic;
-
-    --------------------------------------------------------------------
     -- HDMI PLL Signals
     --------------------------------------------------------------------
 
@@ -297,6 +247,30 @@ architecture RTL of top is
     signal hdmi_frame : std_logic_vector(7 downto 0);
 
     signal hdmi_eo : std_logic_vector(15 downto 0);
+
+    --------------------------------------------------------------------
+    -- HDMI ScanGen Signals
+    --------------------------------------------------------------------
+
+    signal scan_clk : std_logic;
+    signal scan_reset_n : std_logic;
+
+    signal scan_hdisp : std_logic;
+    signal scan_vdisp : std_logic;
+    signal scan_disp : std_logic;
+
+    signal scan_hsync : std_logic;
+    signal scan_vsync : std_logic;
+
+    signal scan_hdata : std_logic;
+    signal scan_vdata : std_logic;
+    signal scan_data : std_logic;
+    signal scan_even : std_logic;
+
+    signal scan_vconf : std_logic;
+    signal scan_vc_ev_a : std_logic;
+    signal scan_vc_ev_b : std_logic;
+    signal scan_vc_ev_c : std_logic;
 
     --------------------------------------------------------------------
     -- Addr Gen Signals
@@ -706,7 +680,7 @@ begin
 
     pll_clkin1 <= clk_100;
     pll_clkin2 <= ps_fclk(0);
-    pll_clkinsel <= ps_reset_n(2);
+    pll_clkinsel <= ps_reset_n(3);
 
     pll_pwrdwn <= '0';
 
@@ -761,7 +735,7 @@ begin
 	generic map (
 	    NAME => "ScanGen",
 	    REG_MASK => x"000000FF",
-	    OREG_SIZE => 16,
+	    OREG_SIZE => 20,
 	    IREG_SIZE => 4 )
 	port map (
 	    s_axi_aclk => m_axi10_aclk,
@@ -775,142 +749,67 @@ begin
 	    oreg => reg_oreg,
 	    ireg => reg_igen );
 
-    scan_total_w <= reg_oreg(0)(11 downto 0);
-    scan_total_h <= reg_oreg(1)(11 downto 0);
-
-    scan_hdisp_s <= reg_oreg(2)(11 downto 0);
-    scan_hdisp_e <= reg_oreg(3)(11 downto 0);
-
-    scan_vdisp_s <= reg_oreg(4)(11 downto 0);
-    scan_vdisp_e <= reg_oreg(5)(11 downto 0);
-
-    scan_hsync_s <= reg_oreg(6)(11 downto 0);
-    scan_hsync_e <= reg_oreg(7)(11 downto 0);
-
-    scan_vsync_s <= reg_oreg(8)(11 downto 0);
-    scan_vsync_e <= reg_oreg(9)(11 downto 0);
-
-
-    scan_vconf_s <= reg_oreg(10)(11 downto 0);
-    scan_vconf_e <= reg_oreg(11)(11 downto 0);
-
-    scan_hdata_s <= reg_oreg(12)(11 downto 0);
-    scan_hdata_e <= reg_oreg(13)(11 downto 0);
-
-    scan_vdata_s <= reg_oreg(14)(11 downto 0);
-    scan_vdata_e <= reg_oreg(15)(11 downto 0);
-
-
     --------------------------------------------------------------------
     -- Scan Generator
     --------------------------------------------------------------------
 
-    scan_gen_inst : entity work.scan_gen
+    scan_gen_inst : entity work.scan_hdmi
 	port map (
 	    clk => scan_clk,
 	    reset_n => scan_reset_n,
 	    --
-	    total_w => scan_total_w,
-	    total_h => scan_total_h,
+	    total_w => reg_oreg(0)(11 downto 0),
+	    total_h => reg_oreg(1)(11 downto 0),
 	    --
-	    hcnt => scan_hcnt,
-	    vcnt => scan_vcnt );
-
-    scan_hdisp_inst : entity work.scan_check
-	port map (
-	    clk => scan_clk,
-	    reset_n => scan_reset_n,
+	    hdisp_s => reg_oreg(2)(11 downto 0),
+	    hdisp_e => reg_oreg(3)(11 downto 0),
+	    vdisp_s => reg_oreg(4)(11 downto 0),
+	    vdisp_e => reg_oreg(5)(11 downto 0),
 	    --
-	    counter => scan_hcnt,
-	    cval_on => scan_hdisp_s,
-	    cval_off => scan_hdisp_e,
+	    hsync_s => reg_oreg(6)(11 downto 0),
+	    hsync_e => reg_oreg(7)(11 downto 0),
+	    vsync_s => reg_oreg(8)(11 downto 0),
+	    vsync_e => reg_oreg(9)(11 downto 0),
 	    --
-	    match => scan_hdisp );
-
-    scan_vdisp_inst : entity work.scan_check
-	port map (
-	    clk => scan_clk,
-	    reset_n => scan_reset_n,
+	    hdata_s => reg_oreg(10)(11 downto 0),
+	    hdata_e => reg_oreg(11)(11 downto 0),
+	    vdata_s => reg_oreg(12)(11 downto 0),
+	    vdata_e => reg_oreg(13)(11 downto 0),
 	    --
-	    counter => scan_vcnt,
-	    cval_on => scan_vdisp_s,
-	    cval_off => scan_vdisp_e,
+	    vconf_r => reg_oreg(14)(11 downto 0),
+	    vconf_a => reg_oreg(15)(11 downto 0),
+	    vconf_b => reg_oreg(16)(11 downto 0),
+	    vconf_c => reg_oreg(17)(11 downto 0),
 	    --
-	    match => scan_vdisp );
-
-    scan_hsync_inst : entity work.scan_check
-	port map (
-	    clk => scan_clk,
-	    reset_n => scan_reset_n,
+	    hdisp => scan_hdisp,
+	    vdisp => scan_vdisp,
+	    disp => scan_disp,
 	    --
-	    counter => scan_hcnt,
-	    cval_on => scan_hsync_s,
-	    cval_off => scan_hsync_e,
+	    hsync => scan_hsync,
+	    vsync => scan_vsync,
 	    --
-	    match => scan_hsync );
-
-    scan_vsync_inst : entity work.scan_check
-	port map (
-	    clk => scan_clk,
-	    reset_n => scan_reset_n,
+	    hdata => scan_hdata,
+	    vdata => scan_vdata,
+	    data => scan_data,
+	    even => scan_even,
 	    --
-	    counter => scan_vcnt,
-	    cval_on => scan_vsync_s,
-	    cval_off => scan_vsync_e,
-	    --
-	    match => scan_vsync );
-
-    scan_vconf_inst : entity work.scan_check
-	port map (
-	    clk => scan_clk,
-	    reset_n => scan_reset_n,
-	    --
-	    counter => scan_vcnt,
-	    cval_on => scan_vconf_s,
-	    cval_off => scan_vconf_e,
-	    --
-	    match_on => scan_vc_on,
-	    match_off => scan_vcoff,
-	    match => scan_vconf );
-
-    scan_hdata_inst : entity work.scan_check
-	port map (
-	    clk => scan_clk,
-	    reset_n => scan_reset_n,
-	    --
-	    counter => scan_hcnt,
-	    cval_on => scan_hdata_s,
-	    cval_off => scan_hdata_e,
-	    --
-	    match => scan_hdata );
-
-    scan_vdata_inst : entity work.scan_check
-	port map (
-	    clk => scan_clk,
-	    reset_n => scan_reset_n,
-	    --
-	    counter => scan_vcnt,
-	    cval_on => scan_vdata_s,
-	    cval_off => scan_vdata_e,
-	    --
-	    match => scan_vdata );
+	    vconf => scan_vconf,
+	    vc_ev_a => scan_vc_ev_a,
+	    vc_ev_b => scan_vc_ev_b,
+	    vc_ev_c => scan_vc_ev_c );
 
 
     scan_clk <= hdmi_clk;
     scan_reset_n <= ps_reset_n(1);
 
-    hdmi_eo <= x"0000"
-	when (scan_hcnt(0) xor scan_vcnt(0)) = '0'
-	else x"FFFF";
-
-    hd_data <= hdmi_eo when (scan_hdata and scan_vdata) = '0'
-	else rdata_out(2) when scan_hcnt(0) = '0'
+    hd_data <= x"0000" when scan_data = '0'
+	else rdata_out(2) when scan_even = '1'
 	else rdata_out(3);
 
     hd_hsync <= scan_hsync;
     hd_vsync <= scan_vsync;
 
-    hd_de <= scan_hdisp and scan_vdisp;
+    hd_de <= scan_disp;
 
     hd_clk <= hdmi_clk;
 
@@ -957,9 +856,15 @@ begin
 		--
 		addr => raddr_in(I) );
 
+	sync_inst : entity work.synchronizer
+	    port map (
+		clk => addr_gen_clk(I),
+		async_in => scan_vc_ev_a,
+		sync_out => addr_gen_reset(I) );
+
 	addr_gen_clk(I) <= addr_clk;
 	-- addr_gen_reset(I) <= swi(4);
-	addr_gen_reset(I) <= scan_vc_on;
+	-- addr_gen_reset(I) <= scan_vc_ev_a;
 	addr_gen_auto(I) <= swi(4);
 	addr_gen_enable(I) <= not raddr_full(I);
 
@@ -1029,23 +934,28 @@ begin
 
 	end generate;
 
+	sync_inst : entity work.synchronizer
+	    generic map (
+		ACTIVE_OUT => '0' )
+	    port map (
+		clk => reader_clk,
+		async_in => scan_vconf,
+		sync_out => reader_enable(I) );
+
 	raddr_clk(I) <= addr_gen_clk(I);
 	raddr_enable(I) <= not raddr_full(I);
 
 	rdata_clk(I) <= hdmi_clk;
-	rdata_enable(I) <= scan_hdata and scan_vdata;
+	rdata_enable(I) <= scan_data;
 
-	reader_enable(I) <= not scan_vconf;
-	reader_reset(I) <= scan_vc_on;
+	-- reader_enable(I) <= not scan_vconf;
+	reader_reset(I) <= scan_vc_ev_b;
 
     end generate;
 
     s_axi_aclk(1) <= reader_clk;
     s_axi_aclk(3) <= reader_clk;
 
-
-
-    --addr_gen_reset(3) <= scan_vconf;
 
     --------------------------------------------------------------------
     -- LED Status output
