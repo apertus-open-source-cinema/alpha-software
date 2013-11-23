@@ -1,0 +1,5 @@
+
+vhdl work data_sync.vhd
+vhdl work reset_sync.vhd
+
+vhdl work sim_tb.vhd
