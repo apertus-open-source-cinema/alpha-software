@@ -18,7 +18,8 @@ read_vhdl ../axi_split.vhd
 read_vhdl ../reg_file.vhd
 read_vhdl ../reg_pll.vhd
 read_vhdl ../async_div.vhd
-read_vhdl ../synchronizer.vhd
+read_vhdl ../data_sync.vhd
+read_vhdl ../reset_sync.vhd
 read_vhdl ../pmod_debug.vhd
 # read_vhdl ../pmod_encode.vhd
 # read_vhdl ../hdmi_pll.vhd

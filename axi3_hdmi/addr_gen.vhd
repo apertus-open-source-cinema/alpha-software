@@ -39,36 +39,36 @@ entity addr_gen is
 end entity addr_gen;
 
 architecture RTL of addr_gen is
+
+    attribute KEEP_HIERARCHY : string;
+    attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
+
+    signal addr_next : unsigned(addr'range);
+    signal acnt : unsigned(addr'range);
+
 begin
 
     addr_proc: process (clk, addr_min)
 
-	variable addr_v : unsigned(addr'range);
-	variable next_v : unsigned(addr'range) :=
-	    resize(ADDR_INIT, addr'length);
-
-	variable acnt_v : unsigned(addr'range) :=
-	    (others => '0');
-
     begin
 
-	if reset = '1' then			-- reset
-	    addr_v := addr_min;
-	    next_v := addr_min;
-	    acnt_v := (others => '0');
+	if reset = '1' then				-- reset
+	    addr <= std_logic_vector(addr_min);
+	    addr_next <= addr_min;
+	    acnt <= (others => '0');
 
 	elsif rising_edge(clk) then
-	    if enable = '1' then		-- enabled
-		addr_v := next_v;
+	    if enable = '1' then			-- enabled
+		addr <= std_logic_vector(addr_next);
 
-		if next_v = addr_max then	-- last?
+		if addr_next = addr_max then		-- last?
 		    null;
-		elsif acnt_v = addr_cnt then
-		    acnt_v := (others => '0');
-		    next_v := next_v + addr_add;
+		elsif acnt = addr_cnt then
+		    acnt <= (others => '0');
+		    addr_next <= addr_next + addr_add;
 		else
-		    acnt_v := acnt_v + "1";
-		    next_v := next_v + addr_inc;
+		    acnt <= acnt + "1";
+		    addr_next <= addr_next + addr_inc;
 		end if;
 
 	    else
@@ -77,8 +77,6 @@ begin
 	    end if;
 
 	end if;
-
-	addr <= std_logic_vector(addr_v);
 
     end process;
 

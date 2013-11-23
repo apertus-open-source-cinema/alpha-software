@@ -8,7 +8,7 @@ set_property PACKAGE_PIN W11 [get_ports spi_clk]
 set_property PACKAGE_PIN W10 [get_ports spi_in]
 set_property PACKAGE_PIN W12 [get_ports spi_out]
 
-set_property IOSTANDARD LVCMOS33 [get_ports {spi_*}]
+set_property IOSTANDARD LVCMOS33 [get_ports spi_*]
 
 set_property PACKAGE_PIN T22 [get_ports {led[0]}]
 set_property PACKAGE_PIN T21 [get_ports {led[1]}]
@@ -32,13 +32,15 @@ set_property PACKAGE_PIN M15 [get_ports {swi[7]}]
 
 set_property IOSTANDARD LVCMOS25 [get_ports {swi[*]}]
 
-# set_false_path -from [get_pins -filter {IS_CLOCK} reg_file_inst*/oreg*/*]
+set_false_path -from [get_pins reg_file_inst0/oreg*/C]
+set_false_path -from [get_pins reg_file_inst1/oreg*/C]
 
 set_multicycle_path 2 -from [get_pins */FIFO_addr_reset/*/C]
-set_multicycle_path 1 -from [get_pins */FIFO_addr_reset/*/C] -hold
+set_multicycle_path 1 -hold -from [get_pins */FIFO_addr_reset/*/C]
 
 set_multicycle_path 2 -from [get_pins */FIFO_data_reset/*/C]
-set_multicycle_path 1 -from [get_pins */FIFO_data_reset/*/C] -hold
+set_multicycle_path 1 -hold -from [get_pins */FIFO_data_reset/*/C]
 
 set_multicycle_path 2 -from [get_pins scan_gen_inst/vconf*/C]
-set_multicycle_path 1 -from [get_pins scan_gen_inst/vconf*/C] -hold
+set_multicycle_path 1 -hold -from [get_pins scan_gen_inst/vconf*/C]
+

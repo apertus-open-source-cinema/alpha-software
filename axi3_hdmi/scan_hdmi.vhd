@@ -40,9 +40,12 @@ entity scan_hdmi is
 	vdata_e : in std_logic_vector(11 downto 0);
 	--
 	vconf_r : in std_logic_vector(11 downto 0);
-	vconf_a : in std_logic_vector(11 downto 0);
-	vconf_b : in std_logic_vector(11 downto 0);
-	vconf_c : in std_logic_vector(11 downto 0);
+	dsrst_c	: in std_logic_vector(11 downto 0);
+	hagen_s : in std_logic_vector(11 downto 0);
+	hagen_e : in std_logic_vector(11 downto 0);
+	--
+	dskip_s : in std_logic_vector(11 downto 0);
+	dskip_e	: in std_logic_vector(11 downto 0);
 	--
 	hdisp	: out std_logic;
 	vdisp	: out std_logic;
@@ -57,9 +60,9 @@ entity scan_hdmi is
 	even	: out std_logic;
 	--
 	vconf	: out std_logic;
-	vc_ev_a : out std_logic;
-	vc_ev_b : out std_logic;
-	vc_ev_c : out std_logic
+	dsrst	: out std_logic;
+	hagen	: out std_logic;
+	dskip	: out std_logic
     );
 end entity scan_hdmi;
 
@@ -78,12 +81,16 @@ architecture RTL of scan_hdmi is
 
     signal scan_hsync : std_logic;
     signal scan_vsync : std_logic;
+    signal scan_vsoff : std_logic;
 
     signal scan_hdata : std_logic;
     signal scan_vdata : std_logic;
     signal scan_data : std_logic;
 
     signal scan_vconf : std_logic;
+    signal scan_dsrst : std_logic;
+    signal scan_hagen : std_logic;
+    signal scan_dskip : std_logic;
 
 begin
 
@@ -102,7 +109,7 @@ begin
 	    hcnt => scan_hcnt,
 	    vcnt => scan_vcnt );
 
-    sync_inst : entity work.synchronizer
+    sync_inst : entity work.reset_sync
 	generic map (
 	    ACTIVE_IN => '0',
 	    ACTIVE_OUT => '0' )
@@ -159,7 +166,8 @@ begin
 	    cval_on => vsync_s,
 	    cval_off => vsync_e,
 	    --
-	    match => scan_vsync );
+	    match => scan_vsync,
+	    match_off => scan_vsoff );
 
     scan_hdata_inst : entity work.scan_check
 	port map (
@@ -194,6 +202,39 @@ begin
 	    --
 	    match_on => scan_vconf );
 
+    scan_hagen_inst : entity work.scan_check
+	port map (
+	    clk => scan_clk,
+	    reset_n => scan_reset_n,
+	    --
+	    counter => scan_hcnt,
+	    cval_on => hagen_s,
+	    cval_off => hagen_e,
+	    --
+	    match => scan_hagen );
+
+    scan_dsrst_inst : entity work.scan_check
+	port map (
+	    clk => scan_clk,
+	    reset_n => scan_reset_n,
+	    --
+	    counter => scan_hcnt,
+	    cval_on => dsrst_c,
+	    cval_off => dsrst_c,
+	    --
+	    match_on => scan_dsrst );
+
+    scan_dskip_inst : entity work.scan_check
+	port map (
+	    clk => scan_clk,
+	    reset_n => scan_reset_n,
+	    --
+	    counter => scan_hcnt,
+	    cval_on => dskip_s,
+	    cval_off => dskip_e,
+	    --
+	    match => scan_dskip );
+
     scan_proc : process (clk, reset_n)
     begin
 	if reset_n = '0' then
@@ -210,9 +251,9 @@ begin
 	    even <= '0';
 	
 	    vconf <= '0';
-	    vc_ev_a <= '0';
-	    vc_ev_b <= '0';
-	    vc_ev_c <= '0';
+	    dsrst <= '0';
+	    hagen <= '0';
+	    dskip <= '0';
 
 	elsif rising_edge(clk) then
 	    hdisp <= scan_hdisp;
@@ -229,26 +270,10 @@ begin
 	    even <= not scan_hcnt(0);
 
 	    vconf <= scan_vconf;
+	    dsrst <= scan_vconf and scan_dsrst;
+	    hagen <= scan_vconf and scan_hagen;
+	    dskip <= scan_vsoff and scan_dskip;
 
-	    if scan_vconf = '1' then
-		if scan_hcnt = vconf_a then
-		    vc_ev_a <= '1';
-		else
-		    vc_ev_a <= '0';
-		end if;
-
-		if scan_hcnt = vconf_b then
-		    vc_ev_b <= '1';
-		else
-		    vc_ev_b <= '0';
-		end if;
-
-		if scan_hcnt = vconf_c then
-		    vc_ev_c <= '1';
-		else
-		    vc_ev_c <= '0';
-		end if;
-	    end if;
 	end if;
     end process;
 

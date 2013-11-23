@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --  axihp_reader.vhd
 --	AXIHP Reader (No In Flight)
---	Version 1.3
+--	Version 1.4
 --
 --  Copyright (C) 2013 H.Poetzl
 --
@@ -79,6 +79,8 @@ begin
 	variable arvalid_v : std_logic := '0';
 	variable rready_v : std_logic := '0';
 
+	variable addr_v : std_logic_vector(31 downto 0);
+
 	type r_state is (addr_s, data_s, hold_s, idle_s);
 
 	variable state : r_state := idle_s;
@@ -91,11 +93,8 @@ begin
 		rready_v := '0';
 
 		state := idle_s;
-		addr_enable <= '0';
 
 	    else
-		addr_enable <= '0';
-
 		--  ARVALID ---> RVALID		    Master
 		--     \	 /`   \
 		--	\,	/      \,
@@ -105,6 +104,7 @@ begin
 		    when addr_s =>
 			rready_v := '0';
 			dcnt_v := dcnt_c;
+			addr_v := (addr_in and ADDR_MASK) or ADDR_DATA;
 
 			if arvalid_v = '0' then
 			    if enable = '0' then		-- disable reader
@@ -136,15 +136,12 @@ begin
 			    dcnt_v := dcnt_v - 1;
 
 			    if dcnt_v < 0 then			-- last read
-				addr_enable <= '1';		-- fetch addr
-
 				state := addr_s;
 			    end if;
 			end if;
 
 		    when hold_s =>
 			if enable = '1' then
-			    addr_enable <= '1';			-- fetch addr
 			    state := addr_s;
 			end if;
 
@@ -170,16 +167,17 @@ begin
 	end if;
 
 	m_axi_ro.arid <= (others => '0');
+	m_axi_ro.araddr <= addr_v;
 
 	m_axi_ro.arvalid <= arvalid_v;
 	m_axi_ro.rready <= rready_v;
 
 	data_enable <= rready_v and m_axi_ri.rvalid;
+	addr_enable <= arvalid_v and m_axi_ri.arready;
 
     end process;
 
     data_out <= m_axi_ri.rdata(DATA_WIDTH - 1 downto 0);
-    m_axi_ro.araddr <= (addr_in and ADDR_MASK) or ADDR_DATA;
 
     m_axi_ro.arlen <=
 	std_logic_vector(to_unsigned(DATA_COUNT - 1, 4));

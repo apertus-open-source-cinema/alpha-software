@@ -160,7 +160,7 @@ architecture RTL of top is
     -- Gen Register File Signals
     --------------------------------------------------------------------
 
-    signal reg_ogen : reg_array(0 to 15);
+    signal reg_ogen : reg_array(0 to 19);
     signal reg_igen : reg_array(0 to 3);
 
     --------------------------------------------------------------------
@@ -232,7 +232,7 @@ architecture RTL of top is
     signal hdmi_pll_locked : std_logic;
 
     signal hdmi_clk : std_logic;
-
+    signal data_clk : std_logic;
     signal addr_clk : std_logic;
 
     --------------------------------------------------------------------
@@ -268,9 +268,9 @@ architecture RTL of top is
     signal scan_even : std_logic;
 
     signal scan_vconf : std_logic;
-    signal scan_vc_ev_a : std_logic;
-    signal scan_vc_ev_b : std_logic;
-    signal scan_vc_ev_c : std_logic;
+    signal scan_dsrst : std_logic;
+    signal scan_hagen : std_logic;
+    signal scan_dskip : std_logic;
 
     --------------------------------------------------------------------
     -- Addr Gen Signals
@@ -280,6 +280,7 @@ architecture RTL of top is
 
     signal addr_gen_clk : std_logic_vector(ADDR_COUNT - 1 downto 0);
     signal addr_gen_reset : std_logic_vector(ADDR_COUNT - 1 downto 0);
+    signal addr_gen_hold : std_logic_vector(ADDR_COUNT - 1 downto 0);
     signal addr_gen_enable : std_logic_vector(ADDR_COUNT - 1 downto 0);
     signal addr_gen_auto : std_logic_vector(ADDR_COUNT - 1 downto 0);
 
@@ -287,17 +288,16 @@ architecture RTL of top is
     -- Reader/Writer Signals
     --------------------------------------------------------------------
 
-    constant READER_COUNT : natural := 2;
-    constant WRITER_COUNT : natural := 2;
-    constant RW_COUNT : natural := READER_COUNT + WRITER_COUNT;
+    constant READER_COUNT : natural := 4;
+    constant WRITER_COUNT : natural := 0;
 
     type rdata_t is array (natural range <>) of
 	std_logic_vector (15 downto 0);
 
-    signal rdata_clk	: std_logic_vector(RW_COUNT - 1 downto 0);
-    signal rdata_enable : std_logic_vector(RW_COUNT - 1 downto 0);
-    signal rdata_out	: rdata_t(RW_COUNT - 1 downto 0);
-    signal rdata_empty	: std_logic_vector(RW_COUNT - 1 downto 0);
+    signal rdata_clk	: std_logic_vector(READER_COUNT - 1 downto 0);
+    signal rdata_enable : std_logic_vector(READER_COUNT - 1 downto 0);
+    signal rdata_out	: rdata_t(READER_COUNT - 1 downto 0);
+    signal rdata_empty	: std_logic_vector(READER_COUNT - 1 downto 0);
 
     -- attribute DONT_TOUCH of rdata_clk : signal is "TRUE";
     -- attribute DONT_TOUCH of rdata_enable : signal is "TRUE";
@@ -307,33 +307,39 @@ architecture RTL of top is
     type raddr_t is array (natural range <>) of
 	std_logic_vector (31 downto 0);
 
-    signal raddr_clk	: std_logic_vector(RW_COUNT - 1 downto 0);
-    signal raddr_enable : std_logic_vector(RW_COUNT - 1 downto 0);
-    signal raddr_in	: raddr_t(RW_COUNT - 1 downto 0);
-    signal raddr_full	: std_logic_vector(RW_COUNT - 1 downto 0);
+    signal raddr_clk	: std_logic_vector(READER_COUNT - 1 downto 0);
+    signal raddr_enable : std_logic_vector(READER_COUNT - 1 downto 0);
+    signal raddr_in	: raddr_t(READER_COUNT - 1 downto 0);
+    signal raddr_full	: std_logic_vector(READER_COUNT - 1 downto 0);
 
     -- attribute DONT_TOUCH of raddr_clk : signal is "TRUE";
     -- attribute DONT_TOUCH of raddr_enable : signal is "TRUE";
     -- attribute DONT_TOUCH of raddr_in : signal is "TRUE";
     -- attribute DONT_TOUCH of raddr_full : signal is "TRUE";
 
-    signal reader_enable : std_logic_vector(RW_COUNT - 1 downto 0);
-    signal reader_reset : std_logic_vector(RW_COUNT - 1 downto 0);
+    constant RADDR_MASK : raddr_t(0 to READER_COUNT - 1) := 
+	( x"00FFFFFF", x"00FFFFFF", x"00FFFFFF", x"00FFFFFF" );
+    constant RADDR_BASE : raddr_t(0 to READER_COUNT - 1) := 
+	( x"1B000000", x"1C000000", x"1D000000", x"1E000000" );
+
+    signal reader_disable : std_logic_vector(READER_COUNT - 1 downto 0);
+    signal reader_enable : std_logic_vector(READER_COUNT - 1 downto 0);
+    signal reader_reset : std_logic_vector(READER_COUNT - 1 downto 0);
 
     type reader_state_t is array (natural range <>) of
 	std_logic_vector (7 downto 0);
 
-    signal reader_state : reader_state_t(RW_COUNT - 1 downto 0);
+    signal reader_state : reader_state_t(READER_COUNT - 1 downto 0);
 
     type reader_data_t is array (natural range <>) of
 	std_logic_vector (63 downto 0);
 
-    signal reader_data : reader_data_t(RW_COUNT - 1 downto 0);
+    signal reader_data : reader_data_t(READER_COUNT - 1 downto 0);
 
     type reader_addr_t is array (natural range <>) of
 	std_logic_vector (31 downto 0);
 
-    signal reader_addr : reader_addr_t(RW_COUNT - 1 downto 0);
+    signal reader_addr : reader_addr_t(READER_COUNT - 1 downto 0);
 
     signal reader_clk : std_logic;
 
@@ -617,9 +623,9 @@ begin
 	    CLKIN2_PERIOD => 10.0,
 	    --
 	    CLKOUT0_DIVIDE => 10,	-- (1-128)
-	    CLKOUT1_DIVIDE => 20,
-	    CLKOUT2_DIVIDE => 8,
-	    CLKOUT3_DIVIDE => 1,
+	    CLKOUT1_DIVIDE => 10,
+	    CLKOUT2_DIVIDE => 20,
+	    CLKOUT3_DIVIDE => 8,
 	    CLKOUT4_DIVIDE => 1,
 	    CLKOUT5_DIVIDE => 1,
 	    --
@@ -630,7 +636,7 @@ begin
 	    CLKOUT4_DUTY_CYCLE => 0.5,
 	    CLKOUT5_DUTY_CYCLE => 0.5,
 	    --
-	    CLKOUT0_PHASE => 0.0,	-- (-360.000-360.000)
+	    CLKOUT0_PHASE => 15.0,	-- (-360.000-360.000)
 	    CLKOUT1_PHASE => 0.0,
 	    CLKOUT2_PHASE => 0.0,
 	    CLKOUT3_PHASE => 0.0,
@@ -694,11 +700,17 @@ begin
 	port map (
 	    I => pll_clkout(1),
 	    CE => pll_locked,
-	    O => addr_clk );
+	    O => data_clk );
 
     BUFG_inst2 : BUFGCE
 	port map (
 	    I => pll_clkout(2),
+	    CE => pll_locked,
+	    O => addr_clk );
+
+    BUFG_inst3 : BUFGCE
+	port map (
+	    I => pll_clkout(3),
 	    CE => pll_locked,
 	    O => reader_clk );
 
@@ -777,9 +789,11 @@ begin
 	    vdata_e => reg_oreg(13)(11 downto 0),
 	    --
 	    vconf_r => reg_oreg(14)(11 downto 0),
-	    vconf_a => reg_oreg(15)(11 downto 0),
-	    vconf_b => reg_oreg(16)(11 downto 0),
-	    vconf_c => reg_oreg(17)(11 downto 0),
+	    dsrst_c => reg_oreg(15)(11 downto 0),
+	    hagen_s => reg_oreg(16)(11 downto 0),
+	    hagen_e => reg_oreg(17)(11 downto 0),
+	    dskip_s => reg_oreg(18)(11 downto 0),
+	    dskip_e => reg_oreg(19)(11 downto 0),
 	    --
 	    hdisp => scan_hdisp,
 	    vdisp => scan_vdisp,
@@ -794,17 +808,17 @@ begin
 	    even => scan_even,
 	    --
 	    vconf => scan_vconf,
-	    vc_ev_a => scan_vc_ev_a,
-	    vc_ev_b => scan_vc_ev_b,
-	    vc_ev_c => scan_vc_ev_c );
+	    dsrst => scan_dsrst,
+	    hagen => scan_hagen,
+	    dskip => scan_dskip );
 
 
-    scan_clk <= hdmi_clk;
+    scan_clk <= data_clk;
     scan_reset_n <= ps_reset_n(1);
 
     hd_data <= x"0000" when scan_data = '0'
-	else rdata_out(2) when scan_even = '1'
-	else rdata_out(3);
+	else rdata_out(2) xor rdata_out(3) when scan_even = '1'
+	else rdata_out(0) xor rdata_out(1);
 
     hd_hsync <= scan_hsync;
     hd_vsync <= scan_vsync;
@@ -822,7 +836,7 @@ begin
 	generic map (
 	    NAME => "AddrGen",
 	    REG_MASK => x"000000FF",
-	    OREG_SIZE => 16,
+	    OREG_SIZE => 20,
 	    IREG_SIZE => 4 )
 	port map (
 	    s_axi_aclk => m_axi110_aclk,
@@ -840,7 +854,7 @@ begin
     -- Address Generator
     --------------------------------------------------------------------
 
-    GEN_ADDR: for I in 3 downto 2 generate
+    GEN_ADDR: for I in 3 downto 0 generate
     begin
 	addr_gen_inst : entity work.addr_gen
 	    port map (
@@ -848,136 +862,111 @@ begin
 		reset => addr_gen_reset(I),
 		enable => addr_gen_enable(I),
 		--
-		addr_min => unsigned(reg_ogen((I-2)*8 + 0)),
-		addr_inc => unsigned(reg_ogen((I-2)*8 + 1)),
-		addr_cnt => unsigned(reg_ogen((I-2)*8 + 2)),
-		addr_add => unsigned(reg_ogen((I-2)*8 + 3)),
-		addr_max => unsigned(reg_ogen((I-2)*8 + 4)),
+		addr_min => unsigned(reg_ogen(I*5 + 0)),
+		addr_inc => unsigned(reg_ogen(I*5 + 1)),
+		addr_cnt => unsigned(reg_ogen(I*5 + 2)),
+		addr_add => unsigned(reg_ogen(I*5 + 3)),
+		addr_max => unsigned(reg_ogen(I*5 + 4)),
 		--
 		addr => raddr_in(I) );
 
-	sync_inst : entity work.synchronizer
+	sync_reset_inst : entity work.reset_sync
 	    port map (
 		clk => addr_gen_clk(I),
-		async_in => scan_vc_ev_a,
+		async_in => scan_dsrst,
 		sync_out => addr_gen_reset(I) );
+
+	sync_hold_inst : entity work.data_sync
+	    port map (
+		clk => addr_gen_clk(I),
+		async_in => scan_hagen,
+		sync_out => addr_gen_hold(I) );
 
 	addr_gen_clk(I) <= addr_clk;
 	-- addr_gen_reset(I) <= swi(4);
 	-- addr_gen_reset(I) <= scan_vc_ev_a;
 	addr_gen_auto(I) <= swi(4);
-	addr_gen_enable(I) <= not raddr_full(I);
+	addr_gen_enable(I) <=
+	    not (raddr_full(I) or addr_gen_hold(I));
 
     end generate;
 
-    GEN_DATA: for I in 3 downto 2 generate
+    GEN_DATA: for I in 3 downto 0 generate
     begin
-	RDR2 : if I = 2 generate
-	begin
-	    AXI_DSRC_inst : entity work.axi_dsrc
-		generic map (
-		    ADDR_MASK => x"00FFFFFF",
-		    ADDR_DATA => x"1B000000" )
-		port map (
-		    m_axi_aclk => s_axi_aclk(1),
-		    m_axi_areset_n => s_axi_areset_n(1),
-		    enable => reader_enable(I),		-- in, reader
-		    reset => reader_reset(I),		-- in, reset
-		    --
-		    m_axi_ro => s_axi_ri(1),
-		    m_axi_ri => s_axi_ro(1),
-		    --
-		    addr_clk => raddr_clk(I),		-- in
-		    addr_enable => raddr_enable(I),	-- in
-		    addr_full => raddr_full(I),		-- out
-		    addr_in => raddr_in(I),		-- in
-		    --
-		    data_clk => rdata_clk(I),		-- in
-		    data_enable => rdata_enable(I),	-- in
-		    data_empty => rdata_empty(I),	-- out
-		    data_out => rdata_out(I),		-- out
-		    --
-		    reader_data => reader_data(I),
-		    reader_addr => reader_addr(I),
-		    reader_state => reader_state(I) );
-
-	end generate;
-
-	RDR3 : if I = 3 generate
-	begin
-	    AXI_DSRC_inst : entity work.axi_dsrc
-		generic map (
-		    ADDR_MASK => x"00FFFFFF",
-		    ADDR_DATA => x"1C000000" )
-		port map (
-		    m_axi_aclk => s_axi_aclk(3),
-		    m_axi_areset_n => s_axi_areset_n(3),
-		    enable => reader_enable(I),		-- in, reader
-		    reset => reader_reset(I),		-- in, reset
-		    --
-		    m_axi_ro => s_axi_ri(3),
-		    m_axi_ri => s_axi_ro(3),
-		    --
-		    addr_clk => raddr_clk(I),		-- in
-		    addr_enable => raddr_enable(I),	-- in
-		    addr_full => raddr_full(I),		-- out
-		    addr_in => raddr_in(I),		-- in
-		    --
-		    data_clk => rdata_clk(I),		-- in
-		    data_enable => rdata_enable(I),	-- in
-		    data_empty => rdata_empty(I),	-- out
-		    data_out => rdata_out(I),		-- out
-		    --
-		    reader_data => reader_data(I),
-		    reader_addr => reader_addr(I),
-		    reader_state => reader_state(I) );
-
-	end generate;
-
-	sync_inst : entity work.synchronizer
+	AXI_DSRC_inst : entity work.axi_dsrc
 	    generic map (
-		ACTIVE_OUT => '0' )
+		ADDR_MASK => RADDR_MASK(I),
+		ADDR_DATA => RADDR_BASE(I) )
+	    port map (
+		m_axi_aclk => s_axi_aclk(I),
+		m_axi_areset_n => s_axi_areset_n(I),
+		enable => reader_enable(I),		-- in, reader
+		reset => reader_reset(I),		-- in, reset
+		--
+		m_axi_ro => s_axi_ri(I),
+		m_axi_ri => s_axi_ro(I),
+		--
+		addr_clk => raddr_clk(I),		-- in
+		addr_enable => raddr_enable(I),		-- in
+		addr_full => raddr_full(I),		-- out
+		addr_in => raddr_in(I),			-- in
+		--
+		data_clk => rdata_clk(I),		-- in
+		data_enable => rdata_enable(I),		-- in
+		data_empty => rdata_empty(I),		-- out
+		data_out => rdata_out(I),		-- out
+		--
+		reader_data => reader_data(I),
+		reader_addr => reader_addr(I),
+		reader_state => reader_state(I) );
+
+	sync_inst : entity work.data_sync
 	    port map (
 		clk => reader_clk,
 		async_in => scan_vconf,
-		sync_out => reader_enable(I) );
+		sync_out => reader_disable(I) );
 
 	raddr_clk(I) <= addr_gen_clk(I);
-	raddr_enable(I) <= not raddr_full(I);
+	raddr_enable(I) <= addr_gen_enable(I);
 
-	rdata_clk(I) <= hdmi_clk;
-	rdata_enable(I) <= scan_data;
+	rdata_clk(I) <= data_clk;
+	rdata_enable(I) <= scan_data or scan_dskip;
 
-	-- reader_enable(I) <= not scan_vconf;
-	reader_reset(I) <= scan_vc_ev_b;
+	reader_enable(I) <= not reader_disable(I);
+	reader_reset(I) <= scan_dsrst;
+
+	s_axi_aclk(I) <= reader_clk;
 
     end generate;
-
-    s_axi_aclk(1) <= reader_clk;
-    s_axi_aclk(3) <= reader_clk;
-
 
     --------------------------------------------------------------------
     -- LED Status output
     --------------------------------------------------------------------
 
-    led(0) <= hdmi_pll_locked;
+    -- led(0) <= hdmi_pll_locked;
 
     div_reader_inst : entity work.async_div
 	generic map (
 	    STAGES => 28 )
 	port map (
 	    clk_in => reader_clk,
-	    clk_out => led(1) );
+	    clk_out => led(0) );
 
     div_hdmi_inst : entity work.async_div
 	generic map (
 	    STAGES => 28 )
 	port map (
 	    clk_in => hdmi_clk,
-	    clk_out => led(2) );
+	    clk_out => led(1) );
 
     div_data_inst : entity work.async_div
+	generic map (
+	    STAGES => 28 )
+	port map (
+	    clk_in => addr_clk,
+	    clk_out => led(2) );
+ 
+    div_addr_inst : entity work.async_div
 	generic map (
 	    STAGES => 28 )
 	port map (
@@ -985,10 +974,10 @@ begin
 	    clk_out => led(3) );
 
 
-    led(4) <= rdata_empty(2);
-    led(5) <= rdata_enable(2);
-    led(6) <= rdata_empty(3);
-    led(7) <= rdata_enable(3);
+    led(4) <= rdata_empty(0);
+    led(5) <= rdata_empty(1);
+    led(6) <= rdata_empty(2);
+    led(7) <= rdata_empty(3);
 
 
     --------------------------------------------------------------------
@@ -1025,6 +1014,19 @@ begin
     begin
 	case swi(3 downto 0) is
 	    when "0000" =>
+		pmod_v0 <= raddr_in(0) & 
+			   "0" & addr_gen_enable(0) & "0" & addr_gen_reset(0) & 
+			   "0" & raddr_enable(0) & "0" & raddr_full(0) &
+			   "000" & rdata_enable(0) & "000" & rdata_empty(0) &
+			   rdata_out(0);
+
+		pmod_v1 <= raddr_in(1) &
+			   "0" & addr_gen_enable(1) & "0" & addr_gen_reset(1) & 
+			   "0" & raddr_enable(1) & "0" & raddr_full(1) &
+			   "000" & rdata_enable(1) & "000" & rdata_empty(1) &
+			   rdata_out(1);
+
+	    when "0001" =>
 		pmod_v0 <= raddr_in(2) & 
 			   "0" & addr_gen_enable(2) & "0" & addr_gen_reset(2) & 
 			   "0" & raddr_enable(2) & "0" & raddr_full(2) &
@@ -1041,11 +1043,19 @@ begin
 		-- pmod_v0 <= raddr_in(2);
 		-- pmod_v1 <= raddr_in(3);
 
-	    when "0010" =>
+	    when "0100" =>
+		pmod_v0 <= reader_addr(0) & x"000000" & reader_state(0);
+		pmod_v1 <= reader_data(0);
+
+	    when "0101" =>
+		pmod_v0 <= reader_addr(1) & x"000000" & reader_state(1);
+		pmod_v1 <= reader_data(1);
+
+	    when "0110" =>
 		pmod_v0 <= reader_addr(2) & x"000000" & reader_state(2);
 		pmod_v1 <= reader_data(2);
 
-	    when "0011" =>
+	    when "0111" =>
 		pmod_v0 <= reader_addr(3) & x"000000" & reader_state(3);
 		pmod_v1 <= reader_data(3);
 

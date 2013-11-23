@@ -159,19 +159,19 @@ begin
     -- Reset Synchronizers
     --------------------------------------------------------------------
 
-    sync_aclk_inst : entity work.synchronizer
+    sync_aclk_inst : entity work.reset_sync
 	port map (
 	    clk => m_axi_aclk,
 	    async_in => reset,
 	    sync_out => reset_axi );
 
-    sync_addr_inst : entity work.synchronizer
+    sync_addr_inst : entity work.reset_sync
 	port map (
 	    clk => addr_clk,
 	    async_in => reset,
 	    sync_out => reset_addr );
 
-    sync_data_inst : entity work.synchronizer
+    sync_data_inst : entity work.reset_sync
 	port map (
 	    clk => data_clk,
 	    async_in => reset,

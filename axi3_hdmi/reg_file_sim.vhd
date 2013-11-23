@@ -76,9 +76,9 @@ begin
 	    std_logic_vector(to_unsigned(	  41, 32)),	--    41    8
 	    std_logic_vector(to_unsigned(	1121, 32)),	--  1121   24
 	    std_logic_vector(to_unsigned(	  10, 32)),	--    10    4
-	    std_logic_vector(to_unsigned(	  32, 32)),	--    20    6
+	    std_logic_vector(to_unsigned(	 128, 32)),	--    20    6
 
-	    std_logic_vector(to_unsigned(	 256, 32)),	--     0    0
+	    std_logic_vector(to_unsigned(	  64, 32)),	--     0    0
 	    std_logic_vector(to_unsigned(	 512, 32)),	--     5    2
 	    std_logic_vector(to_unsigned(	   0, 32)),	--    30    7
 	    std_logic_vector(to_unsigned(	   0, 32)) );	--    30    7
@@ -93,18 +93,24 @@ begin
 	    std_logic_vector(to_unsigned(	  29, 32)),
 	    std_logic_vector(to_unsigned( 16#001180#, 32)),
 	    std_logic_vector(to_unsigned( 16#FFF000#, 32)),
-	    std_logic_vector(to_unsigned(	   0, 32)),
-	    std_logic_vector(to_unsigned(	   0, 32)),
-	    std_logic_vector(to_unsigned(	   0, 32)),
 
 	    std_logic_vector(to_unsigned( 16#000000#, 32)),
 	    std_logic_vector(to_unsigned( 16#000080#, 32)),
 	    std_logic_vector(to_unsigned(	  29, 32)),
 	    std_logic_vector(to_unsigned( 16#001180#, 32)),
 	    std_logic_vector(to_unsigned( 16#FFF000#, 32)),
-	    std_logic_vector(to_unsigned(	   0, 32)),
-	    std_logic_vector(to_unsigned(	   0, 32)),
-	    std_logic_vector(to_unsigned(	   0, 32)) );
+
+	    std_logic_vector(to_unsigned( 16#000000#, 32)),
+	    std_logic_vector(to_unsigned( 16#000080#, 32)),
+	    std_logic_vector(to_unsigned(	  29, 32)),
+	    std_logic_vector(to_unsigned( 16#001180#, 32)),
+	    std_logic_vector(to_unsigned( 16#FFF000#, 32)),
+
+	    std_logic_vector(to_unsigned( 16#000000#, 32)),
+	    std_logic_vector(to_unsigned( 16#000080#, 32)),
+	    std_logic_vector(to_unsigned(	  29, 32)),
+	    std_logic_vector(to_unsigned( 16#001180#, 32)),
+	    std_logic_vector(to_unsigned( 16#FFF000#, 32)) );
     end generate;
 	
 end RTL;
