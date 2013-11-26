@@ -45,10 +45,10 @@ begin
     generic map (
 	CLKIN1_PERIOD => 10.0,
 	CLKFBOUT_MULT => 10,
-	CLKOUT0_DIVIDE => 1000/250,	-- AXIHP clock
-	CLKOUT1_DIVIDE => 1000/250,	-- AXIHP clock
-	CLKOUT2_DIVIDE => 1000/250,	-- AXIHP clock
-	CLKOUT3_DIVIDE => 1000/250,	-- AXIHP clock
+	CLKOUT0_DIVIDE => 1000/200,	-- AXIHP clock
+	CLKOUT1_DIVIDE => 1000/200,	-- AXIHP clock
+	CLKOUT2_DIVIDE => 1000/200,	-- AXIHP clock
+	CLKOUT3_DIVIDE => 1000/200,	-- AXIHP clock
 	DIVCLK_DIVIDE => 1 )
     port map (
 	CLKIN1 => ref_clk_in,

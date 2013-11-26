@@ -34,7 +34,9 @@ use work.vivado_pkg.all;	-- Vivado Attributes
 
 entity top is
     port (
-	clk_100 : in std_logic			-- input clock to FPGA
+	clk_100 : in std_logic;			-- input clock to FPGA
+	--
+	led : out std_logic_vector(7 downto 0)
     );
 
 end entity top;
@@ -103,6 +105,45 @@ architecture RTL of top is
 
     signal writer_enable : std_logic_vector(3 downto 0)
 	:= (others => '0');
+
+    type status_t is array (natural range <>) of
+	std_logic_vector (96 downto 0);
+
+    signal pc_status : status_t(3 downto 0);
+    signal pc_asserted : std_logic_vector(3 downto 0);
+
+    component checker
+	port (
+	    system_resetn : in std_logic;
+	    --
+	    aclk : in std_logic;
+	    aresetn : in std_logic;
+	    --
+	    pc_axi_awaddr : in std_logic_vector(31 downto 0);
+	    pc_axi_awlen : in std_logic_vector(3 downto 0);
+	    pc_axi_awsize : in std_logic_vector(2 downto 0);
+	    pc_axi_awburst : in std_logic_vector(1 downto 0);
+	    pc_axi_awlock : in std_logic_vector(1 downto 0);
+	    pc_axi_awcache : in std_logic_vector(3 downto 0);
+	    pc_axi_awprot : in std_logic_vector(2 downto 0);
+	    pc_axi_awqos : in std_logic_vector(3 downto 0);
+	    pc_axi_awvalid : in std_logic;
+	    pc_axi_awready : in std_logic;
+	    --
+	    pc_axi_wlast : in std_logic;
+	    pc_axi_wdata : in std_logic_vector(63 downto 0);
+	    pc_axi_wstrb : in std_logic_vector(7 downto 0);
+	    pc_axi_wvalid : in std_logic;
+	    pc_axi_wready : in std_logic;
+	    --
+	    pc_axi_bresp : in std_logic_vector(1 downto 0);
+	    pc_axi_bvalid : in std_logic;
+	    pc_axi_bready : in std_logic;
+	    --
+	    pc_status : out std_logic_vector(96 downto 0);
+	    pc_asserted : out std_logic
+	);
+    end component checker;
 
 begin
 
@@ -317,6 +358,39 @@ begin
 
 	s_axi_aclk(I) <= pll_clk(I);
 
+	AXI_check_inst : checker
+	    port map (
+		system_resetn => '1',
+		--
+		aclk => s_axi_aclk(I),
+		aresetn => s_axi_areset_n(I),
+		--
+		pc_axi_awaddr => s_axi_wi(I).awaddr,
+		pc_axi_awlen => s_axi_wi(I).awlen,
+		pc_axi_awsize => "011",
+		pc_axi_awburst => s_axi_wi(I).awburst,
+		pc_axi_awlock => (others => '0'),
+		pc_axi_awcache => (others => '0'),
+		pc_axi_awprot => s_axi_wi(I).awprot,
+		pc_axi_awqos => (others => '0'),
+		pc_axi_awvalid => s_axi_wi(I).awvalid,
+		pc_axi_awready => s_axi_wo(I).awready,
+		--
+		pc_axi_wlast => s_axi_wi(I).wlast,
+		pc_axi_wdata => s_axi_wi(I).wdata,
+		pc_axi_wstrb => s_axi_wi(I).wstrb,
+		pc_axi_wvalid => s_axi_wi(I).wvalid,
+		pc_axi_wready => s_axi_wo(I).wready,
+		--
+		pc_axi_bresp => s_axi_wo(I).bresp,
+		pc_axi_bvalid => s_axi_wo(I).bvalid,
+		pc_axi_bready => s_axi_wi(I).bready,
+		--
+		pc_status => pc_status(I),
+		pc_asserted => pc_asserted(I) );
+
+	led(I) <= pc_asserted(I);
+
 	delay_proc : process (pll_clk(I))
 	    variable cnt_v : natural := 0;
 	begin
@@ -330,5 +404,8 @@ begin
 	end process;
 
     end generate;
+
+
+    led(7 downto 4) <= (others => '0');
 
 end RTL;
