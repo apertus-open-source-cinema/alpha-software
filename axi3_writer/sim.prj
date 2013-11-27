@@ -1,0 +1,12 @@
+
+vhdl work axihp_pll.vhd
+vhdl work axi_mwrt.vhd
+vhdl work axihp_writer.vhd
+
+vhdl work axi3_pkg.vhd
+vhdl work vivado_pkg.vhd
+vhdl work top.vhd
+
+vhdl work sim_ps7_stub.vhd
+vhdl work sim_pmod_debug.vhd
+vhdl work sim_tb.vhd
