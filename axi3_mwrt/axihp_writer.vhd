@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --  axihp_writer.vhd
---	AXIHP Writer (No In Flight)
---	Version 1.4
+--	AXIHP Writer (Async, In Flight)
+--	Version 1.5
 --
 --  Copyright (C) 2013 H.Poetzl
 --
@@ -17,10 +17,11 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.ALL;
 
-library unimacro;
-use unimacro.VCOMPONENTS.all;
+library unisim;
+use unisim.VCOMPONENTS.all;
 
 use work.axi3s_pkg.all;		-- AXI3 Slave Interface
+use work.vivado_pkg.all;	-- Vivado Attributes
 
 
 entity axihp_writer is
@@ -30,172 +31,205 @@ entity axihp_writer is
 	ADDR_MASK : std_logic_vector(31 downto 0) := x"00FFFFFF";
 	ADDR_DATA : std_logic_vector(31 downto 0) := x"1B000000" );
     port (
-	m_axi_aclk	: in std_ulogic;
-	m_axi_areset_n	: in std_ulogic;
-	enable		: in std_ulogic;
+	m_axi_aclk	: in std_logic;
+	m_axi_areset_n	: in std_logic;
+	enable		: in std_logic;
+	inactive	: out std_logic;
 	--
 	m_axi_wo	: out axi3s_write_in_r;
 	m_axi_wi	: in axi3s_write_out_r;
 	--
-	data_clk	: out std_ulogic;
-	data_enable	: out std_ulogic;
+	data_clk	: out std_logic;
+	data_enable	: out std_logic;
 	data_in		: in std_logic_vector(DATA_WIDTH - 1 downto 0);
-	data_empty	: in std_ulogic;
+	data_empty	: in std_logic;
 	--
-	addr_clk	: out std_ulogic;
-	addr_enable	: out std_ulogic;
+	addr_clk	: out std_logic;
+	addr_enable	: out std_logic;
 	addr_in		: in std_logic_vector(31 downto 0);
-	addr_empty	: in std_ulogic;
+	addr_empty	: in std_logic;
 	--
 	writer_state	: out std_logic_vector(7 downto 0) );
 
 end entity axihp_writer;
 
+
 architecture RTL of axihp_writer is
+
+    attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
+
+    constant awlen_c : std_logic_vector(3 downto 0)
+	:= std_logic_vector(to_unsigned(DATA_COUNT - 1, 4));
+
+    signal active : unsigned(3 downto 0) := x"0";
+    signal unconf : unsigned(3 downto 0) := x"0";
+
+    signal awvalid : std_logic := '0';
+    signal wvalid : std_logic := '0';
+    signal wlast : std_logic;
+    signal bready : std_logic := '0';
+
+    signal data_en : std_logic;
+    signal addr_en : std_logic;
+    signal resp_en : std_logic;
+
 begin
 
-    write_proc : process(m_axi_aclk, m_axi_wi)
+    --------------------------------------------------------------------
+    -- Address Pipeline
+    --------------------------------------------------------------------
 
-	constant dcnt_c : natural := DATA_COUNT - 1;
-	variable dcnt_v : integer range DATA_COUNT - 1 downto -1;
+    addr_en <= awvalid and m_axi_wi.awready;
 
-	variable awvalid_v : std_logic := '0';
-	variable wvalid_v : std_logic := '0';
-	variable wlast_v : std_logic := '0';
-
-	variable addr_v : std_logic_vector(31 downto 0);
-
-	type w_state is (addr_s, data_s, hold_s, idle_s);
-
-	variable state : w_state := idle_s;
-
+    addr_proc : process(m_axi_aclk, m_axi_wi)
     begin
-
 	if rising_edge(m_axi_aclk) then
-	    if m_axi_areset_n = '0' then
-		awvalid_v := '0';
-		wvalid_v := '0';
-		wlast_v := '0';
+	    if m_axi_areset_n = '0' then	-- reset
+		awvalid <= '0';
 
-		state := idle_s;
-
-	    else
-		--  AWVALID ---> WVALID	 _	       BREADY	    Master
-		--     \    --__ /`   \	  --__		/`
-		--	\,	/--__  \,     --_      /
-		--	 AWREADY     -> WREADY ---> BVALID	    Slave
-
-		case state is
-		    when addr_s =>
-			wvalid_v := '0';
-			wlast_v := '0';
-			dcnt_v := dcnt_c;
-			addr_v := (addr_in and ADDR_MASK) or ADDR_DATA;
-
-			if awvalid_v = '0' then
-			    if enable = '0' then		-- disable writer
-				state := hold_s;
-
-			    elsif addr_empty = '1' then		-- fifo empty
-				state := idle_s;
-
-			    elsif data_empty = '1' then		-- fifo empty
-				state := idle_s;
-
-			    else				-- go ahead
-				awvalid_v := '1';
-
-			    end if;
-			end if;
-			
-			if awvalid_v = '1' then
-			    if m_axi_wi.awready = '1' then	-- slave ready
-				state := data_s;
-			    end if;
-			end if;
-
-		    when data_s =>
-			awvalid_v := '0';
-			wvalid_v := '1';
-
-			if m_axi_wi.wready = '1' then		-- write ready
-			    dcnt_v := dcnt_v - 1;
-
-			    if dcnt_v < 0 then			-- last write
-				wlast_v := '1';
-
-				state := addr_s;
-			    end if;
-			end if;
-
-		    when hold_s =>
-			if enable = '1' then
-			    state := addr_s;
-			end if;
-
-		    when idle_s =>
-			if data_empty = '0' and 
-			    addr_empty = '0' then
-			    state := addr_s;
-			end if;
-
-		end case;
+	    elsif awvalid = '0' then		-- idle phase
+		if enable = '1' and		-- writer enabled
+		    addr_empty = '0' and	-- fifo not empty
+		    active(3) = '0' then	-- below max
+		    awvalid <= '1';
+		end if;
 	    end if;
 
-	    case state is
-		when addr_s => writer_state(3 downto 0) <= "0001";
-		when data_s => writer_state(3 downto 0) <= "0010";
-		when hold_s => writer_state(3 downto 0) <= "0111";
-		when idle_s => writer_state(3 downto 0) <= "1000";
-	    end case;
-
-	    writer_state(7 downto 4) <=
-		std_logic_vector(to_unsigned(dcnt_v, 4));
-
+	    if awvalid = '1' then		-- active phase
+		if m_axi_wi.awready = '1' then
+		    awvalid <= '0';
+		end if;
+	    end if;
 	end if;
+    end process;
 
-	m_axi_wo.awid <= (others => '0');
-	m_axi_wo.wid <= (others => '0');
-	m_axi_wo.awaddr <= addr_v;
+    m_axi_wo.awaddr <= (addr_in and ADDR_MASK) or ADDR_DATA;
+    m_axi_wo.awvalid <= awvalid;
 
-	m_axi_wo.awvalid <= awvalid_v;
-	m_axi_wo.wvalid <= wvalid_v;
+    addr_enable <= addr_en;
 
-	m_axi_wo.wlast <= wlast_v;
 
-	data_enable <= wvalid_v and m_axi_wi.wready;
-	addr_enable <= awvalid_v and m_axi_wi.awready;
+    --------------------------------------------------------------------
+    -- Data Pipeline
+    --------------------------------------------------------------------
 
+    SRL16E_inst : SRL16E
+	generic map (
+	    INIT => x"0001")
+	port map (
+	    CLK => m_axi_aclk,			-- Clock input
+	    CE => data_en,			-- Clock enable input
+	    D => wlast,				-- SRL data input
+	    Q => wlast,				-- SRL data output
+	    A0 => awlen_c(0),			-- Select[0] input
+	    A1 => awlen_c(1),			-- Select[1] input
+	    A2 => awlen_c(2),			-- Select[2] input
+	    A3 => awlen_c(3) );			-- Select[3] input
+
+    data_en <= wvalid and m_axi_wi.wready;
+
+    write_proc : process(m_axi_aclk, m_axi_wi)
+    begin
+	if rising_edge(m_axi_aclk) then
+	    if m_axi_areset_n = '0' then	-- reset
+		wvalid <= '0';
+
+	    elsif wvalid = '0' then		-- idle phase
+		if data_empty = '0' and		-- fifo not empty
+		    active /= x"0" then		-- inactive
+		    wvalid <= '1';
+		end if;
+
+	    else				-- active phase
+		if wlast = '1' then
+		    wvalid <= '0';
+		end if;
+	    end if;
+	end if;
     end process;
 
     m_axi_wo.wdata(DATA_WIDTH - 1 downto 0) <= data_in;
 
+    m_axi_wo.wvalid <= wvalid;
+    m_axi_wo.wlast <= wlast;
+
+    data_enable <= data_en;
+
+
+    --------------------------------------------------------------------
+    -- Response Pipeline
+    --------------------------------------------------------------------
+
+    resp_en <= bready and m_axi_wi.bvalid;
 
     bresp_proc : process(m_axi_aclk)
-
-	variable bready_v : std_logic := '0';
-
     begin
-
 	if rising_edge(m_axi_aclk) then
-	    if m_axi_areset_n = '0' then
-		bready_v := '0';
+	    if m_axi_areset_n = '0' then	-- reset
+		bready <= '0';
 
-	    else
-		bready_v := '1';
+	    elsif bready = '0' then		-- idle phase
+		if enable = '1' then		-- writer enabled
+		    bready <= '1';
+		end if;
 
-		if m_axi_wi.bvalid = '1' then
-		    null;
+	    else				-- active phase
+		if unconf = x"0" then		-- all done
+		    bready <= '0';
 		end if;
 	    end if;
 	end if;
-
-	m_axi_wo.bready <= bready_v;
-
     end process;
 
-    m_axi_wo.awlen <=
-	std_logic_vector(to_unsigned(DATA_COUNT - 1, 4));
+    m_axi_wo.bready <= bready;
+
+
+    --------------------------------------------------------------------
+    -- In Flight Accounting
+    --------------------------------------------------------------------
+
+    active_proc : process(m_axi_aclk)
+    begin
+	if rising_edge(m_axi_aclk) then
+	    if addr_en = '1' and
+		wlast = '0' then		-- one more
+		active <= active + "1";
+
+	    elsif addr_en = '0' and
+		wlast = '1' then		-- one less
+		active <= active - "1";
+
+	    end if;
+	end if;
+    end process;
+
+    unconf_proc : process(m_axi_aclk)
+    begin
+	if rising_edge(m_axi_aclk) then
+	    if addr_en = '1' and
+		resp_en = '0' then		-- one more
+		unconf <= unconf + "1";
+
+	    elsif addr_en = '0' and
+		resp_en = '1' then		-- one less
+		unconf <= unconf - "1";
+
+	    end if;
+	end if;
+    end process;
+
+    inactive <= '1' when active = x"0"
+	and unconf = x"0" else '0';
+
+
+    --------------------------------------------------------------------
+    -- Constant Values, Clocks
+    --------------------------------------------------------------------
+
+    m_axi_wo.awid <= (others => '0');
+    m_axi_wo.wid <= (others => '0');
+
+    m_axi_wo.awlen <= awlen_c;
 
     m_axi_wo.awburst <= "01";
     m_axi_wo.awsize <= "11";

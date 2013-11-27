@@ -13,12 +13,15 @@ read_vhdl ../ps7_stub.vhd
 read_vhdl ../axi_mwrt.vhd
 read_vhdl ../axihp_pll.vhd
 read_vhdl ../axihp_writer.vhd
+read_vhdl ../async_div.vhd
+read_vhdl ../pmod_debug.vhd
 
 read_vhdl ../axi3_pkg.vhd
 read_vhdl ../vivado_pkg.vhd
 read_vhdl ../top.vhd
 
 read_xdc ../top.xdc
+read_xdc ../pmod_debug.xdc
 
 set_property PART xc7z020clg484-1 [current_project]
 set_property BOARD em.avnet.com:zynq:zed:c [current_project]
@@ -30,8 +33,7 @@ create_ip -vlnv xilinx.com:ip:axi_protocol_checker:1.1 -module_name checker
 set_property CONFIG.PROTOCOL {AXI3} [get_ips checker]
 set_property CONFIG.READ_WRITE_MODE {WRITE_ONLY} [get_ips checker]
 set_property CONFIG.DATA_WIDTH {64} [get_ips checker]
-set_property CONFIG.MAX_RD_BURSTS {4} [get_ips checker]
-set_property CONFIG.MAX_WR_BURSTS {4} [get_ips checker]
+set_property CONFIG.MAX_WR_BURSTS {16} [get_ips checker]
 set_property CONFIG.HAS_SYSTEM_RESET {1} [get_ips checker]
 
 

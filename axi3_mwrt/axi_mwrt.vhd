@@ -36,6 +36,7 @@ entity axi_mwrt is
 	m_axi_aclk	: in std_logic;
 	m_axi_areset_n	: in std_logic;
 	enable		: in std_logic;
+	inactive	: out std_logic;
 	--
 	m_axi_wo	: out axi3s_write_in_r;
 	m_axi_wi	: in axi3s_write_out_r
@@ -71,6 +72,10 @@ architecture RTL of axi_mwrt is
     signal writer_state : std_logic_vector(7 downto 0);
 
 begin
+
+    --------------------------------------------------------------------
+    -- Address Generator
+    --------------------------------------------------------------------
 
     DSP48E1_addr_inst : DSP48E1
 	generic map (
@@ -146,6 +151,10 @@ begin
 
     waddr_empty <= '0';
     waddr_in <= waddr_dsp(ADDR_WIDTH - 1 downto 0);
+
+    --------------------------------------------------------------------
+    -- Data Generator
+    --------------------------------------------------------------------
 
     DSP48E1_data_inst : DSP48E1
 	generic map (
@@ -240,6 +249,7 @@ begin
 	    m_axi_aclk => m_axi_aclk,
 	    m_axi_areset_n => m_axi_areset_n,
 	    enable => enable,
+	    inactive => inactive,
 	    --
 	    m_axi_wo => m_axi_wo,
 	    m_axi_wi => m_axi_wi,

@@ -36,6 +36,13 @@ entity top is
     port (
 	clk_100 : in std_logic;			-- input clock to FPGA
 	--
+	pmod_jcm : out std_logic_vector(3 downto 0);
+	pmod_jca : out std_logic_vector(3 downto 0);
+	--
+	pmod_jdm : out std_logic_vector(3 downto 0);
+	pmod_jda : out std_logic_vector(3 downto 0);
+	--
+	swi : in std_logic_vector(7 downto 0);
 	led : out std_logic_vector(7 downto 0)
     );
 
@@ -58,20 +65,28 @@ architecture RTL of top is
 
     signal s_axi_ri : axi3s_read_in_t(3 downto 0);
 
+    attribute DONT_TOUCH of s_axi_ri : signal is "TRUE";
+
     type axi3s_read_out_t is array (natural range <>) of
 	axi3s_read_out_r;
 
     signal s_axi_ro : axi3s_read_out_t(3 downto 0);
+
+    attribute DONT_TOUCH of s_axi_ro : signal is "TRUE";
 
     type axi3s_write_in_t is array (natural range <>) of
 	axi3s_write_in_r;
 
     signal s_axi_wi : axi3s_write_in_t(3 downto 0);
 
+    attribute DONT_TOUCH of s_axi_wi : signal is "TRUE";
+
     type axi3s_write_out_t is array (natural range <>) of
 	axi3s_write_out_r;
 
     signal s_axi_wo : axi3s_write_out_t(3 downto 0);
+
+    attribute DONT_TOUCH of s_axi_wo : signal is "TRUE";
 
     --------------------------------------------------------------------
     -- PLL Signals
@@ -105,6 +120,7 @@ architecture RTL of top is
 
     signal writer_enable : std_logic_vector(3 downto 0)
 	:= (others => '0');
+    signal writer_inactive : std_logic_vector(3 downto 0);
 
     type status_t is array (natural range <>) of
 	std_logic_vector (96 downto 0);
@@ -144,6 +160,24 @@ architecture RTL of top is
 	    pc_asserted : out std_logic
 	);
     end component checker;
+
+    --------------------------------------------------------------------
+    -- Debug Signals
+    --------------------------------------------------------------------
+
+    signal pmod_clk : std_logic;
+
+    attribute DONT_TOUCH of pmod_clk : signal is "TRUE";
+
+    signal pmod_v0 : std_logic_vector(63 downto 0);
+
+    attribute DONT_TOUCH of pmod_dbg_jc_inst : label is "TRUE";
+    attribute MARK_DEBUG of pmod_v0 : signal is "TRUE";
+
+    signal pmod_v1 : std_logic_vector(63 downto 0);
+
+    attribute DONT_TOUCH of pmod_dbg_jd_inst : label is "TRUE";
+    attribute MARK_DEBUG of pmod_v1 : signal is "TRUE";
 
 begin
 
@@ -352,11 +386,14 @@ begin
 		m_axi_aclk => s_axi_aclk(I),
 		m_axi_areset_n => s_axi_areset_n(I),
 		enable => writer_enable(I),
+		inactive => writer_inactive(I),
 		--
 		m_axi_wo => s_axi_wi(I),
 		m_axi_wi => s_axi_wo(I) );
 
 	s_axi_aclk(I) <= pll_clk(I);
+
+	led(I + 4) <= writer_inactive(I);
 
 	AXI_check_inst : checker
 	    port map (
@@ -394,10 +431,17 @@ begin
 	delay_proc : process (pll_clk(I))
 	    variable cnt_v : natural := 0;
 	begin
-	    if rising_edge(pll_clk(I)) then
-		if cnt_v = I * 100 + 100 then
-		    writer_enable(I) <= '1';
+	    if rising_edge(pll_clk(0)) then
+		if cnt_v = 1000 then
+		    writer_enable(I) <= swi(I + 4);
+
 		else
+		    if cnt_v = I * 100 + 100 then
+			writer_enable(I) <= '1';
+		    elsif cnt_v = I * 100 + 500 then
+			writer_enable(I) <= '0';
+		    end if;
+
 		    cnt_v := cnt_v + 1;
 		end if;
 	    end if;
@@ -406,6 +450,62 @@ begin
     end generate;
 
 
-    led(7 downto 4) <= (others => '0');
+    --------------------------------------------------------------------
+    -- PMOD Debug
+    --------------------------------------------------------------------
+
+    pmod_clk <= clk_100;
+
+    pmod_dbg_jd_inst : entity work.pmod_debug
+	generic map (
+	    PRESCALE => 12 )
+	port map (
+	    clk => pmod_clk,
+	    --
+	    value => pmod_v0,
+	    --
+	    jxm => pmod_jdm,
+	    jxa => pmod_jda );
+
+    pmod_dbg_jc_inst : entity work.pmod_debug
+	generic map (
+	    PRESCALE => 12 )
+	port map (
+	    clk => pmod_clk,
+	    --
+	    value => pmod_v1,
+	    --
+	    jxm => pmod_jcm,
+	    jxa => pmod_jca );
+
+    pmod_proc : process (pmod_clk, swi, pc_status)
+    begin
+	case swi(3 downto 0) is
+	    when "0000" =>
+		pmod_v0(63 downto 33) <= (others => '1');
+		pmod_v0(32 downto 0) <= pc_status(0)(96 downto 64);
+		pmod_v1 <= pc_status(0)(63 downto 0);
+
+	    when "0001" =>
+		pmod_v0(63 downto 33) <= (others => '1');
+		pmod_v0(32 downto 0) <= pc_status(1)(96 downto 64);
+		pmod_v1 <= pc_status(1)(63 downto 0);
+
+	    when "0010" =>
+		pmod_v0(63 downto 33) <= (others => '1');
+		pmod_v0(32 downto 0) <= pc_status(2)(96 downto 64);
+		pmod_v1 <= pc_status(2)(63 downto 0);
+
+	    when "0011" =>
+		pmod_v0(63 downto 33) <= (others => '1');
+		pmod_v0(32 downto 0) <= pc_status(3)(96 downto 64);
+		pmod_v1 <= pc_status(3)(63 downto 0);
+
+	    when others =>
+		pmod_v0 <= (others => '0');
+		pmod_v1 <= (others => '0');
+
+	end case;
+    end process;
 
 end RTL;
