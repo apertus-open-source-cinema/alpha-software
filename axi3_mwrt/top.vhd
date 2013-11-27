@@ -161,6 +161,8 @@ architecture RTL of top is
 	);
     end component checker;
 
+    signal system_reset_n : std_logic := '0';
+
     --------------------------------------------------------------------
     -- Debug Signals
     --------------------------------------------------------------------
@@ -397,7 +399,7 @@ begin
 
 	AXI_check_inst : checker
 	    port map (
-		system_resetn => '1',
+		system_resetn => system_reset_n,
 		--
 		aclk => s_axi_aclk(I),
 		aresetn => s_axi_areset_n(I),
@@ -428,6 +430,7 @@ begin
 
 	led(I) <= pc_asserted(I);
 
+
 	delay_proc : process (pll_clk(I))
 	    variable cnt_v : natural := 0;
 	begin
@@ -449,6 +452,22 @@ begin
 
     end generate;
 
+    reset_proc : process (clk_100)
+	variable cnt_v : natural := 0;
+    begin
+	if rising_edge(clk_100) then
+	    if cnt_v = 100 then
+		system_reset_n <= swi(3);
+
+	    else
+		if cnt_v = 10 then
+		    system_reset_n <= '1';
+		end if;
+
+		cnt_v := cnt_v + 1;
+	    end if;
+	end if;
+    end process;
 
     --------------------------------------------------------------------
     -- PMOD Debug
@@ -480,23 +499,23 @@ begin
 
     pmod_proc : process (pmod_clk, swi, pc_status)
     begin
-	case swi(3 downto 0) is
-	    when "0000" =>
+	case swi(2 downto 0) is
+	    when "000" =>
 		pmod_v0(63 downto 33) <= (others => '1');
 		pmod_v0(32 downto 0) <= pc_status(0)(96 downto 64);
 		pmod_v1 <= pc_status(0)(63 downto 0);
 
-	    when "0001" =>
+	    when "001" =>
 		pmod_v0(63 downto 33) <= (others => '1');
 		pmod_v0(32 downto 0) <= pc_status(1)(96 downto 64);
 		pmod_v1 <= pc_status(1)(63 downto 0);
 
-	    when "0010" =>
+	    when "010" =>
 		pmod_v0(63 downto 33) <= (others => '1');
 		pmod_v0(32 downto 0) <= pc_status(2)(96 downto 64);
 		pmod_v1 <= pc_status(2)(63 downto 0);
 
-	    when "0011" =>
+	    when "011" =>
 		pmod_v0(63 downto 33) <= (others => '1');
 		pmod_v0(32 downto 0) <= pc_status(3)(96 downto 64);
 		pmod_v1 <= pc_status(3)(63 downto 0);

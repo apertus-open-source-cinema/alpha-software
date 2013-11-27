@@ -1,5 +1,6 @@
 
 vhdl work axihp_pll.vhd
+vhdl work dsp48_wrap.vhd
 vhdl work axi_mwrt.vhd
 vhdl work axihp_writer.vhd
 

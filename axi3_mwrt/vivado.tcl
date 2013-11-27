@@ -10,6 +10,7 @@ set_param messaging.defaultLimit 10000
 # STEP#1: setup design sources and constraints
 
 read_vhdl ../ps7_stub.vhd
+read_vhdl ../dsp48_wrap.vhd
 read_vhdl ../axi_mwrt.vhd
 read_vhdl ../axihp_pll.vhd
 read_vhdl ../axihp_writer.vhd

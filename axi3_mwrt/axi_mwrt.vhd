@@ -77,77 +77,19 @@ begin
     -- Address Generator
     --------------------------------------------------------------------
 
-    DSP48E1_addr_inst : DSP48E1
+    DSP48_addr_inst : entity work.dsp48_wrap
 	generic map (
-	    AREG => 0,				-- Pipeline stages for A (0, 1 or 2)
-	    BREG => 0,				-- Pipeline stages for B (0, 1 or 2)
-	    CREG => 0,				-- Pipeline stages for C (0 or 1)
-	    DREG => 0,				-- Pipeline stages for D (0 or 1)
-	    MREG => 1,				-- Pipeline stages for M (0 or 1)
-	    PREG => 1,				-- Pipeline stages for P (0 or 1)
-	    ACASCREG => 0,			-- Pipeline stages A/ACIN to ACOUT (0, 1 or 2)
-	    BCASCREG => 0,			-- Pipeline stages B/BCIN to BCOUT (0, 1 or 2)
-	    ADREG => 0, 			-- Pipeline stages for pre-adder (0 or 1)
-	    ALUMODEREG => 0,			-- Pipeline stages for ALUMODE (0 or 1)
-	    CARRYINREG => 0,			-- Pipeline stages for CARRYIN (0 or 1)
-	    CARRYINSELREG => 0,			-- Pipeline stages for CARRYINSEL (0 or 1)
-	    INMODEREG => 0,			-- Pipeline stages for INMODE (0 or 1)
-	    OPMODEREG => 0,			-- Pipeline stages for OPMODE (0 or 1)
-	    --
-	    USE_MULT => "NONE",
-	    AUTORESET_PATDET => "NO_RESET",	-- "NO_RESET", "RESET_MATCH", "RESET_NOT_MATCH"
-	    MASK => x"000000000000",		-- 48-bit mask value for pattern detect (1=ignore)
-	    PATTERN => x"000000000000",		-- 48-bit pattern match for pattern detect
-	    SEL_MASK => "MASK",			-- "C", "MASK", "ROUNDING_MODE1", "ROUNDING_MODE2"
-	    SEL_PATTERN => "PATTERN",		-- Select pattern value ("PATTERN" or "C")
-	    USE_PATTERN_DETECT => "NO_PATDET",	-- Enable pattern detect ("PATDET" or "NO_PATDET")
-	    USE_SIMD => "ONE48" )		-- SIMD selection ("ONE48", "TWO24", "FOUR12")
+	    MREG => 1,			-- Pipeline stages for M (0 or 1)
+	    PREG => 1 )			-- Pipeline stages for P (0 or 1)
 	port map (
-	    CLK => waddr_clk,			-- 1-bit input: Clock input
+	    CLK => waddr_clk,		-- 1-bit input: Clock input
 	    --
-	    A => (others => '0'),		-- 30-bit input: A data input
-	    B => (others => '0'),		-- 18-bit input: B data input
-	    C => x"000000000080",		-- 48-bit input: C data input
-	    D => (others => '0'),		-- 25-bit input: D data input
+	    C => x"000000000080",	-- 48-bit input: C data input
 	    --
-	    OPMODE => "0001110",		-- 7-bit input: Operation mode input
-	    ALUMODE => "0000",			-- 4-bit input: ALU control input
-	    INMODE => (others => '0'),		-- 5-bit input: INMODE control input
-	    CARRYINSEL => "000",		-- 3-bit input: Carry select input
-	    CARRYIN => '0',			-- 1-bit input: Carry input signal
+	    OPMODE => "0001110",	-- 7-bit input: Operation mode
+	    CEP => waddr_enable,	-- 1-bit input: CE input for PREG
 	    --
-	    MULTSIGNIN => '0',			-- 1-bit input: Multiplier sign input
-	    ACIN => (others => '0'),		-- 30-bit input: A cascade data input
-	    BCIN => (others => '0'),		-- 18-bit input: B cascade data input
-	    PCIN => (others => '0'),		-- 48-bit input: P cascade input
-	    CARRYCASCIN => '0',			-- 1-bit input: Cascade carry input
-	    --
-	    CEA1 => '0',			-- 1-bit input: CE input for 1st stage AREG
-	    CEA2 => '0',			-- 1-bit input: CE input for 2nd stage AREG
-	    CEAD => '0',			-- 1-bit input: CE input for ADREG
-	    CEALUMODE => '0',			-- 1-bit input: CE input for ALUMODERE
-	    CEB1 => '0',			-- 1-bit input: CE input for 1st stage BREG
-	    CEB2 => '0',			-- 1-bit input: CE input for 2nd stage BREG
-	    CEC => '1',				-- 1-bit input: CE input for CREG
-	    CECARRYIN => '0',			-- 1-bit input: CE input for CARRYINREG
-	    CECTRL => '0',			-- 1-bit input: CE input for OPMODEREG and CARRYINSELREG
-	    CED => '0',				-- 1-bit input: CE input for DREG
-	    CEINMODE => '0',			-- 1-bit input: CE input for INMODREG
-	    CEM => '0',				-- 1-bit input: CE input for MREG
-	    CEP => waddr_enable,		-- 1-bit input: CE input for PREG
-	    --
-	    RSTA => '0',			-- 1-bit input: Reset input for AREG
-	    RSTALLCARRYIN => '0',		-- 1-bit input: Reset input for CARRYINREG
-	    RSTALUMODE => '0',			-- 1-bit input: Reset input for ALUMODEREG
-	    RSTB => '0',			-- 1-bit input: Reset input for BREG
-	    RSTC => '0',			-- 1-bit input: Reset input for CREG
-	    RSTCTRL => '0',			-- 1-bit input: Reset input for OPMODEREG and CARRYINSELREG
-	    RSTD => '0',			-- 1-bit input: Reset input for DREG and ADREG
-	    RSTINMODE => '0',			-- 1-bit input: Reset input for INMODREG
-	    RSTM => '0',			-- 1-bit input: Reset input for MREG
-	    RSTP => '0',			-- 1-bit input: Reset input for PREG
-	    --
-	    P => waddr_dsp );			-- 48-bit output: Primary data output
+	    P => waddr_dsp );		-- 48-bit output: Primary data out
 
     waddr_empty <= '0';
     waddr_in <= waddr_dsp(ADDR_WIDTH - 1 downto 0);
@@ -156,77 +98,20 @@ begin
     -- Data Generator
     --------------------------------------------------------------------
 
-    DSP48E1_data_inst : DSP48E1
+    DSP48_data_inst : entity work.dsp48_wrap
 	generic map (
-	    AREG => 0,				-- Pipeline stages for A (0, 1 or 2)
-	    BREG => 0,				-- Pipeline stages for B (0, 1 or 2)
-	    CREG => 0,				-- Pipeline stages for C (0 or 1)
-	    DREG => 0,				-- Pipeline stages for D (0 or 1)
-	    MREG => 1,				-- Pipeline stages for M (0 or 1)
-	    PREG => 1,				-- Pipeline stages for P (0 or 1)
-	    ACASCREG => 0,			-- Pipeline stages A/ACIN to ACOUT (0, 1 or 2)
-	    BCASCREG => 0,			-- Pipeline stages B/BCIN to BCOUT (0, 1 or 2)
-	    ADREG => 0, 			-- Pipeline stages for pre-adder (0 or 1)
-	    ALUMODEREG => 0,			-- Pipeline stages for ALUMODE (0 or 1)
-	    CARRYINREG => 0,			-- Pipeline stages for CARRYIN (0 or 1)
-	    CARRYINSELREG => 0,			-- Pipeline stages for CARRYINSEL (0 or 1)
-	    INMODEREG => 0,			-- Pipeline stages for INMODE (0 or 1)
-	    OPMODEREG => 0,			-- Pipeline stages for OPMODE (0 or 1)
-	    --
-	    USE_MULT => "NONE",
-	    AUTORESET_PATDET => "NO_RESET",	-- "NO_RESET", "RESET_MATCH", "RESET_NOT_MATCH"
-	    MASK => x"000000000000",		-- 48-bit mask value for pattern detect (1=ignore)
-	    PATTERN => x"000000000000",		-- 48-bit pattern match for pattern detect
-	    SEL_MASK => "MASK",			-- "C", "MASK", "ROUNDING_MODE1", "ROUNDING_MODE2"
-	    SEL_PATTERN => "PATTERN",		-- Select pattern value ("PATTERN" or "C")
-	    USE_PATTERN_DETECT => "NO_PATDET",	-- Enable pattern detect ("PATDET" or "NO_PATDET")
-	    USE_SIMD => "FOUR12" )		-- SIMD selection ("ONE48", "TWO24", "FOUR12")
+	    MREG => 1,			-- Pipeline stages for M (0 or 1)
+	    PREG => 1,			-- Pipeline stages for P (0 or 1)
+	    USE_SIMD => "FOUR12" )	-- SIMD Selection
 	port map (
-	    CLK => wdata_clk,			-- 1-bit input: Clock input
+	    CLK => wdata_clk,		-- 1-bit input: Clock input
 	    --
-	    A => (others => '0'),		-- 30-bit input: A data input
-	    B => (others => '0'),		-- 18-bit input: B data input
-	    C => x"004004004004",		-- 48-bit input: C data input
-	    D => (others => '0'),		-- 25-bit input: D data input
+	    C => x"004004004004",	-- 48-bit input: C data input
 	    --
-	    OPMODE => "0001110",		-- 7-bit input: Operation mode input
-	    ALUMODE => "0000",			-- 4-bit input: ALU control input
-	    INMODE => (others => '0'),		-- 5-bit input: INMODE control input
-	    CARRYINSEL => "000",		-- 3-bit input: Carry select input
-	    CARRYIN => '0',			-- 1-bit input: Carry input signal
+	    OPMODE => "0001110",	-- 7-bit input: Operation mode
+	    CEP => wdata_enable,	-- 1-bit input: CE input for PREG
 	    --
-	    MULTSIGNIN => '0',			-- 1-bit input: Multiplier sign input
-	    ACIN => (others => '0'),		-- 30-bit input: A cascade data input
-	    BCIN => (others => '0'),		-- 18-bit input: B cascade data input
-	    PCIN => x"003002001000",		-- 48-bit input: P cascade input
-	    CARRYCASCIN => '0',			-- 1-bit input: Cascade carry input
-	    --
-	    CEA1 => '0',			-- 1-bit input: CE input for 1st stage AREG
-	    CEA2 => '0',			-- 1-bit input: CE input for 2nd stage AREG
-	    CEAD => '0',			-- 1-bit input: CE input for ADREG
-	    CEALUMODE => '0',			-- 1-bit input: CE input for ALUMODERE
-	    CEB1 => '0',			-- 1-bit input: CE input for 1st stage BREG
-	    CEB2 => '0',			-- 1-bit input: CE input for 2nd stage BREG
-	    CEC => '0',				-- 1-bit input: CE input for CREG
-	    CECARRYIN => '0',			-- 1-bit input: CE input for CARRYINREG
-	    CECTRL => '0',			-- 1-bit input: CE input for OPMODEREG and CARRYINSELREG
-	    CED => '0',				-- 1-bit input: CE input for DREG
-	    CEINMODE => '0',			-- 1-bit input: CE input for INMODREG
-	    CEM => '0',				-- 1-bit input: CE input for MREG
-	    CEP => wdata_enable,		-- 1-bit input: CE input for PREG
-	    --
-	    RSTA => '0',			-- 1-bit input: Reset input for AREG
-	    RSTALLCARRYIN => '0',		-- 1-bit input: Reset input for CARRYINREG
-	    RSTALUMODE => '0',			-- 1-bit input: Reset input for ALUMODEREG
-	    RSTB => '0',			-- 1-bit input: Reset input for BREG
-	    RSTC => '0',			-- 1-bit input: Reset input for CREG
-	    RSTCTRL => '0',			-- 1-bit input: Reset input for OPMODEREG and CARRYINSELREG
-	    RSTD => '0',			-- 1-bit input: Reset input for DREG and ADREG
-	    RSTINMODE => '0',			-- 1-bit input: Reset input for INMODREG
-	    RSTM => '0',			-- 1-bit input: Reset input for MREG
-	    RSTP => '0',			-- 1-bit input: Reset input for PREG
-	    --
-	    P => wdata_dsp );			-- 48-bit output: Primary data output
+	    P => wdata_dsp );		-- 48-bit output: Primary data out
 
     wdata_empty <= '0';
     wdata_in <= (( x"0" & wdata_dsp(47 downto 36) &
