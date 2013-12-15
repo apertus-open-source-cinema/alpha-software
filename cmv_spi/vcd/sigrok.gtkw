@@ -1,0 +1,23 @@
+[*]
+[*] GTKWave Analyzer v3.3.50 (w)1999-2013 BSI
+[*] Sun Dec 15 18:02:32 2013
+[*]
+[dumpfile] "/tmp/spi_read_0x1357@85.vcd"
+[dumpfile_mtime] "Sun Dec 15 05:46:42 2013"
+[dumpfile_size] 1056
+[savefile] "/tmp/test.gtkw"
+[timestart] 0
+[size] 1511 684
+[pos] -1 -1
+*-9.594586 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 224
+[signals_width] 199
+[sst_expanded] 1
+[sst_vpaned_height] 174
+@28
+libsigrok.spi_clk
+libsigrok.spi_en
+libsigrok.spi_in
+libsigrok.spi_out
+[pattern_trace] 1
+[pattern_trace] 0

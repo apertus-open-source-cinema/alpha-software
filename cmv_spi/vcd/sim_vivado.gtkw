@@ -1,0 +1,23 @@
+[*]
+[*] GTKWave Analyzer v3.3.50 (w)1999-2013 BSI
+[*] Sun Dec 15 18:04:50 2013
+[*]
+[dumpfile] "/mnt/disk/0/PROJ/AXIOM/PROJ/alpha-software/cmv_spi/sim.vivado/dump.vcd"
+[dumpfile_mtime] "Sun Dec 15 17:59:59 2013"
+[dumpfile_size] 9558
+[savefile] "/tmp/sim_vivado.gtkw"
+[timestart] 0
+[size] 1511 684
+[pos] -1 -1
+*-20.560009 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 224
+[signals_width] 199
+[sst_expanded] 1
+[sst_vpaned_height] 174
+@28
+testbench.spi_clk
+testbench.spi_en
+testbench.spi_in
+testbench.spi_out
+[pattern_trace] 1
+[pattern_trace] 0

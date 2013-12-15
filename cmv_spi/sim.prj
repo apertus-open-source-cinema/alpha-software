@@ -1,0 +1,5 @@
+
+vhdl work cmv_spi.vhd
+
+vhdl work vivado_pkg.vhd
+vhdl work cmv_spi_tb.vhd
