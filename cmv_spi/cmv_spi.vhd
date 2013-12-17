@@ -45,12 +45,14 @@ architecture RTL of cmv_spi is
 
     attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
 
+    signal enable_a : std_logic := '0';
+    signal enable_b : std_logic := '0';
     signal enable : std_logic := '0';
 
     signal data_shift : std_logic_vector(22 downto 0)
 	:= (others => '0');
 
-    signal ctrl_shift : std_logic_vector(23 downto 0)
+    signal ctrl_shift : std_logic_vector(24 downto 0)
 	:= (others => '0');
 
 begin
@@ -71,22 +73,25 @@ begin
     -- CMV SPI Enable Signal
     --------------------------------------------------------------------
 
-    enable_proc : process (
-	spi_clk_in, spi_action, ctrl_shift(0))
+    enable_a_proc : process (spi_clk_in, spi_action)
     begin
-	if rising_edge(spi_clk_in) then
-	    if ctrl_shift(0) = '1' then
-		enable <= '0';
-	    end if;
-	end if;
-
 	if falling_edge(spi_clk_in) then
 	    if spi_action = '1' then
-		enable <= '1';
+		enable_a <= not enable_b;
 	    end if;
 	end if;
     end process;
 
+    enable_b_proc : process (spi_clk_in, ctrl_shift(0))
+    begin
+	if rising_edge(spi_clk_in) then
+	    if ctrl_shift(0) = '1' then
+		enable_b <= enable_a;
+	    end if;
+	end if;
+    end process;
+
+    enable <= enable_a xor enable_b;
     spi_en <= enable;
     spi_clk <= spi_clk_in when enable = '1' else '0';
     -- spi_clk <= spi_clk_in when enable = '1' and spi_action = '0' else '0';
@@ -95,8 +100,8 @@ begin
     -- CMV SPI Data Shift
     --------------------------------------------------------------------
 
-    data_proc : process (
-	spi_action, spi_clk_in, 
+    data_in_proc : process (
+	spi_clk_in, spi_action,
 	spi_din, spi_addr, spi_out)
     begin
 	if rising_edge(spi_clk_in) then
@@ -112,7 +117,10 @@ begin
 
 	    end if;
 	end if;
+    end process;
 
+    data_out_proc : process (spi_clk_in, spi_action)
+    begin
 	if falling_edge(spi_clk_in) then
 	    if spi_action = '1' then			-- sync load
 		spi_in <= spi_write;
@@ -122,7 +130,7 @@ begin
 	end if;
     end process;
 
-    spi_dout <= data_shift(spi_dout'range);
+    spi_dout <= data_shift(spi_dout'high + 1 downto 1);
     spi_latch <= ctrl_shift(0) and not spi_action;
 
     --------------------------------------------------------------------
