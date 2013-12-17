@@ -1243,8 +1243,8 @@ begin
 		generic map (
 		    DATA_WIDTH => 64,
 		    DATA_COUNT => 16,
-		    ADDR_MASK => x"00FFFFFF",
-		    ADDR_DATA => x"1B000000" )
+		    ADDR_MASK => x"03FFFFFF",
+		    ADDR_DATA => x"18000000" )
 		port map (
 		    m_axi_aclk => s_axi0_aclk,
 		    m_axi_areset_n => s_axi0_areset_n,
@@ -1272,7 +1272,7 @@ begin
 		generic map (
 		    DATA_WIDTH => 64,
 		    DATA_COUNT => 16,
-		    ADDR_MASK => x"00FFFFFF",
+		    ADDR_MASK => x"03FFFFFF",
 		    ADDR_DATA => x"1C000000" )
 		port map (
 		    m_axi_aclk => s_axi2_aclk,
