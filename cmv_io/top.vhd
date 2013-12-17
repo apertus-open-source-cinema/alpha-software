@@ -1000,23 +1000,28 @@ begin
 
     GEN_4TO1_64: for I in 7 downto 0 generate
     begin
-	comb64_4to1_inst : entity work.data_4to1
-	    generic map (
-		DI_WIDTH => 16,
-		DI_BLOCK => 16,
-		DO_WIDTH => 64 )
-	    port map (
-		clk => iserdes_clk,
-		rst => comb64_reset(I),
-		--
-		data_in0 => cmv_data(I*4 + 0),
-		data_in1 => cmv_data(I*4 + 1),
-		data_in2 => cmv_data(I*4 + 2),
-		data_in3 => cmv_data(I*4 + 3),
-		push_in => cmv_push(I*4 + 3 downto I*4),
-		--
-		data_out => comb64_data(I),
-		push_out => comb64_push(I) );
+--	comb64_4to1_inst : entity work.data_4to1
+--	    generic map (
+--		DI_WIDTH => 16,
+--		DI_BLOCK => 16,
+--		DO_WIDTH => 64 )
+--	    port map (
+--		clk => iserdes_clk,
+--		rst => comb64_reset(I),
+--		--
+--		data_in0 => cmv_data(I*4 + 0),
+--		data_in1 => cmv_data(I*4 + 1),
+--		data_in2 => cmv_data(I*4 + 2),
+--		data_in3 => cmv_data(I*4 + 3),
+--		push_in => cmv_push(I*4 + 3 downto I*4),
+--		--
+--		data_out => comb64_data(I),
+--		push_out => comb64_push(I) );
+
+	comb64_push(I) <= cmv_push(CHANNELS);
+	comb64_data(I) <=
+	    cmv_data(I*4 + 0) & cmv_data(I*4 + 1) &
+	    cmv_data(I*4 + 2) & cmv_data(I*4 + 3);
 
     end generate;
 
@@ -1028,23 +1033,28 @@ begin
     GEN_4TO1_256: for I in 1 downto 0 generate
     begin
 
-	comb256_4to1_inst : entity work.data_4to1
-	    generic map (
-		DI_WIDTH => 64,
-		DI_BLOCK => 64,
-		DO_WIDTH => 256 )
-	    port map (
-		clk => iserdes_clk,
-		rst => comb256_reset(I),
-		--
-		data_in0 => comb64_data(I*4 + 0),
-		data_in1 => comb64_data(I*4 + 1),
-		data_in2 => comb64_data(I*4 + 2),
-		data_in3 => comb64_data(I*4 + 3),
-		push_in => comb64_push(I*4 + 3 downto I*4),
-		--
-		data_out => comb256_data(I),
-		push_out => comb256_push(I) );
+--	comb256_4to1_inst : entity work.data_4to1
+--	    generic map (
+--		DI_WIDTH => 64,
+--		DI_BLOCK => 64,
+--		DO_WIDTH => 256 )
+--	    port map (
+--		clk => iserdes_clk,
+--		rst => comb256_reset(I),
+--		--
+--		data_in0 => comb64_data(I*4 + 0),
+--		data_in1 => comb64_data(I*4 + 1),
+--		data_in2 => comb64_data(I*4 + 2),
+--		data_in3 => comb64_data(I*4 + 3),
+--		push_in => comb64_push(I*4 + 3 downto I*4),
+--		--
+--		data_out => comb256_data(I),
+--		push_out => comb256_push(I) );
+
+	comb256_push(I) <= cmv_push(CHANNELS);
+	comb256_data(I) <=
+	    comb64_data(I*4 + 0) & comb64_data(I*4 + 1) &
+	    comb64_data(I*4 + 2) & comb64_data(I*4 + 3);
 
     end generate;
 
