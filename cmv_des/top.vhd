@@ -179,15 +179,15 @@ architecture RTL of top is
 
     signal iserdes_clk : std_logic;
     signal iserdes_clkdiv : std_logic;
+    signal iserdes_toggle : std_logic;
     signal iserdes_bitslip : std_logic_vector (CHANNELS + 1 downto 0);
-    signal iserdes_wordslip : std_logic_vector (CHANNELS + 1 downto 0);
 
     type data_par_t is array (natural range <>) of
 	std_logic_vector (11 downto 0);
 
     signal cmv_data_par : data_par_t (CHANNELS downto 0)
 	:= (others => (others => '0'));
-    signal cmv_push : std_logic_vector (CHANNELS downto 0);
+    signal cmv_data_push : std_logic_vector (CHANNELS downto 0);
 
     signal cmv_rst_sys : std_logic;
 
@@ -574,15 +574,14 @@ begin
 	    s_axi_wo => m_axi01_wi,
 	    s_axi_wi => m_axi01_wo,
 	    --
-	    delay_clk => cmv_dly_clk,		-- in
+	    delay_clk => iserdes_clkdiv,	-- in
 	    --
 	    delay_in => idelay_in,		-- in
 	    delay_out => idelay_out,		-- out
 	    --
 	    match => cmv_match,			-- in
 	    mismatch => cmv_mismatch,		-- in
-	    bitslip => iserdes_bitslip,		-- out
-	    wordslip => iserdes_wordslip );	-- out
+	    bitslip => iserdes_bitslip );	-- out
 
     --------------------------------------------------------------------
     -- LVDS Input and Deserializer
@@ -628,17 +627,18 @@ begin
 		port map (
 		    serdes_clk	  => iserdes_clk,
 		    serdes_clkdiv => iserdes_clkdiv,
+		    serdes_toggle => iserdes_toggle,
 		    serdes_rst	  => cmv_rst_sys,
 		    --
 		    data_ser	  => idelay_out(I),
 		    data_par	  => cmv_data_par(I),
+		    data_push	  => cmv_data_push(I),
 		    --
 		    pattern	  => x"080",
 		    match	  => cmv_match(I),
 		    mismatch	  => cmv_mismatch(I),
 		    --
-		    bitslip	  => iserdes_bitslip(I),
-		    wordslip	  => iserdes_wordslip(I) );
+		    bitslip	  => iserdes_bitslip(I) );
 
 	end generate;
 
@@ -661,17 +661,18 @@ begin
 		port map (
 		    serdes_clk	  => iserdes_clk,
 		    serdes_clkdiv => iserdes_clkdiv,
+		    serdes_toggle => iserdes_toggle,
 		    serdes_rst	  => cmv_rst_sys,
 		    --
 		    data_ser	  => idelay_out(I),
 		    data_par	  => cmv_data_par(I),
+		    data_push	  => cmv_data_push(I),
 		    --
 		    pattern	  => cmv_pattern,
 		    match	  => cmv_match(I),
 		    mismatch	  => cmv_mismatch(I),
 		    --
-		    bitslip	  => iserdes_bitslip(I),
-		    wordslip	  => iserdes_wordslip(I) );
+		    bitslip	  => iserdes_bitslip(I) );
 
 	end generate;
     end generate;
@@ -680,10 +681,20 @@ begin
 
     iserdes_clk <= lvds_clk;
     iserdes_clkdiv <= word_clk;
+
+    toggle_proc : process (iserdes_clkdiv)
+    begin
+	if rising_edge(iserdes_clkdiv) then
+	    if iserdes_bitslip(CHANNELS + 1) = '0' then
+		iserdes_toggle <= not iserdes_toggle;
+	    end if;
+	end if;
+    end process;
+
     -- iserdes_clk <= cmv_outclk;
 
     cmv_rst_sys <= '0';
-    cmv_pattern <= x"0A5";
+    cmv_pattern <= "101010010101";
 
     --------------------------------------------------------------------
     -- LED Status output

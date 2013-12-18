@@ -46,8 +46,7 @@ entity reg_delay is
 	match : in std_logic_vector(CHANNELS - 1 downto 0);
 	mismatch : in std_logic_vector(CHANNELS - 1 downto 0);
 	--
-	bitslip : out std_logic_vector(CHANNELS - 1 downto 0);
-	wordslip : out std_logic_vector(CHANNELS - 1 downto 0)
+	bitslip : out std_logic_vector(CHANNELS - 1 downto 0)
     );
 end entity reg_delay;
 
@@ -88,7 +87,6 @@ architecture RTL of reg_delay is
     signal match_out : std_logic;
     signal mismatch_out : std_logic;
     signal bitslip_in : std_logic;
-    signal wordslip_in : std_logic;
 
 begin
 
@@ -151,11 +149,9 @@ begin
 		dly_ld_done <= dly_ld;	-- turn around
 		delay_ld(index) <= '1';
 		bitslip(index) <= bitslip_in;
-		wordslip(index) <= wordslip_in;
 	    else
 		delay_ld(index) <= '0';
 		bitslip(index) <= '0';
-		wordslip(index) <= '0';
 	    end if;
 	end if;
     end process;
@@ -347,7 +343,6 @@ begin
 	s_axi_wo.bresp <= bresp_v;
 
 	bitslip_in <= wdata_v(31);
-	wordslip_in <= wdata_v(30);
 	delay_val <= wdata_v(4 downto 0);
 
 	s_axi_ro.rdata(29) <= match_out;

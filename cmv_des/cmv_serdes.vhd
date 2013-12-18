@@ -25,17 +25,18 @@ entity cmv_serdes is
     port (
 	serdes_clk	: in  std_logic;
 	serdes_clkdiv	: in  std_logic;
+	serdes_toggle	: in  std_logic;
 	serdes_rst	: in  std_logic;
 	--
 	data_ser	: in  std_logic;
 	data_par	: out std_logic_vector (11 downto 0);
+	data_push	: out std_logic;
 	--
 	pattern		: in  std_logic_vector (11 downto 0);
 	match		: out std_logic;
 	mismatch	: out std_logic;
 	--
-	bitslip		: in  std_logic;
-	wordslip	: in  std_logic
+	bitslip		: in  std_logic
     );
 
 end entity cmv_serdes;
@@ -46,7 +47,6 @@ architecture RTL of cmv_serdes is
     attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
 
     signal bitslip_occ : std_logic := '0';
-    signal wordslip_occ : std_logic := '0';
 
     signal data : std_logic_vector(5 downto 0);
     signal data_out : std_logic_vector(11 downto 0);
@@ -95,28 +95,34 @@ begin
     -- mismatch <= '0';
     -- data_par(11 downto 6) <= (others => '0');
 
-    switch_proc : process(serdes_clkdiv, bitslip)
-	variable first_v : boolean := true;
-	variable shift_v : std_logic_vector(5 downto 0) := "000001";
+    switch_proc : process (serdes_clkdiv, serdes_toggle)
     begin
 	if rising_edge(serdes_clkdiv) then
-	    if first_v then
+	    if serdes_toggle = '1' then
 		data_out(5 downto 0) <= data;
-		first_v := false;
 	    else
 		data_out(11 downto 6) <= data;
-		first_v := true;
-	    end if;
-
-	    if wordslip_occ = '1' then
-		first_v := not first_v;
 	    end if;
 	end if;
     end process;
 
-    data_par <= data_out;
+    push_proc : process (serdes_clk, serdes_toggle)
+	variable toggle_v : std_logic := '0';
+    begin
+	if rising_edge(serdes_clk) then
+	    if toggle_v = '1' and
+		serdes_toggle = '0' then
+		data_par <= data_out;
+		data_push <= '1';
+	    else
+		data_push <= '0';
+	    end if;
 
-    bitslip_proc : process(serdes_clkdiv, bitslip)
+	    toggle_v := serdes_toggle;
+	end if;
+    end process;
+
+    bitslip_proc : process (serdes_clkdiv, bitslip)
 	variable shift_v : std_logic_vector(1 downto 0) := "10";
     begin
 	if bitslip = '1' then
@@ -129,20 +135,7 @@ begin
 	end if;
     end process;
 
-    wordslip_proc : process(serdes_clkdiv, wordslip)
-	variable shift_v : std_logic_vector(1 downto 0) := "10";
-    begin
-	if wordslip = '1' then
-	    shift_v := "10";
-	else
-	    if rising_edge(serdes_clkdiv) then
-		shift_v := '0' & shift_v(1);
-		wordslip_occ <= shift_v(0);
-	    end if;
-	end if;
-    end process;
-
-    match_proc : process(serdes_clkdiv, pattern)
+    match_proc : process (serdes_clkdiv, pattern)
 	variable shift_v : std_logic_vector(7 downto 0);
     begin
 	if rising_edge(serdes_clkdiv) then
