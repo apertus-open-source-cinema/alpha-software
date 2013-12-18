@@ -47,7 +47,7 @@ entity top is
 	spi_in : out std_ulogic;
 	spi_out : in std_ulogic;
 	--
-	cmv_clk : out std_ulogic;
+	cmv_clk_in : out std_ulogic;
 	cmv_t_exp1 : out std_ulogic;
 	cmv_t_exp2 : out std_ulogic;
 	cmv_frame_req : out std_ulogic;
@@ -156,7 +156,6 @@ architecture RTL of top is
 
     signal cmv_lvds_clk : std_ulogic;
     signal cmv_dly_clk : std_ulogic;
-    signal cmv_clk_in : std_ulogic;
     signal cmv_spi_clk : std_ulogic;
 
     --------------------------------------------------------------------

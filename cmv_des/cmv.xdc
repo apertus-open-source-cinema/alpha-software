@@ -14,7 +14,7 @@ create_clock -period 6.666 -name lvds_outclk -waveform {0.000 3.333} [get_ports 
 # set_input_delay -clock pll_lvds_clk -network_latency_included 3.333 [get_ports cmv_lvds_data*]
 
 
-set_property PACKAGE_PIN W8 [get_ports cmv_clk]
+set_property PACKAGE_PIN W8 [get_ports cmv_clk_in]
 set_property PACKAGE_PIN V10 [get_ports cmv_t_exp1]
 set_property PACKAGE_PIN V9 [get_ports cmv_t_exp2]
 set_property PACKAGE_PIN V8 [get_ports cmv_frame_req]
