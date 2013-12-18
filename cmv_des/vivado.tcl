@@ -88,7 +88,7 @@ write_sdf -force -quiet post_route.sdf
 
 # STEP#5: generate a bitstream
 
-write_bitstream -force $ODIR/cmv_io.bit
+write_bitstream -force $ODIR/cmv_des.bit
 
 # STEP#6: generate reports
 
