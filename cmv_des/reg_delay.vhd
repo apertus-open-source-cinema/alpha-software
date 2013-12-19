@@ -21,7 +21,7 @@ library unisim;
 use unisim.VCOMPONENTS.ALL;
 
 use work.axi3ml_pkg.ALL;	-- AXI3 Lite Master
-use work.vivado_pkg.ALL;
+use work.vivado_pkg.ALL;	-- Vivado Attributes
 
 
 entity reg_delay is

@@ -17,6 +17,24 @@ use IEEE.std_logic_1164.ALL;
 
 package vivado_pkg is
 
+
+    attribute ASYNC_REG : string;
+
+    --  This attribute can be placed on any register;
+    --
+    --  Values are FALSE (default) and TRUE.
+    --
+    --  FALSE :	The register can be optimized away, or absorbed into 
+    --		a block such as SRL, DSP, or RAMB.
+    --  TRUE :	The register is part of a synchronization chain. 
+    --		It will be preserved through implementation, placed near
+    --		the other registers in the chain and used for MTBF
+    --		reporting.
+
+
+    attribute BEL : string;
+
+
     attribute BUFFER_TYPE : string;
 
     --  Apply BUFFER_TYPE on an input to describe what type of buffer 
@@ -25,27 +43,89 @@ package vivado_pkg is
     --  By default, Vivado synthesis uses IBUF/BUFG or BUFGPs
     --  for clocks and IBUFs for inputs.
     --
-    --  Supported values are:
-    --  - ibuf : For clock ports where a IBUF/BUFG pair is
-    --  	 not wanted. In this case only, the IBUF
-    --  	 is inferred for the clock.
-    --
-    --  - none : Indicates that no input or output buffers
-    --  	 are used. A none value on a clock port
-    --  	 results in no buffers.
-    --
     --  The BUFFER_TYPE attribute can be placed on any top-level port.
-
-
-    attribute MAX_FANOUT : integer;
-
-    --  MAX_FANOUT instructs Vivado synthesis on the fanout limits
-    --  for registers and signals. You can specify this either in
-    --  RTL or as an input to the project. The value is an integer.
     --
-    --  This attribute only works on registers and combinatorial
-    --  signals. To achieve the fanout, it replicates the register
-    --  or the driver that drives the combinatorial signal.
+    --  Values are:
+    --  ibuf :	For clock ports where a IBUF/BUFG pair is not wanted.
+    --		In this case only, the IBUF is inferred for the clock.
+    --
+    --  none :	Indicates that no input or output buffers are used.
+    --		A none value on a clock port results in no buffers.
+
+
+    attribute DONT_TOUCH : string;
+
+    --  Use the DONT_TOUCH attribute in place of KEEP or KEEP_HIERARCHY.
+    --  The DONT_TOUCH works in the same way as KEEP or KEEP_HIERARCHY
+    --  attributes; however, unlike KEEP and KEEP_HIERARCHY, DONT_TOUCH
+    --  is forward-annotated to place and route to prevent logic
+    --  optimization.
+    --
+    --  Like KEEP and KEEP_HIERARCHY, be careful when using DONT_TOUCH.
+    --  In cases where other attributes are in conflict with DONT_TOUCH,
+    --  the DONT_TOUCH attribute takes precedence.
+    --
+    --  This attribute can be placed on any signal, module, entity,
+    --  or component.
+    --
+    --  Values are FALSE (default) and TRUE.
+
+
+    attribute DRIVE : integer;
+
+
+    attribute FSM_ENCODING : string;
+
+    --  FSM_ENCODING controls how a state machine is encoded during 
+    --  synthesis.
+    --  As a default, the Vivado synthesis tool chooses an encoding
+    --  protocol for state machines based on internal algorithms that
+    --  determine the best solution for most designs. 
+    --  However, the FSM_ENCODING property lets you specify the state
+    --  machine encoding of your choice.
+    --
+    --  Values are:
+    --  off :	This disables state machine encoding within the
+    --		Vivado synthesis tool. In this case the state machine
+    --		is synthesized as logic.
+    --  one_hot :
+    --  sequential :
+    --  johnson :
+    --  gray :
+    --  auto :	This is the default behavior when FSM_ENCODING is
+    --		not specified. it allows the Vivado synthesis tool to
+    --		determine the best state machine encoding method.
+
+
+    attribute FSM_SAFE_STATE : string;
+
+    attribute HIODELAY_GROUP : string;
+
+    attribute HLUTNM : string;
+
+    attribute HU_SET : string;
+
+    attribute IN_TERM : string;
+
+
+    attribute IOB : string;
+
+    --  The IOB is not a synthesis attribute; it is used downstream
+    --  by Vivado implementation. This attribute indicates if a register
+    --  should go into the I/O buffer.
+    --
+    --  Place this attribute on the register that you want in the I/O
+    --  buffer. Place this attribute on the register that you want in
+    --  the I/O buffer.
+    --
+    --  Values are FALSE and TRUE.
+
+
+    attribute IOBDELAY : string;
+
+    attribute IODELAY_GROUP : string;
+
+    attribute IOSTANDARD : string;
 
 
     attribute KEEP_HIERARCHY : string;
@@ -63,32 +143,77 @@ package vivado_pkg is
     --
     --  The KEEP_HIERARCHY can be placed in the module or 
     --  architecture level or the instance.
-
-
-    attribute DONT_TOUCH : string;
-
-    --  Use the DONT_TOUCH attribute in place of KEEP or KEEP_HIERARCHY.
-    --  The DONT_TOUCH works in the same way as KEEP or KEEP_HIERARCHY
-    --  attributes; however, unlike KEEP and KEEP_HIERARCHY, DONT_TOUCH
-    --  is forward-annotated to place and route to prevent logic
-    --  optimization.
     --
-    --  Like KEEP and KEEP_HIERARCHY, be careful when using DONT_TOUCH.
-    --  In cases where other attributes are in conflict with DONT_TOUCH,
-    --  the DONT_TOUCH attribute takes precedence.
+    --  Values are FALSE and TRUE.
+
+
+    attribute KEEPER : string;
+
+    --  KEEPER applies a weak driver on a tri-stateable output or
+    --  bidirectional port to preserve its value when not being driven.
     --
-    --  The values for DONT_TOUCH are TRUE/FALSE or yes/no. 
-    --  This attribute can be placed on any signal, module, entity,
-    --  or component.
+    --  The KEEPER property retains the value of the output net to
+    --  which it is attached.
+    --
+    --  For example, if logic 1 is being driven onto a net, KEEPER
+    --  drives a weak or resistive 1 onto the net. If the net driver
+    --  is then tri-stated, KEEPER continues to drive a weak or 
+    --  resistive 1 onto the net to preserve that value.
+    --
+    --  Values are FALSE, TRUE, YES and NO.
+
+
+    attribute LOC : string;
+
+    attribute LOCK_PINS : string;
+
+    attribute LUTNM : string;
 
 
     attribute MARK_DEBUG : string;
 
-    --  Set MARK_DEBUG on a net in the RTL to preserve it and make 
-    --  it visible in the netlist.
+    --  Set MARK_DEBUG on a net in the RTL to preserve it and make it
+    --  visible in the netlist.
     --
-    --  This allows it to be connected to the logic debug tools at 
-    --  any point in the compilation flow.
+    --  This allows it to be connected to the logic debug tools at any
+    --  point in the compilation flow.
+    --
+    --  Values are FALSE and TRUE.
+
+
+    attribute MAX_FANOUT : integer;
+
+    --  MAX_FANOUT instructs Vivado synthesis on the fanout limits
+    --  for registers and signals. You can specify this either in
+    --  RTL or as an input to the project. The value is an integer.
+    --
+    --  This attribute only works on registers and combinatorial
+    --  signals. To achieve the fanout, it replicates the register
+    --  or the driver that drives the combinatorial signal.
+
+
+    attribute PACKAGE_PIN : string;
+
+    attribute PULLDOWN : string;
+
+    --  PULLDOWN applies a weak logic low level on a tri-stateable
+    --  output or bidirectional port to prevent it from floating.
+    --
+    --  The PULLDOWN property guarantees a logic Low level to allow
+    --  tri-stated nets to avoid floating when not being driven.
+    --
+    --  Values are FALSE, TRUE, YES and NO.
+
+
+    attribute PULLUP : string;
+
+    --  PULLUP applies a weak logic High on a tri-stateable output
+    --  or bidirectional port to prevent it from floating.
+    --
+    --  The PULLUP property guarantees a logic High level to allow
+    --  tri-stated nets to avoid floating when not being driven.
+    --
+    --  Values are FALSE, TRUE, YES and NO.
 
 
     attribute REGISTER_BALANCING : string;
@@ -99,6 +224,51 @@ package vivado_pkg is
     attribute REGISTER_DUPLICATION : string;
 
     --  YES, NO
+
+
+    attribute RLOC: string;
+
+    attribute RLOC_ORIGIN: string;
+
+    attribute RPM_GRID : string;
+
+
+    attribute SHREG_EXTRACT : string;
+
+    --  SHREG_EXTRACT instructs the synthesis tool on whether to infer 
+    --  SRL structures.
+    --
+    --  Place SHREG_EXTRACT on the signal declared for SRL or the 
+    --  module/entity with the SRL.
+    --
+    --  values are YES and NO.
+
+
+    attribute SLEW : string;
+
+
+    attribute SRL_STYLE : string;
+
+    --  SRL_STYLE tells the synthesis tool how to infer SRLs that are 
+    --  found in the design. Accepted values are:
+    --
+    --  "register" :	The tool does not infer an SRL, but instead 
+    --			only uses registers.
+    --  "srl" :		The tool infers an SRL without any registers 
+    --			before or after.
+    --  "srl_reg" :	The tool infers an SRL and leaves one register
+    --			after the SRL.
+    --  "reg_srl" :	The tool infers an SRL and leaves one register
+    --			before the SRL.
+    --  "reg_srl_reg" :	The tool infers an SRL and leaves one register
+    --			before and one register after the SRL.
+    --
+    --  Place SRL_STYLE on the signal declared for SRL.
+
+
+    attribute U_SET : string;
+
+
 
 end package;
 
