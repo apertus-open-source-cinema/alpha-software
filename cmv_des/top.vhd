@@ -10,7 +10,7 @@
 --	as published by the Free Software Foundation, either version
 --	2 of the License, or (at your option) any later version.
 --
---  Vivado 2013.3:
+--  Vivado 2013.4:
 --    mkdir -p build.vivado
 --    (cd build.vivado && vivado -mode tcl -source ../vivado.tcl)
 --    (cd build.vivado && promgen -w -b -p bin -u 0 cmv_des.bit -data_width 32)
