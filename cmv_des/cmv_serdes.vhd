@@ -49,6 +49,7 @@ architecture RTL of cmv_serdes is
     signal bitslip_occ : std_logic := '0';
 
     signal data : std_logic_vector(5 downto 0);
+    signal data_buf : std_logic_vector(5 downto 0);
     signal data_out : std_logic_vector(11 downto 0);
 
 begin
@@ -99,28 +100,29 @@ begin
     begin
 	if rising_edge(serdes_clkdiv) then
 	    if serdes_toggle = '1' then
-		data_out(5 downto 0) <= data;
+		data_buf(5 downto 0) <= data;
 	    else
-		data_out(11 downto 6) <= data;
+		data_out <= data & data_buf;
 	    end if;
 	end if;
     end process;
 
     push_proc : process (serdes_clk, serdes_toggle)
-	variable toggle_v : std_logic := '0';
+	variable toggle_d_v : std_logic := '0';
     begin
 	if rising_edge(serdes_clk) then
-	    if toggle_v = '1' and
+	    if toggle_d_v = '1' and
 		serdes_toggle = '0' then
-		data_par <= data_out;
 		data_push <= '1';
 	    else
 		data_push <= '0';
 	    end if;
 
-	    toggle_v := serdes_toggle;
+	    toggle_d_v := serdes_toggle;
 	end if;
     end process;
+
+    data_par <= data_out;
 
     bitslip_proc : process (serdes_clkdiv, bitslip)
 	variable shift_v : std_logic_vector(1 downto 0) := "10";
