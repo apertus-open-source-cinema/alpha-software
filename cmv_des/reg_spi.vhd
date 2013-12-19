@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --  reg_spi.vhd
 --	AXI3 Lite CMV SPI Interface
---	Version 1.2
+--	Version 1.3
 --
 --  Copyright (C) 2013 H.Poetzl
 --
@@ -52,6 +52,15 @@ architecture RTL of reg_spi is
     signal axi_spi_done : std_logic;
     signal axi_spi_active : std_logic;
 
+    signal reg_ab_in : std_logic_vector(23 downto 0);
+    signal reg_ba_out : std_logic_vector(15 downto 0);
+
+    alias axi_spi_write is reg_ab_in(23);
+    alias axi_spi_addr is reg_ab_in(22 downto 16);
+    alias axi_spi_din is reg_ab_in(15 downto 0);
+
+    alias axi_spi_dout is reg_ba_out(15 downto 0);
+
 	-- spi_clk_in domain
     signal spi_go : std_logic;
     signal spi_done : std_logic := '0';
@@ -59,27 +68,39 @@ architecture RTL of reg_spi is
     signal spi_action_occ : std_logic := '0';
     signal spi_active : std_logic;
 
-	-- mixed domain
-    signal spi_write : std_logic;
-    signal spi_addr : std_logic_vector(6 downto 0);
-    signal spi_din : std_logic_vector(15 downto 0);
-
-    signal spi_dout : std_logic_vector(15 downto 0);
     signal spi_latch : std_logic;
+
+    signal reg_ab_out : std_logic_vector(23 downto 0);
+    signal reg_ba_in : std_logic_vector(15 downto 0);
+
+    alias spi_write is reg_ab_out(23);
+    alias spi_addr is reg_ab_out(22 downto 16);
+    alias spi_din is reg_ab_out(15 downto 0);
+
+    alias spi_dout is reg_ba_in(15 downto 0);
 
 begin
 
-    ping_pong_inst : entity work.ping_pong
+    pp_reg_sync_inst : entity work.pp_reg_sync
+	generic map (
+	    AB_WIDTH => 24,
+	    BA_WIDTH => 16 )
 	port map (
 	    clk_a => s_axi_aclk,
 	    ping_a => axi_spi_go,		-- in,  toggle
 	    pong_a => axi_spi_done,		-- out, toggle
 	    active => axi_spi_active,		-- out
 	    --
+	    reg_ab_in => reg_ab_in,
+	    reg_ba_out => reg_ba_out,
+	    --
 	    clk_b => spi_clk_in,
 	    ping_b => spi_go,			-- out, toggle
 	    pong_b => spi_done,			-- in,  toggle
-	    action => spi_action );		-- out
+	    action => spi_action,		-- out
+	    --
+	    reg_ba_in => reg_ba_in,
+	    reg_ab_out => reg_ab_out );
 
     spi_inst : entity work.cmv_spi
 	port map (
@@ -142,7 +163,7 @@ begin
 
     reg_rwseq_proc : process (
 	s_axi_aclk, s_axi_areset_n,
-	s_axi_ri, s_axi_wi, spi_dout )
+	s_axi_ri, s_axi_wi, axi_spi_dout )
 
 	variable addr_v : std_logic_vector(31 downto 0);
 
@@ -162,11 +183,11 @@ begin
 	variable spi_write_v : std_logic := '1';
 
 	type rw_state is (
-	    idle,
-	    r_addr, r_go, r_spi, r_data, r_done,
-	    w_addr, w_data, w_go, w_spi, w_resp, w_done);
+	    idle_s,
+	    r_addr_s, r_spi_s, r_data_s,
+	    w_addr_s, w_data_s, w_spi_s, w_resp_s);
 
-	variable state : rw_state := idle;
+	variable state : rw_state := idle_s;
 
     begin
 	if rising_edge(s_axi_aclk) then
@@ -180,16 +201,19 @@ begin
 		wready_v := '0';
 		bvalid_v := '0';
 
-		state := idle;
+		state := idle_s;
 
 	    else
 		case state is
-		    when idle =>
+		    when idle_s =>
+			rvalid_v := '0';
+			bvalid_v := '0';
+
 			if s_axi_ri.arvalid = '1' then	-- address _is_ valid
-			    state := r_addr;
+			    state := r_addr_s;
 
 			elsif s_axi_wi.awvalid = '1' then -- address _is_ valid
-			    state := w_addr;
+			    state := w_addr_s;
 
 			end if;
 
@@ -198,50 +222,41 @@ begin
 		--	\,	/      \,
 		--	 ARREADY     RREADY	    Slave
 
-		    when r_addr =>
+		    when r_addr_s =>
 			addr_v := s_axi_ri.araddr;
 			arready_v := '1';		-- ready for transfer
 
 			spi_write_v := '0';
-			state := r_go;
-
-		    when r_go =>			-- trigger spi action
-			arready_v := '0';		-- done with addr
-
 			axi_spi_go <= not axi_spi_go;	-- toggle trigger
-			state := r_spi;
+			state := r_spi_s;
 
-		    when r_spi =>			-- wait for spi
+		    when r_spi_s =>			-- wait for spi
+			arready_v := '0';		-- done with addr
 			if axi_spi_active = '0' then
-			    state := r_data;
+			    state := r_data_s;
 			end if;
 
-		    when r_data =>			-- deliver data
+		    when r_data_s =>			-- deliver data
 			rresp_v := "00";
 
 			if s_axi_ri.rready = '1' then	-- master ready
 			    rvalid_v := '1';		-- data is valid
 
-			    state := r_done;
+			    state := idle_s;
 			end if;
-
-		    when r_done =>
-			rvalid_v := '0';
-
-			state := idle;
 
 		--  AWVALID ---> WVALID	 _	       BREADY	    Master
 		--     \    --__ /`   \	  --__		/`
 		--	\,	/--__  \,     --_      /
 		--	 AWREADY     -> WREADY ---> BVALID	    Slave
 
-		    when w_addr =>
+		    when w_addr_s =>
 			addr_v := s_axi_wi.awaddr;
 			awready_v := '1';   		-- ready for transfer
 
-			state := w_data;
+			state := w_data_s;
 
-		    when w_data =>
+		    when w_data_s =>
 			awready_v := '0';		-- done with addr
 			wready_v := '1';		-- we are ready for data
 
@@ -252,31 +267,22 @@ begin
 			    bresp_v := "00";		-- transfer OK
 
 			    spi_write_v := '1';
-			    state := w_go;
+			    axi_spi_go <= not axi_spi_go;
+			    state := w_spi_s;
 			end if;
 
-		    when w_go =>			-- trigger spi action
+		    when w_spi_s =>			-- wait for spi
 			wready_v := '0';		-- done with write
-
-			axi_spi_go <= not axi_spi_go;	-- toggle trigger
-			state := w_spi;
-
-		    when w_spi =>			-- wait for spi
 			if axi_spi_active = '0' then
-			    state := w_resp;
+			    state := w_resp_s;
 			end if;
 
-		    when w_resp =>
+		    when w_resp_s =>
 			if s_axi_wi.bready = '1' then	-- master ready
 			    bvalid_v := '1';		-- response valid
 
-			    state := w_done;
+			    state := idle_s;
 			end if;
-
-		    when w_done =>
-			bvalid_v := '0';
-
-			state := idle;
 
 		end case;
 	    end if;
@@ -293,11 +299,11 @@ begin
 
 	s_axi_wo.bresp <= bresp_v;
 
-	spi_write <= spi_write_v;
-	spi_addr <= addr_v(8 downto 2);
-	spi_din <= wdata_v(15 downto 0);
+	axi_spi_write <= spi_write_v;
+	axi_spi_addr <= addr_v(8 downto 2);
+	axi_spi_din <= wdata_v(15 downto 0);
 
-	s_axi_ro.rdata(15 downto 0) <= spi_dout;
+	s_axi_ro.rdata(15 downto 0) <= axi_spi_dout;
 
     end process;
 

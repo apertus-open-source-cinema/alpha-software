@@ -51,42 +51,12 @@ set_property PACKAGE_PIN R16 [get_ports btn_d]
 set_property IOSTANDARD LVCMOS25 [get_ports btn_*]
 
 
-# set_multicycle_path 2 -from [get_pins reg_delay_inst/wdata*/C]
-# set_multicycle_path 1 -hold -from [get_pins reg_delay_inst/wdata*/C]
+set_false_path -from [get_cells -hierarchical reg_ba_reg*]
+set_false_path -from [get_cells -hierarchical reg_ab_reg*]
 
-set_multicycle_path 2 -from [get_pins reg_delay_inst/index*/C]
-set_multicycle_path 1 -hold -from [get_pins reg_delay_inst/index*/C]
+set_false_path -from [get_cells -hierarchical ping_a_d_reg*]
+set_false_path -from [get_cells -hierarchical pong_b_d_reg*]
 
-set_false_path -from [get_pins reg_delay_inst/delay_val_out*/C]
-set_false_path -from [get_pins reg_delay_inst/mismatch*/C]
-set_false_path -from [get_pins reg_delay_inst/match*/C]
-set_false_path -from [get_pins reg_delay_inst/bitslip*/C]
-# set_false_path -from [get_pins reg_delay_inst/wordslip*/C]
-
-set_multicycle_path 2 -from [get_pins reg_delay_inst/GEN_DELAY*/C]
-set_multicycle_path 1 -hold -from [get_pins reg_delay_inst/GEN_DELAY*/C]
-
-set_multicycle_path 2 -from [get_pins reg_delay_inst/ping_pong*/*/shift*/C]
-set_multicycle_path 1 -hold -from [get_pins reg_delay_inst/ping_pong*/*/shift*/C]
-
-set_false_path -from [get_pins reg_delay_inst/dly*done*/C]
-set_false_path -from [get_pins reg_delay_inst/dly*done*/C]
-
-set_multicycle_path 2 -from [get_pins reg_spi_inst/spi_inst/data_shift*/C]
-set_multicycle_path 1 -hold -from [get_pins reg_spi_inst/spi_inst/data_shift*/C]
-
-set_false_path -from [get_pins reg_spi_inst/spi*done*/C]
-set_false_path -from [get_pins reg_spi_inst/wdata*/C]
-set_false_path -from [get_pins reg_spi_inst/addr*/C]
-
-set_false_path -to [get_pins reg_delay_inst/match_out*/D]
-set_false_path -to [get_pins reg_delay_inst/mismatch_out*/D]
-
-set_false_path -from [get_pins reg_delay_inst/index*/C]
-set_false_path -from [get_pins reg_delay_inst/wdata*/C]
-
-set_multicycle_path 2 -from [get_pins iserdes_toggle*/C]
-set_multicycle_path 1 -hold -from [get_pins iserdes_toggle*/C]
 
 # create_pblock pblock_delay
 # add_cells_to_pblock [get_pblocks pblock_delay] [get_cells -quiet [list reg_delay_inst]]

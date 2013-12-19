@@ -55,64 +55,73 @@ architecture RTL of reg_delay is
 
     attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
 
-	-- s_axi_aclk domain
-    signal axi_dly_ld : std_logic := '0';
-    signal axi_dly_ld_done : std_logic;
-    signal axi_dly_ld_active : std_logic;
+    constant INDEX_WIDTH : natural := 6;
 
-    signal axi_dly_rd : std_logic := '0';
-    signal axi_dly_rd_done : std_logic;
-    signal axi_dly_rd_active : std_logic;
+	-- s_axi_aclk domain
+    signal axi_dly_go : std_logic := '0';
+    signal axi_dly_done : std_logic;
+    signal axi_dly_active : std_logic;
+
+    signal reg_ab_in : std_logic_vector(INDEX_WIDTH + 6 downto 0);
+    signal reg_ba_out : std_logic_vector(6 downto 0);
+
+    alias axi_dly_index is reg_ab_in(INDEX_WIDTH + 6 downto 7);
+    alias axi_pat_bitslip is reg_ab_in(6);
+    alias axi_dly_ld is reg_ab_in(5);
+    alias axi_dly_val is reg_ab_in(4 downto 0);
+
+    alias axi_pat_match is reg_ba_out(6);
+    alias axi_pat_mismatch is reg_ba_out(5);
+    alias axi_dly_oval is reg_ba_out(4 downto 0);
 
 	-- delay_clk domain
-    signal dly_ld : std_logic;
-    signal dly_ld_done : std_logic := '0';
-    signal dly_ld_action : std_logic;
-
-    signal dly_rd : std_logic;
-    signal dly_rd_done : std_logic := '0';
-    signal dly_rd_action : std_logic;
+    signal dly_go : std_logic;
+    signal dly_done : std_logic := '0';
+    signal dly_action : std_logic;
 
     signal delay_ld : std_logic_vector(CHANNELS - 1 downto 0);
 
     type delay_val_t is array (natural range <>) of
-	std_logic_vector (4 downto 0);
+	std_logic_vector(4 downto 0);
     signal delay_oval : delay_val_t(CHANNELS - 1 downto 0);
 
-	-- mixed domain
-    signal index : integer := 1;
     signal delay_val : std_logic_vector(4 downto 0);
-    signal delay_val_out : std_logic_vector(4 downto 0);
 
-    signal match_out : std_logic;
-    signal mismatch_out : std_logic;
-    signal bitslip_in : std_logic;
+    signal reg_ba_in : std_logic_vector(6 downto 0);
+    signal reg_ab_out : std_logic_vector(INDEX_WIDTH + 6 downto 0);
+
+    alias dly_index is reg_ab_out(INDEX_WIDTH + 6 downto 7);
+    alias pat_bitslip is reg_ab_out(6);
+    alias dly_ld is reg_ab_out(5);
+    alias dly_val is reg_ab_out(4 downto 0);
+
+    alias pat_match is reg_ba_in(6);
+    alias pat_mismatch is reg_ba_in(5);
+    alias dly_oval is reg_ba_in(4 downto 0);
 
 begin
 
-    ping_pong_inst0 : entity work.ping_pong
+    pp_reg_sync_inst : entity work.pp_reg_sync
+	generic map (
+	    AB_WIDTH => INDEX_WIDTH + 7,
+	    BA_WIDTH => 7 )
 	port map (
 	    clk_a => s_axi_aclk,
-	    ping_a => axi_dly_ld,		-- in,  toggle
-	    pong_a => axi_dly_ld_done,		-- out, toggle
-	    active => axi_dly_ld_active,	-- out
+	    ping_a => axi_dly_go,		-- in,  toggle
+	    pong_a => axi_dly_done,		-- out, toggle
+	    active => axi_dly_active,		-- out
+	    --
+	    reg_ab_in => reg_ab_in,
+	    reg_ba_out => reg_ba_out,
 	    --
 	    clk_b => delay_clk,
-	    ping_b => dly_ld,			-- out, toggle
-	    pong_b => dly_ld_done,		-- in,  toggle
-	    action => dly_ld_action );		-- out
+	    ping_b => dly_go,			-- out, toggle
+	    pong_b => dly_done,			-- in,  toggle
+	    action => dly_action,		-- out
+	    --
+	    reg_ba_in => reg_ba_in,
+	    reg_ab_out => reg_ab_out );
 
-    ping_pong_inst1 : entity work.ping_pong
-	port map (
-	    clk_a => s_axi_aclk,
-	    ping_a => axi_dly_rd,		-- in,  toggle
-	    pong_a => axi_dly_rd_done,		-- out, toggle
-	    active => axi_dly_rd_active,	-- out
-	    --
-	    clk_b => delay_clk,
-	    ping_b => dly_rd,			-- out, toggle
-	    pong_b => dly_rd_done,		-- in,  toggle
-	    action => dly_rd_action );		-- out
 
     GEN_DELAY: for I in CHANNELS - 1 downto 0 generate
 	IDELAY_inst : IDELAYE2
@@ -138,39 +147,34 @@ begin
 
     end generate;
 
+
     --------------------------------------------------------------------
     -- Load Action and Reply
     --------------------------------------------------------------------
 
-    ld_action_proc : process (delay_clk, dly_ld_action)
+    action_proc : process (delay_clk, dly_action)
+	variable index_v : natural;
     begin
 	if rising_edge(delay_clk) then
-	    if dly_ld_action = '1' then
-		dly_ld_done <= dly_ld;	-- turn around
-		delay_ld(index) <= '1';
-		bitslip(index) <= bitslip_in;
+	    index_v := to_integer(unsigned(dly_index));
+
+	    if dly_action = '1' then
+		delay_val <= dly_val;
+		delay_ld(index_v) <= dly_ld;
+		bitslip(index_v) <= pat_bitslip;
+
+		dly_oval <= delay_oval(index_v);
+		pat_match <= match(index_v);
+		pat_mismatch <= mismatch(index_v);
+
+		dly_done <= dly_go;	-- turn around
 	    else
-		delay_ld(index) <= '0';
-		bitslip(index) <= '0';
+		delay_ld(index_v) <= '0';
+		bitslip(index_v) <= '0';
 	    end if;
 	end if;
     end process;
 
-    --------------------------------------------------------------------
-    -- Read Action and Reply
-    --------------------------------------------------------------------
-
-    rd_action_proc : process (delay_clk, dly_rd_action)
-    begin
-	if rising_edge(delay_clk) then
-	    if dly_rd_action = '1' then
-		delay_val_out <= delay_oval(index);
-		match_out <= match(index);
-		mismatch_out <= mismatch(index);
-		dly_rd_done <= dly_rd;	-- turn around
-	    end if;
-	end if;
-    end process;
 
     --------------------------------------------------------------------
     -- AXI Read/Write
@@ -178,7 +182,7 @@ begin
 
     reg_rwseq_proc : process(
 	s_axi_aclk, s_axi_areset_n,
-	s_axi_ri, s_axi_wi, delay_val_out )
+	s_axi_ri, s_axi_wi, axi_dly_oval )
 
 	variable addr_v : std_logic_vector(31 downto 0);
 	variable index_v : integer := 0;
@@ -197,11 +201,17 @@ begin
 	variable bresp_v : std_logic_vector(1 downto 0) := "00";
 
 	type rw_state is (
-	    idle,
-	    r_addr, r_go, r_dly, r_data, r_done,
-	    w_addr, w_data, w_go, w_dly, w_resp, w_done );
+	    idle_s,
+	    r_addr_s, r_dly_s, r_data_s,
+	    w_addr_s, w_data_s, w_dly_s, w_resp_s );
 
-	variable state : rw_state := idle;
+	variable state : rw_state := idle_s;
+
+	function index_func ( val : integer )
+	    return std_logic_vector is
+	begin
+	    return std_logic_vector(to_unsigned(val, INDEX_WIDTH));
+	end function;
 
     begin
 	if rising_edge(s_axi_aclk) then
@@ -215,16 +225,19 @@ begin
 		wready_v := '0';
 		bvalid_v := '0';
 
-		state := idle;
+		state := idle_s;
 
 	    else
 		case state is
-		    when idle =>
+		    when idle_s =>
+			rvalid_v := '0';
+			bvalid_v := '0';
+
 			if s_axi_ri.arvalid = '1' then	-- address _is_ valid
-			    state := r_addr;
+			    state := r_addr_s;
 
 			elsif s_axi_wi.awvalid = '1' then -- address _is_ valid
-			    state := w_addr;
+			    state := w_addr_s;
 
 			end if;
 
@@ -233,67 +246,62 @@ begin
 		--	\,	/      \,
 		--	 ARREADY     RREADY	    Slave
 
-		    when r_addr =>
+		    when r_addr_s =>
 			addr_v := s_axi_ri.araddr;
 			index_v :=
 			    to_integer(unsigned(addr_v) - REG_BASE) / 4;
 
 			if index_v >= 0 and
 			    index_v < CHANNELS then
-			    index <= index_v;
+			    axi_dly_index <= index_func(index_v);
 			    rresp_v := "00";		-- okay
 			else
 			    rresp_v := "11";		-- decode error
 			end if;
 
-			arready_v := '1';		-- ready for transfer
-			state := r_go;
+			axi_dly_ld <= '0';
+			axi_pat_bitslip <= '0';
+			axi_dly_go <= not axi_dly_go;	-- toggle trigger
 
-		    when r_go =>			-- trigger rd action
+			arready_v := '1';		-- ready for transfer
+			state := r_dly_s;
+
+		    when r_dly_s =>			-- wait for delay
 			arready_v := '0';		-- done with addr
 
-			axi_dly_rd <= not axi_dly_rd;	-- toggle trigger
-			state := r_dly;
-
-		    when r_dly =>			-- wait for delay
-			if axi_dly_rd_active = '0' then
-			    state := r_data;
+			if axi_dly_active = '0' then
+			    state := r_data_s;
 			end if;
 
-		    when r_data =>
+		    when r_data_s =>
 			if s_axi_ri.rready = '1' then	-- master ready
 			    rvalid_v := '1';		-- data is valid
 
-			    state := r_done;
+			    state := idle_s;
 			end if;
-
-		    when r_done =>
-			rvalid_v := '0';
-
-			state := idle;
 
 		--  AWVALID ---> WVALID	 _	       BREADY	    Master
 		--     \    --__ /`   \	  --__		/`
 		--	\,	/--__  \,     --_      /
 		--	 AWREADY     -> WREADY ---> BVALID	    Slave
 
-		    when w_addr =>
+		    when w_addr_s =>
 			addr_v := s_axi_wi.awaddr;
 			index_v :=
 			    to_integer(unsigned(addr_v) - REG_BASE) / 4;
 
 			if index_v >= 0 and
 			    index_v < CHANNELS then
-			    index <= index_v;
+			    axi_dly_index <= index_func(index_v);
 			    bresp_v := "00";		-- okay
 			else
 			    bresp_v := "11";		-- decode error
 			end if;
 
 			awready_v := '1';		-- ready for transfer
-			state := w_data;
+			state := w_data_s;
 
-		    when w_data =>
+		    when w_data_s =>
 			awready_v := '0';		-- done with addr
 			wready_v := '1';		-- ready for data
 
@@ -301,31 +309,26 @@ begin
 			    wdata_v := s_axi_wi.wdata;
 			    wstrb_v := s_axi_wi.wstrb;
 
-			    state := w_go;
+			    axi_dly_ld <= '1';
+			    axi_pat_bitslip <= wdata_v(31);
+			    axi_dly_go <= not axi_dly_go;
+
+			    state := w_dly_s;
 			end if;
 
-		    when w_go =>
+		    when w_dly_s =>			-- wait for delay
 			wready_v := '0';		-- done with write
 
-			axi_dly_ld <= not axi_dly_ld;	-- toggle trigger
-			state := w_dly;
-
-		    when w_dly =>			-- wait for delay
-			if axi_dly_ld_active = '0' then
-			    state := w_resp;
+			if axi_dly_active = '0' then
+			    state := w_resp_s;
 			end if;
 
-		    when w_resp =>
+		    when w_resp_s =>
 			if s_axi_wi.bready = '1' then	-- master ready
 			    bvalid_v := '1';		-- response valid
 
-			    state := w_done;
+			    state := idle_s;
 			end if;
-
-		    when w_done =>
-			bvalid_v := '0';
-
-			state := idle;
 
 		end case;
 	    end if;
@@ -342,12 +345,11 @@ begin
 
 	s_axi_wo.bresp <= bresp_v;
 
-	bitslip_in <= wdata_v(31);
-	delay_val <= wdata_v(4 downto 0);
+	axi_dly_val <= wdata_v(4 downto 0);
 
-	s_axi_ro.rdata(29) <= match_out;
-	s_axi_ro.rdata(28) <= mismatch_out;
-	s_axi_ro.rdata(4 downto 0) <= delay_val_out;
+	s_axi_ro.rdata(29) <= axi_pat_match;
+	s_axi_ro.rdata(28) <= axi_pat_mismatch;
+	s_axi_ro.rdata(4 downto 0) <= axi_dly_oval;
 
     end process;
 

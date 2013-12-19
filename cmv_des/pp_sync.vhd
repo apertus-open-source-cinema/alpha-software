@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
---  ping_pong.vhd
+--  pp_sync.vhd
 --	Ping Pong Synchronizer
 --	Version 1.0
 --
@@ -19,7 +19,7 @@ use IEEE.numeric_std.ALL;
 use work.vivado_pkg.ALL;	-- Vivado Attributes
 
 
-entity ping_pong is
+entity pp_sync is
     generic (
 	STAGES : natural := 2
     );
@@ -34,10 +34,10 @@ entity ping_pong is
 	ping_b : out std_logic;
 	action : out std_logic
     );
-end entity ping_pong;
+end entity pp_sync;
 
 
-architecture RTL of ping_pong is
+architecture RTL of pp_sync is
 
     attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
 

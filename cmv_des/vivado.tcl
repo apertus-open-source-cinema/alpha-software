@@ -12,7 +12,8 @@ set_param messaging.defaultLimit 10000
 read_vhdl ../async_div.vhd
 read_vhdl ../sync_div.vhd
 read_vhdl ../data_sync.vhd
-read_vhdl ../ping_pong.vhd
+read_vhdl ../pp_sync.vhd
+read_vhdl ../pp_reg_sync.vhd
 read_vhdl ../ps7_stub.vhd
 read_vhdl ../axi_lite.vhd
 read_vhdl ../axi_split.vhd
