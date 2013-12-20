@@ -65,54 +65,83 @@ int main (int argc, char* argv[]) {
 		if (i == 0)
 			printf("not used");
 		if (i == 1)
-			printf("number of used sensor lines (1..3072");
+			printf("\n1[15:0]\t\tNumber_lines_tot:\t%d\tnumber of used sensor lines\n", swap_endian(registers[i]));
 		if (i > 1 && i < 34)
 			printf("Y_start");
 		if (i > 33  && i < 66)
 			printf("Y_size");
-		if (i == 68) { // Color_exp[3] Bin_en[2] Sub_en[1] Color[0] 
+		if (i == 68) {
+			printf("\n");
 			if ((get_bit(swap_endian(registers[i]), 3)))
-				printf("Color_exp[3]: 1 - monochrome sensor, ");
+				printf("68[3]\t\tColor_exp:\t1\tmonochrome sensor");
 			else
-				printf("Color_exp[3]: 0 - color sensor, ");
+				printf("68[3]\t\tColor_exp:\t0\tcolor sensor");
+			printf("\n");
 			if ((get_bit(swap_endian(registers[i]), 2)))
-				printf("Bin_en[2]: 1 - binning enabled, ");
+				printf("68[2]\t\tBin_en:\t\t1\tbinning enabled");
 			else
-				printf("Bin_en[2]: 0 - binning disabled, ");
+				printf("68[2]\t\tBin_en:\t\t0\tbinning disabled");
+			printf("\n");
 			if ((get_bit(swap_endian(registers[i]), 1)))
-				printf("Sub_en[1]: 1 - image subsampling enabled, ");
+				printf("68[1]\t\tSub_en:\t\t1\timage subsampling enabled");
 			else
-				printf("Sub_en[1]: 0 - image subsampling disabled, ");
+				printf("68[1]\t\tSub_en:\t\t0\timage subsampling disabled");
+			printf("\n");
 			if ((get_bit(swap_endian(registers[i]), 0)))
-				printf("Color[0]: 1 - monochrome sensor");
+				printf("68[0]\t\tColor:\t\t1\tmonochrome sensor");
 			else
-				printf("Color[0]: 0 - color sensor");
+				printf("68[0]\t\tColor:\t\t0\tcolor sensor");
 		}
-		if (i == 116) {
-			printf("ADC_range - slope of the ramp used by the ADC: %d - ", get_bits(swap_endian(registers[i]), 0, 8));
-			switch (get_bits(swap_endian(registers[i]), 0, 8)) {
-				case 205:
-					printf("8 bit mode, ");
+		if (i == 115) {
+			printf("\n115[2:0]\tPGA_gain():\t\t%d\t", get_bits(swap_endian(registers[i]), 0, 3));
+			switch (get_bits(swap_endian(registers[i]), 0, 3)) {
+				case 0:
+					printf("unity gain");
 					break;
-				case 155:
-					printf("10 bit mode, ");
-					break;
-				case 255:
-					printf("12 bit mode, ");
-					break;
-			}
-			printf("ADC_range_mult - slope of the ramp used by the ADC:  %d - ", get_bits(swap_endian(registers[i]), 8, 2));
-			switch (get_bits(swap_endian(registers[i]), 8, 2)) {
 				case 1:
-					printf("8 bit mode, ");
+					printf("x2 gain");
 					break;
 				case 3:
-					printf("10 bit mode, ");
+					printf("x3 gain");
+					break;				
+				case 7:
+					printf("x4 gain");
+					break;
+			}
+			printf("\n");
+		}
+
+		if (i == 116) {
+			printf("\n116[7:0]\tADC_range:\t\t%d\t", get_bits(swap_endian(registers[i]), 0, 8));
+			switch (get_bits(swap_endian(registers[i]), 0, 8)) {
+				case 205:
+					printf("8 bit mode");
+					break;
+				case 155:
+					printf("10 bit mode");
+					break;
+				case 255:
+					printf("12 bit mode");
+					break;
+				default:
+					printf("no specific bit mode");
+					break;
+			}
+			printf("\tslope of the ramp used by the ADC\n");
+
+			printf("116[9:8]\tADC_range_mult:\t\t%d\t", get_bits(swap_endian(registers[i]), 8, 2));
+			switch (get_bits(swap_endian(registers[i]), 8, 2)) {
+				case 1:
+					printf("8 bit mode");
+					break;
+				case 3:
+					printf("10 bit mode");
 					break;
 				case 2:
-					printf("12 bit mode, ");
+					printf("12 bit mode");
 					break;
-			}	
+			}
+			printf("\n");
 		}
 		
 		printf ("\n");
