@@ -1,30 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "stdint.h"
+
 
 // TODO
 char* Char2Binary (char c) {
 	return c;
 }
 
+// TODO
+uint16_t SwapEndian (uint16_t in) {
+	return (in>>8) | (in<<8);
+}
+
 int main (int argc, char* argv[]) {
-	char registers[256];
-	char buff[8];
-	ssize_t   n;
-  	int total = 0;
+	uint16_t registers[128];
+
 	// read std in
-	//fgets(registers, 256, stdin);
-	int j = 0;
-	while((n = fread(buff, 1, 1, stdin)) > 0) {
-    		printf("+++%s+++\n",strlen(buff));
-    		registers[j] = buff[0];
-		j++;
-	}
-	registers[j] = "\n";
-
-	//fread(registers, 256, 1, stdin);
-   	//cin >> registers;
-
-	printf ("%u bytes read from stdin\n", strlen(registers));
+	int n;
+	n = read(0, registers, sizeof(registers));
+	printf ("%u bytes read from stdin\n", n);
 
 	// Header
 	printf ("------------------------------------------------------------------------------\n");
@@ -32,9 +27,9 @@ int main (int argc, char* argv[]) {
 	printf ("------------------------------------------------------------------------------\n");
 
 	int i;
-	for (i=0; i < strlen(registers); i++) {
-		// two registers per line as we have 128x 16 bit registers
-   		printf ("%d:\t", i/2);
+	for (i=0; i < 128; i++) {
+		//Register Number
+   		printf ("%d:\t\t", i);
 	
 		//Binary
 		//TODO
@@ -42,28 +37,26 @@ int main (int argc, char* argv[]) {
 		printf ("00000000 00000000");
 		//Char2Binary(registers[i+1]);
 		
-		//Hex
-		printf ("\t%X", registers[i]);
-		printf (" ");
-		printf ("%02X\t", (unsigned int)(registers[i+1] & 0xFF));
 
-		/*		
+		//Hex
+		printf ("\t%04X\t", (unsigned int)(SwapEndian(registers[i]) & 0xFFFF));
+
+				
 		//Decimal
-		printf ("%u\t", (unsigned int)(registers.at(i) & 0xFF)*256+(unsigned int)(registers.at(i+1) & 0xFF));
+		printf ("%u\t", (unsigned int)(SwapEndian(registers[i]) & 0xFFFF));
+
 
 		//Comment
-		if (i/2 == 0)
+		if (i == 0)
 			printf("not used");
-		if (i/2 == 1)
+		if (i == 1)
 			printf("Number_lines_tot");
-		if (i/2 > 1 && i/2 < 34)
+		if (i > 1 && i < 34)
 			printf("Y_start");
-		if (i/2 > 33  && i/2 < 66)
-			printf("Y_size");*/
-
+		if (i > 33  && i < 66)
+			printf("Y_size");
 		
 		printf ("\n");
-		i++;
 	}
 
    	return 0;
