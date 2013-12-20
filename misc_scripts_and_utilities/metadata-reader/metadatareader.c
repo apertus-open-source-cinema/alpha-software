@@ -29,12 +29,27 @@ uint16_t get_bits (uint16_t in, int offset, int length) {
 
 
 int main (int argc, char* argv[]) {
+	
+	//Deal with argument
+	bool raw_register = false;
+	if (argc > 1) {
+		if (strcmp (argv[1], "-h") == 0) {	
+			printf( "%s Version 0.1\noptions are:\n-h\tprint this help message\n-r\tprint raw registers\n", argv[0]);
+			return 0;
+		} else {
+			if (strcmp (argv[1], "-r") == 0)
+				raw_register = true;
+		} 
+	}
+
+
 	uint16_t registers[128];
 
 	// read std in
 	int n;
 	n = read(0, registers, sizeof(registers));
 	printf ("%u bytes read from stdin\n", n);
+
 
 	// Header
 	printf ("------------------------------------------------------------------------------\n");
@@ -43,23 +58,27 @@ int main (int argc, char* argv[]) {
 
 	int i;
 	for (i=0; i < 128; i++) {
-		//Register Number
-   		printf ("%d:\t\t", i);
+ 		if (raw_register) {
+			printf ("\n");
+
+
+			//Register Number
+	   		printf ("%d:\t\t", i);
 	
-		//Binary
-		//TODO
-		//printf ("%d:\t", Char2Binary(registers[i]));
-		printf (int2binary(registers[i]));
-		//Char2Binary(registers[i+1]);
+			//Binary
+			//TODO
+			//printf ("%d:\t", Char2Binary(registers[i]));
+			printf (int2binary(registers[i]));
+			//Char2Binary(registers[i+1]);
 		
 
-		//Hex
-		printf ("\t%04X\t", (unsigned int)(swap_endian(registers[i]) & 0xFFFF));
+			//Hex
+			printf ("\t%04X\t", (unsigned int)(swap_endian(registers[i]) & 0xFFFF));
 
 				
-		//Decimal
-		printf ("%u\t", (unsigned int)(swap_endian(registers[i]) & 0xFFFF));
-
+			//Decimal
+			printf ("%u\t", (unsigned int)(swap_endian(registers[i]) & 0xFFFF));
+		}
 
 		//Comment
 		if (i == 0)
@@ -73,9 +92,9 @@ int main (int argc, char* argv[]) {
 		if (i == 68) {
 			printf("\n");
 			if ((get_bit(swap_endian(registers[i]), 3)))
-				printf("68[3]\t\tColor_exp:\t1\tmonochrome sensor");
+				printf("68[3]\t\tColor_exp:\t\t1\tmonochrome sensor");
 			else
-				printf("68[3]\t\tColor_exp:\t0\tcolor sensor");
+				printf("68[3]\t\tColor_exp:\t\t0\tcolor sensor");
 			printf("\n");
 			if ((get_bit(swap_endian(registers[i]), 2)))
 				printf("68[2]\t\tBin_en:\t\t1\tbinning enabled");
@@ -83,17 +102,23 @@ int main (int argc, char* argv[]) {
 				printf("68[2]\t\tBin_en:\t\t0\tbinning disabled");
 			printf("\n");
 			if ((get_bit(swap_endian(registers[i]), 1)))
-				printf("68[1]\t\tSub_en:\t\t1\timage subsampling enabled");
+				printf("68[1]\t\tSub_en:\t\t\t1\timage subsampling enabled");
 			else
-				printf("68[1]\t\tSub_en:\t\t0\timage subsampling disabled");
+				printf("68[1]\t\tSub_en:\t\t\t0\timage subsampling disabled");
 			printf("\n");
 			if ((get_bit(swap_endian(registers[i]), 0)))
-				printf("68[0]\t\tColor:\t\t1\tmonochrome sensor");
+				printf("68[0]\t\tColor:\t\t\t1\tmonochrome sensor");
 			else
-				printf("68[0]\t\tColor:\t\t0\tcolor sensor");
+				printf("68[0]\t\tColor:\t\t\t0\tcolor sensor");
 		}
 		if (i == 115) {
-			printf("\n115[2:0]\tPGA_gain():\t\t%d\t", get_bits(swap_endian(registers[i]), 0, 3));
+			printf("\n115[3]\t\tPGA_div:\t\t%d\t", get_bits(swap_endian(registers[i]), 3, 1));
+			if (get_bits(swap_endian(registers[i]), 3, 1))
+				printf("ON");
+			else
+				printf("OFF");
+			printf("\t\t\tdivide signal by 3");
+			printf("\n115[2:0]\tPGA_gain:\t\t%d\t", get_bits(swap_endian(registers[i]), 0, 3));
 			switch (get_bits(swap_endian(registers[i]), 0, 3)) {
 				case 0:
 					printf("unity gain");
@@ -144,7 +169,7 @@ int main (int argc, char* argv[]) {
 			printf("\n");
 		}
 		
-		printf ("\n");
+		
 	}
 
    	return 0;
