@@ -32,13 +32,20 @@ $coloumn = 0;
 // pixels brighter than this treshhold are considered hot (values go from 0..4096)
 $treshhold = 2000;
 
+$hot_pixel_count = 0;
+
 // iterate through each byte in the image
 for($i = 0; $i < $fsize; $i++) { 
-	$row = floor(($i/2)/4096);
+	$row = floor(($i/2)/3072);
 	$coloumn = ($i/2) % 4096;
-
+	
 	// to make sure we dont iterate through the appended sensor registers	
 	if ($row < 3072) {
+		
+		// output progress percentages
+		if (($row > 10) && ($row % 307 == 0) && ($coloumn == 0))
+			echo round($row/3072*100)."%..";
+
 		$asciiCharacter = $contents[$i+1].$contents[$i];
 		$data = unpack("n*", $asciiCharacter);
 
@@ -47,11 +54,28 @@ for($i = 0; $i < $fsize; $i++) {
 		$value =$data[1]/16;
 	
 		if ($value > $treshhold) {
-			echo "found hot pixel at ";
-			echo "row: ".$row." coloumn: ".$coloumn." value: ".$value."\n";
+			//echo "found hot pixel at ";
+			//echo "row: ".$row." coloumn: ".$coloumn." value: ".$value."\n";
+			$hot_pixel[$hot_pixel_count]['X'] = $coloumn;
+			$hot_pixel[$hot_pixel_count]['Y'] = $row;
+			$hot_pixel[$hot_pixel_count++]['val'] = $value;
 		}
 	}
 	$i++;
 }
-echo "\n";
+echo "\nfound: ".$hot_pixel_count." hot pixels\n";
+$i = 1;
+$j = 0;
+echo "Pixel\tColoumn\tRow\tValue\n";
+foreach ($hot_pixel as $pixel) {
+	echo $i++.":\t".$pixel['X']."\t".$pixel['Y']."\t".$pixel['val']."\n";
+
+	// calculate distance between 2 hot pixels
+	foreach ($hot_pixel as $pixel2) {
+		 $distance = round(sqrt((abs($pixel['X']-$pixel2['X']))*(abs($pixel['X']-$pixel2['X']))+(abs($pixel['Y']-$pixel2['Y']))*(abs($pixel['Y']-$pixel2['Y'])))).", " ;
+		if (($distance > 1) && ($distance < 3))
+			$j++;
+	}
+}
+echo "Number of 2 pixel clusters (according to sensor specification): ". $j/2 ."\n";
 ?>
