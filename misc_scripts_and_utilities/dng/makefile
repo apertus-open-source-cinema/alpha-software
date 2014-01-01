@@ -19,7 +19,7 @@ printDNG:
 CMV12000_sRGB: bayer2rgb
 	$(CC) $(LDFLAGS) src/utils/CMV12000_sRGB.cpp src/bayer/bayer.o $(LIB) -o bin/CMV12000_sRGB
 bayer2rgb: $(C_OBJECTS)
-	$(CC) -03 -Wall -o bin/bayer2rgb src/bayer/bayer.o src/bayer/bayer2rgb.cpp -lm
+	$(CC) -O3 -Wall -o bin/bayer2rgb src/bayer/bayer.o src/bayer/bayer2rgb.cpp -lm
 .c.o:
 	gcc -std=c99 -c $< -o $@
 .cpp.o:
