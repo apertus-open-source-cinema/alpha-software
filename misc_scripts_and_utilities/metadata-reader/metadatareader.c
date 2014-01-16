@@ -2,10 +2,11 @@
 ----------------------------------------------------------------------------
 -- metadatareader.c
 --        read the 128x16bit block via piped stdin and display it in a human
---	  readable format
---        Version 1.0
+--	      readable format
+--        Version 1.1
 --
--- Copyright (C) 2013 Sebastian Pichelhofer
+-- Copyright (C) 2013 Sebastian Pichelhofer,
+--                    Simon Larcher
 --
 --        This program is free software: you can redistribute it and/or
 --        modify it under the terms of the GNU General Public License
@@ -207,6 +208,160 @@ int main (int argc, char* argv[]) {
 			//TODO:
 			/*printf("\n\t\tExposure Time:\t\t%d\t\t", i, ?);
 			printf("Exposure Time (ms)");*/
+		}
+if (i == 73) {
+			// For dual exposure (?)
+			printf("\n%u[15:0]\tExp_time2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("Exposure Time 2 Part 1");
+		}
+		if (i == 74) {
+			// For dual exposure (?)
+			printf("\n%u[23:16]\tExp_time2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("Exposure Time 2 Part 2");
+			printf("\n%u[23:0]\tExp_time2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess));
+			printf("Exposure Time 2 (combined)");
+			//TODO:
+			/*printf("\n\t\tExposure Time 2:\t\t%d\t\t", i, ?);
+			printf("Exposure Time 2 (ms)");*/
+		}
+		if (i == 75) {
+			// For pseudo logatithmic response curve (SDR) (?)
+			printf("\n%u[15:0]\tExp_kp1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("Exposure Knee Point 1 Part 1");
+		}
+		if (i == 76) {
+			// For pseudo logatithmic response curve (SDR) (?)
+			printf("\n%u[23:16]\tExp_kp1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("Exposure Knee Point 1 Part 2");
+			printf("\n%u[23:0]\tExp_kp1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess));
+			printf("Exposure Knee Point 1 (combined)");
+			//TODO:
+			/*printf("\n\t\tExposure Knee Point 1:\t\t%d\t\t", i, ?);
+			printf("Exposure Knee Point 1 (ms)");*/
+		}
+		if (i == 77) {
+			// For pseudo logatithmic response curve (SDR) (?)
+			printf("\n%u[15:0]\tExp_kp2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("Exposure Knee Point 2 Part 1");
+		}
+		if (i == 78) {
+			// For pseudo logatithmic response curve (SDR) (?)
+			printf("\n%u[23:16]\tExp_kp2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("Exposure Knee Point 2 Part 2");
+			printf("\n%u[23:0]\tExp_kp1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess));
+			printf("Exposure Knee Point 2 (combined)");
+			//TODO:
+			/*printf("\n\t\tExposure Knee Point 2:\t\t%d\t\t", i, ?);
+			printf("Exposure Knee Point 2 (ms)");*/
+		}
+		if (i == 79) {
+			printf("\n%u[1:0]\t\tNumber_slopes:\t\t%d\t\t", i, get_bits(swap_endian(registers[i], swap_endianess), 0, 2));
+			switch (get_bits(swap_endian(registers[i], swap_endianess), 0, 2)) {
+				case 1:
+					printf("1 slope");
+					break;
+				case 2:
+					printf("2 slopes");
+					break;
+				case 3:
+					printf("3 slopes");
+					break;
+				}
+		}
+		if (i == 80) {
+			printf("\n%u[15:0]\tNumber_frames:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("%d\t\tNumber of frames to grab and send (intern exp. only)", swap_endian(registers[i], swap_endianess));	
+		}
+		if (i == 81) {
+			printf("\n%u[4:0]\t\tOutput_mode:\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 5) );
+			switch (get_bits(swap_endian(registers[i], swap_endianess), 0, 5)) {
+				case 0:
+					printf("32 outputs");
+					break;
+				case 1:
+					printf("16 outputs");
+					break;
+				case 3:
+					printf("8 outputs");
+					break;
+				case 7:
+					printf("4 outputs");
+					break;
+				case 15:
+					printf("2 outputs");
+					break;
+				case 31:
+					printf("1 outputs");
+					break;
+				}
+			printf("\tNumber of LVDS channels used on each side");
+			printf("\n%u[5]\t\tDisable_top:\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 5, 1) );
+			if (get_bits(swap_endian(registers[i], swap_endianess), 5, 1))
+				printf("Bottom LVDS outputs only");
+			else
+				printf("Two sided read-out (top and bottom)");
+		}
+		if ( i == 82 ) {
+			printf("\n%u[15:0]\tSetting_1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("\t\tAdditional register setting 1");
+		}
+		if ( i == 83 ) {
+			printf("\n%u[15:0]\tSetting_2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("\t\tAdditional register setting 2");
+		}
+		if ( i == 84 ) {
+			printf("\n%u[15:0]\tSetting_3:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("\t\tAdditional register setting 3");
+		}
+		if ( i == 85 ) {
+			printf("\n%u[15:0]\tSetting_4:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("\t\tAdditional register setting 4");
+		}
+		if ( i == 86 ) {
+			printf("\n%u[15:0]\tSetting_5:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("\t\tAdditional register setting 5");
+		}
+		// This is assuming all unused bits that are not in the given range are set to 0, for range [11:0] here bits 12 to 15.
+		if ( i == 87 ) {
+			printf("\n%u[11:0]\tOffset_bot:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("%d\t\tDark level offset on bottom output signal", swap_endian(registers[i], swap_endianess));
+		}
+		if ( i == 88 ) {
+			printf("\n%u[11:0]\tOffset_top:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
+			printf("%d\t\tDark level offset on top output signal", swap_endian(registers[i], swap_endianess));
+		}
+		if ( i == 89 ) {
+			printf("\n%u[11:0]\tTraining_pattern:\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 12) );
+			printf("%d\t\tValue sent over LVDS when no valid image data is sent", get_bits(swap_endian(registers[i], swap_endianess), 0, 12));
+
+			printf("\n%u[15]\t\tBlack_col_en:\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 15, 1) );
+			if (get_bits(swap_endian(registers[i], swap_endianess), 5, 1))
+				printf("Enabled");
+			else
+				printf("Disabled");
+			printf("\t\tElectrical black reference columns");
+		}
+		if ( i == 90 ) {
+			printf("\n%u[15:0]\tChannel_en_bot\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16) );
+			printf("--\t\tBottom data output channel (See register 91)");
+		}
+		if ( i == 91 ) {
+			printf("\n%u[31:16]\tChannel_en_bot\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16) );
+			if ( get_bits(swap_endian(registers[i - 1], swap_endianess), 0, 16) || (get_bits(swap_endian(registers[i], swap_endianess), 0, 16) << 16))
+				printf("Enabled\t\tBottom data output channel");
+			else
+				printf("Disabled\t\tBottom data output channel");
+		}
+		if ( i == 92 ) {
+			printf("\n%u[15:0]\tChannel_en_top\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16) );
+			printf("--\t\tTop data output channel (See register 93)");
+		}
+		if ( i == 93 ) {
+			printf("\n%u[31:16]\tChannel_en_top\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16) );
+			if ( get_bits(swap_endian(registers[i - 1], swap_endianess), 0, 16) || (get_bits(swap_endian(registers[i], swap_endianess), 0, 16) << 16))
+				printf("Enabled\t\tTop data output channel");
+			else
+				printf("Disabled\t\tTop data output channel");
 		}
 		if (i == 115) {
 			printf("\n115[3]\t\tPGA_div:\t\t%d\t\t", get_bits(swap_endian(registers[i], swap_endianess), 3, 1));
