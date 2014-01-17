@@ -55,7 +55,6 @@ uint16_t get_bits (uint16_t in, int offset, int length) {
 	return in3;
 }
 
-//TODO Check if correct about time division, 1e3 == ms ?
 // Contributed by Herbert Poetzlz, (loosely) based on CMV12000 documentation
 static inline  
 double  exposure(uint32_t time, int reg82, int reg85, double bits, double lvds)  
@@ -118,9 +117,9 @@ int main (int argc, char* argv[]) {
 		printf ("-----------------------------------------------------------------------------------\n");
 	
 	} else {
-		printf ("\n-----------------------------------------------------------------------------------\n");
-		printf ("Register\tName\t\t\tDecimal\t\tMeaning\t\tDescription\n");
-		printf ("-----------------------------------------------------------------------------------\n");
+		printf ("\n-------------------------------------------------------------------------------------------------------------------\n");
+		printf ("Register\tName\t\t\tDecimal\t\tMeaning\t\t\tDescription\n");
+		printf ("-------------------------------------------------------------------------------------------------------------------\n");
 	}
 	int i;
 	for (i=0; i < 128; i++) {
@@ -145,7 +144,7 @@ int main (int argc, char* argv[]) {
 		if (i == 0)
 			printf("0\t\tnot used");
 		if (i == 1)
-			printf("\n1[15:0]\t\tNumber_lines_tot:\t%d\t\tnumber of used sensor lines\n", swap_endian(registers[i], swap_endianess));
+			printf("\n1[15:0]\t\tNumber_lines_tot:\t%d\t\t\t\t\tnumber of used sensor lines\n", swap_endian(registers[i], swap_endianess));
 		if (i > 1 && i < 10)
 			printf("%u[15:0]\t\tY_start:\t\t%d\n",i ,swap_endian(registers[i], swap_endianess));
 		if (i > 9 && i < 34)
@@ -162,9 +161,9 @@ int main (int argc, char* argv[]) {
 				printf ("-----------------------------------------------------------------------------------\n");
 	
 			} else {
-				printf ("\n-----------------------------------------------------------------------------------\n");
-				printf ("Register\tName\t\t\tDecimal\t\tMeaning\t\tDescription\n");
-				printf ("-----------------------------------------------------------------------------------\n");
+				printf ("\n-------------------------------------------------------------------------------------------------------------------\n");
+				printf ("Register\tName\t\t\tDecimal\t\tMeaning\t\t\tDescription\n");
+				printf ("-------------------------------------------------------------------------------------------------------------------\n");
 			}
 
 			printf("%u[15:0]\tSub_offset:\t\t%d\n",i ,swap_endian(registers[i], swap_endianess));
@@ -216,7 +215,7 @@ int main (int argc, char* argv[]) {
 				printf("ON");
 			else
 				printf("OFF");
-			printf("\t\tHDR interleaved coloumn mode\n");
+			printf("\t\t\tHDR interleaved coloumn mode\n");
 			printf("%u[1]\t\tExp_ext:\t\t%d\t\t",i ,get_bits(swap_endian(registers[i], swap_endianess), 1, 1));
 			if (get_bits(swap_endian(registers[i], swap_endianess), 1, 1))
 				printf("External Exposure Mode");
@@ -225,53 +224,53 @@ int main (int argc, char* argv[]) {
 		}
 		if (i == 71) {
 			printf("\n%u[15:0]\tExp_time:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("--\t\tExposure Time Part 1");
+			printf("--\t\t\tExposure Time Part 1");
 		}
 		if (i == 72) {
 			printf("\n%u[23:16]\tExp_time:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("--\t\tExposure Time Part 2");
+			printf("--\t\t\tExposure Time Part 2");
 			printf("\n%u[23:0]\tExp_time:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess));
 			double exposure_ns = exposure(swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess), reg82, reg85, bits, lvds);
-			printf("%g\t\tExposure Time (ms)", exposure_ns);
+			printf("%g\t\t\tExposure Time (ms)", exposure_ns);
 		}
 		if (i == 73) {
 			// For dual exposure (?)
 			printf("\n%u[15:0]\tExp_time2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("--\t\tExposure Time 2 Part 1");
+			printf("--\t\t\tExposure Time 2 Part 1");
 		}
 		if (i == 74) {
 			// For dual exposure (?)
 			printf("\n%u[23:16]\tExp_time2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("--\t\tExposure Time 2 Part 2");
+			printf("--\t\t\tExposure Time 2 Part 2");
 			printf("\n%u[23:0]\tExp_time2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess));
 			double exposure_ns = exposure(swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess), reg82, reg85, bits, lvds);
-			printf("%g\t\tExposure Time (ms)", exposure_ns);
+			printf("%g\t\t\tExposure Time (ms)", exposure_ns);
 		}
 		if (i == 75) {
 			// For pseudo logatithmic response curve (SDR) (?)
 			printf("\n%u[15:0]\tExp_kp1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("--\t\tExposure Knee Point 1 Part 1");
+			printf("--\t\t\tExposure Knee Point 1 Part 1");
 		}
 		if (i == 76) {
 			// For pseudo logatithmic response curve (SDR) (?)
 			printf("\n%u[23:16]\tExp_kp1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("--\t\tExposure Knee Point 1 Part 2");
+			printf("--\t\t\tExposure Knee Point 1 Part 2");
 			printf("\n%u[23:0]\tExp_kp1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess));
 			double exposure_ns = exposure(swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess), reg82, reg85, bits, lvds);
-			printf("%g\t\tExposure Time (ms)", exposure_ns);
+			printf("%g\t\t\tExposure Time (ms)", exposure_ns);
 		}
 		if (i == 77) {
 			// For pseudo logatithmic response curve (SDR) (?)
 			printf("\n%u[15:0]\tExp_kp2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("--\t\tExposure Knee Point 2 Part 1");
+			printf("--\t\t\tExposure Knee Point 2 Part 1");
 		}
 		if (i == 78) {
 			// For pseudo logatithmic response curve (SDR) (?)
 			printf("\n%u[23:16]\tExp_kp2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("--\t\tExposure Knee Point 2 Part 2");
+			printf("--\t\t\tExposure Knee Point 2 Part 2");
 			printf("\n%u[23:0]\tExp_kp1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess));
 			double exposure_ns = exposure(swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess), reg82, reg85, bits, lvds);
-			printf("%g\t\tExposure Time (ms)", exposure_ns);
+			printf("%g\t\t\tExposure Time (ms)", exposure_ns);
 		}
 		if (i == 79) {
 			printf("\n%u[1:0]\t\tNumber_slopes:\t\t%d\t\t", i, get_bits(swap_endian(registers[i], swap_endianess), 0, 2));
@@ -286,11 +285,11 @@ int main (int argc, char* argv[]) {
 					printf("3 slopes");
 					break;
 				}
-			printf("\t\tNumber of slopes");
+			printf("\t\t\tNumber of slopes");
 		}
 		if (i == 80) {
 			printf("\n%u[15:0]\tNumber_frames:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("%d\t\tNumber of frames to grab and send (intern exp. only)", swap_endian(registers[i], swap_endianess));	
+			printf("%d\t\t\tNumber of frames to grab and send (intern exp. only)", swap_endian(registers[i], swap_endianess));	
 		}
 		if (i == 81) {
 			printf("\n%u[4:0]\t\tOutput_mode:\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 5) );
@@ -314,7 +313,7 @@ int main (int argc, char* argv[]) {
 					printf("1 outputs");
 					break;
 				}
-			printf("\tNumber of LVDS channels used on each side");
+			printf("\t\tNumber of LVDS channels used on each side");
 			printf("\n%u[5]\t\tDisable_top:\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 5, 1) );
 			if (get_bits(swap_endian(registers[i], swap_endianess), 5, 1))
 				printf("Bottom LVDS outputs only");
@@ -323,43 +322,43 @@ int main (int argc, char* argv[]) {
 		}
 		if ( i == 82 ) {
 			printf("\n%u[15:0]\tSetting_1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("\t\tAdditional register setting 1");
+			printf("\t\t\tAdditional register setting 1");
 		}
 		if ( i == 83 ) {
 			printf("\n%u[15:0]\tSetting_2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("\t\tAdditional register setting 2");
+			printf("\t\t\tAdditional register setting 2");
 		}
 		if ( i == 84 ) {
 			printf("\n%u[15:0]\tSetting_3:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("\t\tAdditional register setting 3");
+			printf("\t\t\tAdditional register setting 3");
 		}
 		if ( i == 85 ) {
 			printf("\n%u[15:0]\tSetting_4:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("\t\tAdditional register setting 4");
+			printf("\t\t\tAdditional register setting 4");
 		}
 		if ( i == 86 ) {
 			printf("\n%u[15:0]\tSetting_5:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("\t\tAdditional register setting 5");
+			printf("\t\t\tAdditional register setting 5");
 		}
 		// This is assuming all unused bits that are not in the given range are set to 0, for range [11:0] here bits 12 to 15.
 		if ( i == 87 ) {
 			printf("\n%u[11:0]\tOffset_bot:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("\t\tDark level offset on bottom output signal", swap_endian(registers[i], swap_endianess));
+			printf("\t\t\tDark level offset on bottom output signal");
 		}
 		if ( i == 88 ) {
 			printf("\n%u[11:0]\tOffset_top:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("\t\tDark level offset on top output signal", swap_endian(registers[i], swap_endianess));
+			printf("\t\t\tDark level offset on top output signal");
 		}
 		if ( i == 89 ) {
 			printf("\n%u[11:0]\tTraining_pattern:\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 12) );
-			printf("\t\tValue sent over LVDS when no valid image data is sent", get_bits(swap_endian(registers[i], swap_endianess), 0, 12));
+			printf("\t\t\tValue sent over LVDS when no valid image data is sent");
 
 			printf("\n%u[15]\t\tBlack_col_en:\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 15, 1) );
 			if (get_bits(swap_endian(registers[i], swap_endianess), 5, 1))
 				printf("Enabled");
 			else
 				printf("Disabled");
-			printf("\t\tElectrical black reference columns");
+			printf("\t\t\tElectrical black reference columns");
 		}
 		if ( i == 90 ) {
 			// Repeat Header to increase readability
@@ -370,47 +369,47 @@ int main (int argc, char* argv[]) {
 				printf ("-----------------------------------------------------------------------------------\n");
 	
 			} else {
-				printf ("\n-----------------------------------------------------------------------------------\n");
-				printf ("Register\tName\t\t\tDecimal\t\tMeaning\t\tDescription\n");
-				printf ("-----------------------------------------------------------------------------------\n");
+				printf ("\n-------------------------------------------------------------------------------------------------------------------\n");
+				printf ("Register\tName\t\t\tDecimal\t\tMeaning\t\t\tDescription\n");
+				printf ("-------------------------------------------------------------------------------------------------------------------\n");
 			}
 			printf("\n%u[15:0]\tChannel_en_bot\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16) );
-			printf("--\t\tBottom data output channel (See register 91)");
+			printf("--\t\t\tBottom data output channel (See register 91)");
 		}
 		if ( i == 91 ) {
 			printf("\n%u[31:16]\tChannel_en_bot\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16) );
 			if ( get_bits(swap_endian(registers[i - 1], swap_endianess), 0, 16) || (get_bits(swap_endian(registers[i], swap_endianess), 0, 16) << 16))
-				printf("Enabled\t\tBottom data output channel");
+				printf("Enabled\t\t\tBottom data output channel");
 			else
-				printf("Disabled\t\tBottom data output channel");
+				printf("Disabled\t\t\tBottom data output channel");
 		}
 		if ( i == 92 ) {
 			printf("\n%u[15:0]\tChannel_en_top\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16) );
-			printf("--\t\tTop data output channel (See register 93)");
+			printf("--\t\t\tTop data output channel (See register 93)");
 		}
 		if ( i == 93 ) {
 			printf("\n%u[31:16]\tChannel_en_top\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16) );
 			if ( get_bits(swap_endian(registers[i - 1], swap_endianess), 0, 16) || (get_bits(swap_endian(registers[i], swap_endianess), 0, 16) << 16))
-				printf("Enabled\t\tTop data output channel");
+				printf("Enabled\t\t\tTop data output channel");
 			else
-				printf("Disabled\t\tTop data output channel");
+				printf("Disabled\t\t\tTop data output channel");
 		}
 		if ( i == 94 ) {
 			printf("\n%u[0]\t\tChannel_en\t\t%d\t\t", i, get_bits(swap_endian(registers[i], swap_endianess), 0, 1));
 			if (get_bits(swap_endian(registers[i], swap_endianess), 0, 1))
-				printf("Enabled\t\tOutput clock channel");
+				printf("Enabled\t\t\tOutput clock channel");
 			else
-				printf("Disabled\tOutput clock channel");
+				printf("Disabled\t\tOutput clock channel");
 			printf("\n%u[1]\t\tChannel_en\t\t%d\t\t", i, get_bits(swap_endian(registers[i], swap_endianess), 1, 1));
 			if (get_bits(swap_endian(registers[i], swap_endianess), 1, 1))
-				printf("Enabled\t\tControl channel");
+				printf("Enabled\t\t\tControl channel");
 			else
-				printf("Disabled\tControl channel");
+				printf("Disabled\t\tControl channel");
 			printf("\n%u[2]\t\tChannel_en\t\t%d\t\t", i, get_bits(swap_endian(registers[i], swap_endianess), 2, 1));
 			if (get_bits(swap_endian(registers[i], swap_endianess), 2, 1))
-				printf("Enabled\t\tInput clock channel");
+				printf("Enabled\t\t\tInput clock channel");
 			else
-				printf("Disabled\tInput clock channel");
+				printf("Disabled\t\tInput clock channel");
 		}
 		if ( i == 95 ) {
 			printf("\n%u[15:0]\tADC_clk_en_bot:\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16) );
@@ -418,7 +417,7 @@ int main (int argc, char* argv[]) {
 				printf("Enabled");
 			else
 				printf("Disabled");
-			printf("\t\tBottom A/D Converter clock");
+			printf("\t\t\tBottom A/D Converter clock");
 		}
 		if ( i == 96 ) {
 			printf("\n%u[15:0]\tADC_clk_en_top:\t\t%d\t\t", i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16) );
@@ -426,45 +425,45 @@ int main (int argc, char* argv[]) {
 				printf("Enabled");
 			else
 				printf("Disabled");
-			printf("\t\tTop A/D Converter clock");
+			printf("\t\t\tTop A/D Converter clock");
 		}
 		// All cases for "FV" lines are handled by the next if statement
 		if ( ( i == 97) || ( i ==  99) || ( i ==  121) || ( i ==  125) || ( i ==  103) || ( i ==  104) || ( i ==  105) || ( i ==  110) || ( i ==  111) ) {
-			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\tFixed Value",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
+			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\t\tFixed Value",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
 		}
 		if ( i == 98 ) {
-			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\tSet to 39705",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
+			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\t\tSet to 39705",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
 		}
 		// All cases for "DNC" lines are handled by the next if statement
 		if ( ( i == 100) || ( i ==  101) || ( i ==  119) || ( i ==  120) || ( i ==  122) || ( i ==  123) || ( i ==  126)) {
-			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\tDo Not Change",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
+			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\t\tDo Not Change",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
 		}
 		if ( i == 102 ) {
-			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\tSet to 8312",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
+			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\t\tSet to 8312",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
 		}
 		if ( i == 106 ) {
-			printf("\n%u[0:6]\tVtfl2:\t\t\t%d\t\t\t\tVoltage threshold for Kneepoint 1 in Multiple slope",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 7));
-			printf("\n%u[13:7]\tVtfl3:\t\t\t%d\t\t\t\tVoltage threshold for Kneepoint 2 in Multiple slope",i,get_bits(swap_endian(registers[i], swap_endianess), 7, 7));
+			printf("\n%u[0:6]\tVtfl2:\t\t\t%d\t\t\t\t\tVoltage threshold for Kneepoint 1 in Multiple slope",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 7));
+			printf("\n%u[13:7]\tVtfl3:\t\t\t%d\t\t\t\t\tVoltage threshold for Kneepoint 2 in Multiple slope",i,get_bits(swap_endian(registers[i], swap_endianess), 7, 7));
 		}
 		if ( i == 107 ) {
-			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\tSet to 9814",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
+			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\t\tSet to 9814",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
 		}
 		if ( i == 108 ) {
-			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\tSet to 12381",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
+			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\t\tSet to 12381",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
 		}
 		if ( i == 109 ) {
-			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\tAdditional register setting",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
+			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\t\tAdditional register setting",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
 		}
 		if ( i == 112 ) {
-			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\tSet to 5",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
+			printf("\n%u[--]\t\t--\t\t\t%d\t\t--\t\t\tSet to 5",i,get_bits(swap_endian(registers[i], swap_endianess), 0, 16));
 		}
 		if ( i == 113 ) {
 			printf("\n%u[15:0]\tSetting_6:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("\t\tAdditional register setting 6");
+			printf("\t\t\tAdditional register setting 6");
 		}
 		if ( i == 114 ) {
 			printf("\n%u[15:0]\tSetting_7:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("\t\tAdditional register setting 7");
+			printf("\t\t\tAdditional register setting 7");
 		}
 		if (i == 115) {
 			printf("\n115[3]\t\tPGA_div:\t\t%d\t\t", get_bits(swap_endian(registers[i], swap_endianess), 3, 1));
@@ -472,23 +471,23 @@ int main (int argc, char* argv[]) {
 				printf("ON");
 			else
 				printf("OFF");
-			printf("\t\tDivide signal by 3");
+			printf("\t\t\tDivide signal by 3");
 			printf("\n115[2:0]\tPGA_gain:\t\t%d\t\t", get_bits(swap_endian(registers[i], swap_endianess), 0, 3));
 			switch (get_bits(swap_endian(registers[i], swap_endianess), 0, 3)) {
 				case 0:
 					printf("Unity gain");
 					break;
 				case 1:
-					printf("x2 gain");
+					printf("x2 gain\t");
 					break;
 				case 3:
-					printf("x3 gain");
+					printf("x3 gain\t");
 					break;				
 				case 7:
-					printf("x4 gain");
+					printf("x4 gain\t");
 					break;
 			}
-			printf("\tAnalog gain applied on output signal\n");
+			printf("\t\tAnalog gain applied on output signal\n");
 		}
 
 		if (i == 116) {
@@ -507,7 +506,7 @@ int main (int argc, char* argv[]) {
 					printf("No specific bit mode");
 					break;
 			}
-			printf("\tSlope of the ramp used by the ADC\n");
+			printf("\t\tSlope of the ramp used by the ADC\n");
 
 			printf("116[9:8]\tADC_range_mult:\t\t%d\t\t", get_bits(swap_endian(registers[i], swap_endianess), 8, 2));
 			switch (get_bits(swap_endian(registers[i], swap_endianess), 8, 2)) {
@@ -523,7 +522,7 @@ int main (int argc, char* argv[]) {
 			}
 			//FIXME ADC_range_mult <- multiple slope mode ?
 			//~ printf("\tSlope of the ramp used by the ADC in multiple slope\n");
-			printf("\tSlope of the ramp used by the ADC\n");
+			printf("\t\tSlope of the ramp used by the ADC\n");
 
 		}
 		if (i == 117) {
@@ -542,7 +541,7 @@ int main (int argc, char* argv[]) {
 					printf("No specific bit mode");
 					break;
 			}
-			printf("\tApply digital gain to signal\n");
+			printf("\t\tApply digital gain to signal\n");
 		}
 		if (i == 118) {
 			printf("118[1:0]\tBit_mode:\t\t%d\t\t", get_bits(swap_endian(registers[i], swap_endianess), 0, 2));
@@ -560,11 +559,11 @@ int main (int argc, char* argv[]) {
 					printf("No specific bit mode");
 					break;
 			}
-			printf("\tBits per pixel");
+			printf("\t\tBits per pixel");
 		}
 		if ( i == 127 ) {
 			printf("\n%u[15:0]\tTemp_sensor:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
-			printf("\t\tOn-chip digital temperature sensor value");
+			printf("\t\t\tOn-chip digital temperature sensor value");
 		}
 	}
 	printf("\n");
