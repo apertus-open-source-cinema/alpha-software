@@ -1,0 +1,45 @@
+#!/bin/sh
+
+cmv_reg() {
+    addr=$(( 0x60000000 + ($1 * 4) ))
+    [ $# -gt 1 ] \
+	&& /sbin/devmem $addr 32 $2 \
+	|| /sbin/devmem $addr 32
+}
+
+fil_reg() {
+    addr=$(( 0x60010000 + ($1 * 4) ))
+    [ $# -gt 1 ] \
+	&& /sbin/devmem $addr 32 $2 \
+	|| /sbin/devmem $addr 32
+}
+
+del_reg() {
+    addr=$(( 0x60100000 + ($1 * 4) ))
+    [ $# -gt 1 ] \
+	&& /sbin/devmem $addr 32 $2 \
+	|| /sbin/devmem $addr 32
+}
+
+
+gen_reg() {
+    addr=$(( 0x80000000 + ($1 * 4) ))
+    [ $# -gt 1 ] \
+	&& /sbin/devmem $addr 32 $2 \
+	|| /sbin/devmem $addr 32
+}
+
+adr_reg() {
+    addr=$(( 0x80010000 + ($1 * 4) ))
+    [ $# -gt 1 ] \
+	&& /sbin/devmem $addr 32 $2 \
+	|| /sbin/devmem $addr 32
+}
+
+pll_reg() {
+    addr=$(( 0x80011000 + ($1 * 4) ))
+    [ $# -gt 1 ] \
+	&& /sbin/devmem $addr 32 $2 \
+	|| /sbin/devmem $addr 32
+}
+
