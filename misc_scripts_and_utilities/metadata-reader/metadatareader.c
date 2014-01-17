@@ -244,7 +244,7 @@ int main (int argc, char* argv[]) {
 			printf("--\t\t\tExposure Time 2 Part 2");
 			printf("\n%u[23:0]\tExp_time2:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess));
 			double exposure_ns = exposure(swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess), reg82, reg85, bits, lvds);
-			printf("%g\t\t\tExposure Time (ms)", exposure_ns);
+			printf("%g\t\t\tExposure Time 2 (ms)", exposure_ns);
 		}
 		if (i == 75) {
 			// For pseudo logatithmic response curve (SDR) (?)
@@ -257,7 +257,7 @@ int main (int argc, char* argv[]) {
 			printf("--\t\t\tExposure Knee Point 1 Part 2");
 			printf("\n%u[23:0]\tExp_kp1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess));
 			double exposure_ns = exposure(swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess), reg82, reg85, bits, lvds);
-			printf("%g\t\t\tExposure Time (ms)", exposure_ns);
+			printf("%g\t\t\tKnee Point 1 Exposure Time (ms)", exposure_ns);
 		}
 		if (i == 77) {
 			// For pseudo logatithmic response curve (SDR) (?)
@@ -270,7 +270,7 @@ int main (int argc, char* argv[]) {
 			printf("--\t\t\tExposure Knee Point 2 Part 2");
 			printf("\n%u[23:0]\tExp_kp1:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess));
 			double exposure_ns = exposure(swap_endian(registers[i], swap_endianess)*65536+swap_endian(registers[i-1], swap_endianess), reg82, reg85, bits, lvds);
-			printf("%g\t\t\tExposure Time (ms)", exposure_ns);
+			printf("%g\t\t\tKnee Point 2 Exposure Time (ms)", exposure_ns);
 		}
 		if (i == 79) {
 			printf("\n%u[1:0]\t\tNumber_slopes:\t\t%d\t\t", i, get_bits(swap_endian(registers[i], swap_endianess), 0, 2));
