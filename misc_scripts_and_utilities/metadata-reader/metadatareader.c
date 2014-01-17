@@ -514,10 +514,7 @@ int main (int argc, char* argv[]) {
 					printf("8 bit mode");
 					break;
 				case 3:
-					printf("10 bit mode");
-					break;
-				case 2: // TODO: this cant be right in the datasheet
-					printf("12 bit mode");
+					printf("10/12 bit mode");
 					break;
 			}
 			//FIXME ADC_range_mult <- multiple slope mode ?
