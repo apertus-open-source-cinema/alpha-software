@@ -517,8 +517,6 @@ int main (int argc, char* argv[]) {
 					printf("10/12 bit mode");
 					break;
 			}
-			//FIXME ADC_range_mult <- multiple slope mode ?
-			//~ printf("\tSlope of the ramp used by the ADC in multiple slope\n");
 			printf("\t\tSlope of the ramp used by the ADC\n");
 
 		}
