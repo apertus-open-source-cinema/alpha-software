@@ -17,7 +17,9 @@ $histogram = GetHistogram();
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta http-equiv="refresh" content="1" >
 	<title>apertus° Axiom Alpha Histogram</title>
-	<link href="..//flot/examples/examples.css" rel="stylesheet" type="text/css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="../libraries/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 	<style type="text/css">
 	.container {
 		box-sizing: border-box;
@@ -103,7 +105,9 @@ $histogram = GetHistogram();
 
 	</script>
 </head>
-<body>
+<body style="padding:10px;">
+    <a class="btn btn-primary" href="/index.php">Back</a> 
+    <h1>apertus&deg; Axiom Alpha Histogram</h1>
 	<div class="container">
 		<div id="placeholder" class="placeholder"></div>
 	</div>

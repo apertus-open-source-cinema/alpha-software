@@ -48,6 +48,7 @@ if (!isset($_GET['page'])) {
 ?>
 
   <div style="padding:10px;">
+  <a class="btn btn-primary" href="/index.php">Back</a> 
   <h1>apertus&deg; Axiom Alpha Registers</h1>
   <!-- 
   The top buttons group registers together that seam appropriate.
