@@ -127,11 +127,19 @@ resize_pblock [get_pblocks pblock_par] -add {SLICE_X108Y50:SLICE_X109Y149}
 
 create_pblock pblock_pat
 add_cells_to_pblock [get_pblocks pblock_pat] [get_cells par_match_inst]
-resize_pblock [get_pblocks pblock_pat] -add {SLICE_X94Y50:SLICE_X97Y149}
+resize_pblock [get_pblocks pblock_pat] -add {SLICE_X98Y50:SLICE_X101Y99}
+
+create_pblock pblock_reme
+add_cells_to_pblock [get_pblocks pblock_reme] [get_cells pixel_remap_even_inst]
+resize_pblock [get_pblocks pblock_reme] -add {SLICE_X80Y75:SLICE_X97Y99}
+
+create_pblock pblock_remo
+add_cells_to_pblock [get_pblocks pblock_remo] [get_cells pixel_remap_odd_inst]
+resize_pblock [get_pblocks pblock_remo] -add {SLICE_X80Y50:SLICE_X97Y74}
 
 create_pblock pblock_chop
 add_cells_to_pblock [get_pblocks pblock_chop] [get_cells fifo_chop_inst]
-resize_pblock [get_pblocks pblock_chop] -add {SLICE_X80Y50:SLICE_X84Y149}
+resize_pblock [get_pblocks pblock_chop] -add {SLICE_X64Y50:SLICE_X67Y99}
 
 
 

@@ -36,6 +36,8 @@ read_vhdl ../fifo_chop.vhd
 read_vhdl ../par_match.vhd
 read_vhdl ../data_filter.vhd
 read_vhdl ../axihp_writer.vhd
+read_vhdl ../pixel_remap.vhd
+read_vhdl ../ram_sdp_reg.vhd
 
 read_vhdl ../vivado_pkg.vhd
 read_vhdl ../axi3_pkg.vhd
@@ -117,8 +119,8 @@ write_sdf -force -quiet post_route.sdf
 # STEP#4b: rerun router
 # place_design -directive ExtraNetDelay_high
 # place_design -directive ExtraPostPlacementOpt
-place_design -post_place_opt
-route_design -directive HigherDelayCost
+# place_design -post_place_opt
+# route_design -directive HigherDelayCost
 # route_design -directive NoTimingRelaxation -free_resource_mode
 # route_design -directive AdvancedSkewModeling -free_resource_mode
 # route_design -directive MoreGlobalIterations -free_resource_mode

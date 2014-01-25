@@ -217,11 +217,19 @@ architecture RTL of top is
     alias par_ctrl : std_logic_vector (11 downto 0)
 	is par_data(CHANNELS);
 
+    signal par_valid : std_logic;
     signal par_enable : std_logic;
 
     signal par_pattern : par12_a (CHANNELS downto 0);
     signal par_match : std_logic_vector (CHANNELS + 1 downto 0);
     signal par_mismatch : std_logic_vector (CHANNELS + 1 downto 0);
+
+    --------------------------------------------------------------------
+    -- Remapper Signals
+    --------------------------------------------------------------------
+
+    signal remap_ctrl : std_logic_vector (11 downto 0);
+    signal remap_data : par12_a (CHANNELS-1 downto 0);
 
     --------------------------------------------------------------------
     -- Register File Signals
@@ -1029,13 +1037,52 @@ begin
 	    fifo_rrdy => fifo_data_rrdy,
 	    fifo_wrdy => fifo_data_wrdy );
 
+
+    pixel_remap_even_inst : entity work.pixel_remap
+	  generic map (
+	    NB_LANES => CHANNELS/2 )
+	  port map (
+	    clk      => serdes_clkdiv,
+	    --
+	    dv_par   => par_valid,
+	    ctrl_in  => par_data(32),
+	    par_din  => par_data(15 downto 0),
+	    --
+	    ctrl_out => remap_ctrl,
+	    par_dout => remap_data(15 downto 0) );
+
+    pixel_remap_odd_inst : entity work.pixel_remap
+	  generic map (
+	    NB_LANES => CHANNELS/2 )
+	  port map (
+	    clk      => serdes_clkdiv,
+	    --
+	    dv_par   => par_valid,
+	    ctrl_in  => par_data(32),
+	    par_din  => par_data(31 downto 16),
+	    --
+	    ctrl_out => open  ,
+	    par_dout => remap_data(31 downto 16) );
+
+    valid_proc : process (serdes_clkdiv)
+    begin
+	if rising_edge(serdes_clkdiv) then
+	    if serdes_phase = '1' then
+		par_valid <= '1';
+	    else
+		par_valid <= '0';
+	    end if;
+	end if;
+    end process;
+
+
     fifo_chop_inst : entity work.fifo_chop
 	port map (
 	    par_clk => serdes_clk,
 	    par_enable => par_enable,
-	    par_data => par_data(31 downto 0),
+	    par_data => remap_data(31 downto 0),
 	    --
-	    par_ctrl => par_data(32),
+	    par_ctrl => remap_ctrl,
 	    --
 	    fifo_clk => fifo_data_wclk,
 	    fifo_enable => data_wen,
