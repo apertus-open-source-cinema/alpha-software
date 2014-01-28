@@ -1,13 +1,13 @@
 <?php
 
 function GetRegisterValue($register) {
-	$cmd = "busybox su -c \". ./cmv.func ; cmv_reg ".$register."\"";
+	$cmd = "busybox su -c \". ../libraries/cmv.func ; cmv_reg ".$register."\"";
 
 	return shell_exec($cmd);
 } 
 
 function SetRegisterValue($register, $value) {
-	$cmd = "busybox su -c \". ./cmv.func ; cmv_reg ".$register." ".$value."\"";
+	$cmd = "busybox su -c \". ../libraries/cmv.func ; cmv_reg ".$register." ".$value."\"";
 
 	return shell_exec($cmd);
 } 
