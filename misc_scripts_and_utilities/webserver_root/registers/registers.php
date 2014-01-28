@@ -59,7 +59,7 @@ if (!isset($_GET['page'])) {
   <a class="btn <?php if ($page == "gain") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=gain&87&88&115&116&117&118">Gain &amp; Levels</a> 
   <a class="btn <?php if ($page == "colors") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=colors&68&118">Colors</a> 
   <a class="btn <?php if ($page == "time") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=time&70&71&72">Timing</a> 
-  <a class="btn <?php if ($page == "hdr") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=hdr&73&74&75&76&77&78&79&80&118">HDR</a> 
+  <a class="btn <?php if ($page == "hdr") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=hdr&71&72&73&74&75&76&77&78&79&80&106&118">HDR</a> 
   <br />
   <br />
   
@@ -134,6 +134,6 @@ echo "</table>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
+    <script src="../libraries/bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>
