@@ -19,4 +19,20 @@ function GetRegisters() {
 	return $registers;
 } 
 
+// Calculate exposure time in milliseconds
+function  CalcExposureTime($time, $reg82, $reg85, $bits, $lvds) {
+	$fot_overlap = 34 * ($reg82 & 0xFF) + 1;  
+	return (($time - 1)*($reg85 + 1) + $fot_overlap) * ($bits/$lvds) * 1e3;  
+} 
+
+// Calculate exposure register values
+function  CalcExposureRegisters($time, $reg82, $reg85, $bits, $lvds) {
+	$fot_overlap = 34 * ($reg82 & 0xFF) + 1; 
+	$a = (($time - $fot_overlap * ($bits/$lvds) * 1e3) / ($reg85 + 1) ) + 1;
+
+	$temp [1] = $a/65536; 
+	$temp [0] = $a - $a/65536;
+	return $temp;
+} 
+
 ?>

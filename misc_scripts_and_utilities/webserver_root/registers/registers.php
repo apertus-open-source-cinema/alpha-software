@@ -28,6 +28,14 @@
 				$( "#'.$a.'apply").prop("checked", true);
 			});';
 		}
+		
+		// Special human readable registers need special javascript functions
+		echo '$( "#exptime" ).change(function( event ) {
+				$( "#exptimeapply").prop("checked", true);
+			});';
+		echo '$( "#exptime2" ).change(function( event ) {
+				$( "#exptime2apply").prop("checked", true);
+			});';
 	?>
 	});
 	</script>
@@ -51,7 +59,7 @@ if (!isset($_GET['page'])) {
   <a class="btn btn-primary" href="/index.php">Back</a> 
   <h1>apertus&deg; Axiom Alpha Registers</h1>
   <!-- 
-  The top buttons group registers together that seam appropriate.
+  The top buttons group registers together in a somehow logical way.
   The syntax: simply list all register indexes that should be displayed as GET parameters (key without value)
   -->
   <a class="btn <?php if ($page == "all") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=all">Show All</a> 
@@ -62,7 +70,6 @@ if (!isset($_GET['page'])) {
   <a class="btn <?php if ($page == "hdr") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=hdr&71&72&73&74&75&76&77&78&79&80&106&118">HDR</a> 
   <br />
   <br />
-  
   
 <?php
 $registers_to_show = null;
@@ -87,6 +94,15 @@ if (isset($_POST["form1"])) {
 			}
 		}
 		
+		//Special Register handling
+		if ((isset($_POST["exptimeapply"]) && ($_POST["exptimeapply"] == "on"))) {
+			//SetRegisterValue(71, $_POST["exptimeapply"]);
+			//SetRegisterValue(72, $_POST["exptimeapply"]);
+			$regs = CalcExposureRegisters ( ) ;
+			$alert .= "Exposure Time set to: ".$_POST["exptime"]." ms<br>\n";
+			$alert .= "71 set to: ".$_POST["exptime"]." ms<br>\n";
+		}
+		
 		// Print Notice Alert
 		echo "<div class=\"alert alert-success\">";
 		echo $alert;
@@ -94,7 +110,7 @@ if (isset($_POST["form1"])) {
 	}
 }
 
-// This actually reads all the register values via a shell script
+// This reads all the register values into one big array via a shell script
 $registers = GetRegisters();
 
 // The big register table
@@ -104,6 +120,7 @@ echo "<tr><th style=\"text-align:center;\" colspan=\"2\">Register</th>
 <th style=\"text-align:center;\" colspan=\"3\">New Value</th></tr>";
 echo "<tr><th style=\"text-align:center;\">Index</th><th style=\"text-align:center;\">Name</th><th style=\"text-align:center;\">dec</th>
 <th style=\"text-align:center;\">hex</th><th style=\"text-align:center;\">dec</th><th style=\"text-align:center;\">hex</th><th style=\"text-align:center;\">Apply</th></tr>";
+// Show All Registers
 if ($page == "all") {
 	for ($i = 0; $i < 128; $i++) {
 		echo "<tr><td>".$i."</td>
@@ -115,6 +132,7 @@ if ($page == "all") {
 		<td><input type=\"checkbox\" id=\"".$i."apply\" name=\"".$i."apply\"></td></tr>";
 	}
 } else {
+	// Show the selected group of registers as defined in the GET Parameters
 	foreach ($registers_to_show as $register_to_show) {
 		$i = $register_to_show;
 		echo "<tr><td>".$i."</td>
@@ -124,6 +142,28 @@ if ($page == "all") {
 		<td><input type=\"text\" id=\"".$i."dec\" name=\"".$i."dec\" size=\"6\" value=\"".hexdec(substr($registers[$i], 6))."\"></td>
 		<td><input type=\"text\" id=\"".$i."hex\" name=\"".$i."hex\" size=\"6\" value=\"0x".substr($registers[$i], 6)."\"></td>
 		<td><input type=\"checkbox\" id=\"".$i."apply\" name=\"".$i."apply\"></td></tr>";
+		
+		// Special Register Fields to make some more human read-/writeable
+		if ($i == 72) {
+			$exposure_ns = CalcExposureTime($registers[$i]*65536+$registers[$i-1], $registers[82], $registers[85], 12, 300000000);
+			echo "<tr class=\"success\"><td></td>
+				<td>Exposure Time</td>
+				<td>".round($exposure_ns, 3)." ms</td>
+				<td></td>
+				<td><input type=\"text\" id=\"exptime\" name=\"exptime\" size=\"8\" value=\"".round($exposure_ns, 3)."\"> ms</td>
+				<td></td>
+				<td><input type=\"checkbox\" id=\"exptimeapply\" name=\"exptimeapply\"></td></tr>";
+		}
+		if ($i == 74) {
+			$exposure_ns = CalcExposureTime($registers[$i]*65536+$registers[$i-1], $registers[82], $registers[85], 12, 300000000);
+			echo "<tr class=\"success\"><td></td>
+				<td>Exposure Time 2</td>
+				<td>".round($exposure_ns, 3)." ms</td>
+				<td></td>
+				<td><input type=\"text\" id=\"exptime2\" name=\"exptime2\" size=\"8\" value=\"".round($exposure_ns, 3)."\"> ms</td>
+				<td></td>
+				<td><input type=\"checkbox\" id=\"exptime2apply\" name=\"exptime2apply\"></td></tr>";
+		}
 	}
 }
 echo "</table>
