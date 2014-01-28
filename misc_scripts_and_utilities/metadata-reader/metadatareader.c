@@ -55,7 +55,7 @@ uint16_t get_bits (uint16_t in, int offset, int length) {
 	return in3;
 }
 
-// Contributed by Herbert Poetzlz, (loosely) based on CMV12000 documentation
+// Contributed by Herbert Poetzl, (loosely) based on CMV12000 documentation
 static inline  
 double  exposure(uint32_t time, int reg82, int reg85, double bits, double lvds)  
 {
