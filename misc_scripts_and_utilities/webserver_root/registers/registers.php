@@ -83,7 +83,11 @@ for ($b = 0; $b < 128; $b++) {
 //debug
 //print_r($registers_to_show);
 
-//Show an alert notice message at the top when registers have been changed
+// This reads all the register values into one big array via a shell script
+$registers = GetRegisters();
+
+
+//Show an alert notice message at the top when registers are being changed
 $alert = "";
 if (isset($_POST["form1"])) {
 	if ($_POST["form1"] == "Apply") {
@@ -96,11 +100,15 @@ if (isset($_POST["form1"])) {
 		
 		//Special Register handling
 		if ((isset($_POST["exptimeapply"]) && ($_POST["exptimeapply"] == "on"))) {
-			//SetRegisterValue(71, $_POST["exptimeapply"]);
-			//SetRegisterValue(72, $_POST["exptimeapply"]);
-			$regs = CalcExposureRegisters ( ) ;
+
+			$regs = CalcExposureRegisters($_POST["exptime"], $registers[82], $registers[85], 12, 300000000);
 			$alert .= "Exposure Time set to: ".$_POST["exptime"]." ms<br>\n";
-			$alert .= "71 set to: ".$_POST["exptime"]." ms<br>\n";
+			$alert .= "Register 71 set to: ". $regs[0] ."<br>\n";
+			$alert .= "Register 72 set to: ". $regs[1] ."<br>\n";
+			SetRegisterValue(71, $regs[0]);
+			$registers[71] = strtoupper(dechex($regs[0]));
+			SetRegisterValue(72, $regs[1]);
+			$registers[72] = strtoupper(dechex($regs[1]));
 		}
 		
 		// Print Notice Alert
@@ -110,11 +118,8 @@ if (isset($_POST["form1"])) {
 	}
 }
 
-// This reads all the register values into one big array via a shell script
-$registers = GetRegisters();
-
 // The big register table
-echo "<form method=\"POST\"><table class=\"table table-striped table-bordered\"  style=\"width:800px\">";
+echo "<form method=\"POST\"><table class=\"table table-hover table-bordered\"  style=\"width:800px\">";
 echo "<tr><th style=\"text-align:center;\" colspan=\"2\">Register</th>
 <th style=\"text-align:center;\" colspan=\"2\" align=\"center\">Current Value</th>
 <th style=\"text-align:center;\" colspan=\"3\">New Value</th></tr>";
@@ -125,10 +130,10 @@ if ($page == "all") {
 	for ($i = 0; $i < 128; $i++) {
 		echo "<tr><td>".$i."</td>
 		<td>".$registernames[$i]."</td>
-		<td>".hexdec(substr($registers[$i], 6))."</td>
-		<td>0x".substr($registers[$i], 6)."</td>
-		<td><input type=\"text\" id=\"".$i."dec\" name=\"".$i."dec\" size=\"6\" value=\"".hexdec(substr($registers[$i], 6))."\"></td>
-		<td><input type=\"text\" id=\"".$i."hex\" name=\"".$i."hex\" size=\"6\" value=\"0x".substr($registers[$i], 6)."\"></td>
+		<td>".hexdec($registers[$i])."</td>
+		<td>0x".$registers[$i]."</td>
+		<td><input type=\"text\" id=\"".$i."dec\" name=\"".$i."dec\" size=\"6\" value=\"".hexdec($registers[$i])."\"></td>
+		<td><input type=\"text\" id=\"".$i."hex\" name=\"".$i."hex\" size=\"6\" value=\"0x".$registers[$i]."\"></td>
 		<td><input type=\"checkbox\" id=\"".$i."apply\" name=\"".$i."apply\"></td></tr>";
 	}
 } else {
@@ -137,15 +142,15 @@ if ($page == "all") {
 		$i = $register_to_show;
 		echo "<tr><td>".$i."</td>
 		<td>".$registernames[$i]."</td>
-		<td>".hexdec(substr($registers[$i], 6))."</td>
-		<td>0x".substr($registers[$i], 6)."</td>
-		<td><input type=\"text\" id=\"".$i."dec\" name=\"".$i."dec\" size=\"6\" value=\"".hexdec(substr($registers[$i], 6))."\"></td>
-		<td><input type=\"text\" id=\"".$i."hex\" name=\"".$i."hex\" size=\"6\" value=\"0x".substr($registers[$i], 6)."\"></td>
+		<td>".hexdec($registers[$i])."</td>
+		<td>0x".$registers[$i]."</td>
+		<td><input type=\"text\" id=\"".$i."dec\" name=\"".$i."dec\" size=\"6\" value=\"".hexdec($registers[$i])."\"></td>
+		<td><input type=\"text\" id=\"".$i."hex\" name=\"".$i."hex\" size=\"6\" value=\"0x".$registers[$i]."\"></td>
 		<td><input type=\"checkbox\" id=\"".$i."apply\" name=\"".$i."apply\"></td></tr>";
 		
 		// Special Register Fields to make some more human read-/writeable
 		if ($i == 72) {
-			$exposure_ns = CalcExposureTime($registers[$i]*65536+$registers[$i-1], $registers[82], $registers[85], 12, 300000000);
+			$exposure_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 300000000);
 			echo "<tr class=\"success\"><td></td>
 				<td>Exposure Time</td>
 				<td>".round($exposure_ns, 3)." ms</td>
@@ -155,7 +160,7 @@ if ($page == "all") {
 				<td><input type=\"checkbox\" id=\"exptimeapply\" name=\"exptimeapply\"></td></tr>";
 		}
 		if ($i == 74) {
-			$exposure_ns = CalcExposureTime($registers[$i]*65536+$registers[$i-1], $registers[82], $registers[85], 12, 300000000);
+			$exposure_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 300000000);
 			echo "<tr class=\"success\"><td></td>
 				<td>Exposure Time 2</td>
 				<td>".round($exposure_ns, 3)." ms</td>
