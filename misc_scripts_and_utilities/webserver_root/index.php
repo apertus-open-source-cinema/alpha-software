@@ -11,6 +11,8 @@
 		<h1>apertus&deg; Axiom Alpha</h1>
 		<a class="btn btn-primary btn-lg" href="/registers/registers.php">Registers</a> 
 		<a class="btn btn-primary btn-lg" href="/histogram/histogram.php">Histogram</a>
+		<a class="btn btn-primary btn-lg" href="/lut/lut.php">LUT</a>
+		<!--<a class="btn btn-primary btn-lg" href="/AxiomVision/AxiomVision.php">AxiomVision</a>-->
 	</div>
   </body>
 </html>

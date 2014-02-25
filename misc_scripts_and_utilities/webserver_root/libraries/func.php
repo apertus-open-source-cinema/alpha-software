@@ -55,4 +55,14 @@ function SetExposureTime($time) {
 	SetRegisterValue(71, $regs[0]);
 	SetRegisterValue(72, $regs[1]);
 }
+
+function GetLUTs() {
+	$cmd = "busybox su -c \". ../libraries/lut.sh\"";
+	$return = shell_exec($cmd);
+	$registers = explode("\n", $return);
+	for ($i = 0; $i < 256; $i++) {
+		$registers[$i] = hexdec(substr($registers[$i], 6));
+	}
+	return $registers;
+} 
 ?>
