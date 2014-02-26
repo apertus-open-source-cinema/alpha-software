@@ -60,7 +60,7 @@ static inline
 double  exposure(uint32_t time, int reg82, int reg85, double bits, double lvds)  
 {
 
-        double fot_overlap = 34 * (reg82 & 0xFF) + 1;  
+        double fot_overlap = (34 * (reg82 & 0xFF)) + 1;  
  
         return ((time - 1)*(reg85 + 1) + fot_overlap) *  
                 (bits/lvds) * 1e3;  

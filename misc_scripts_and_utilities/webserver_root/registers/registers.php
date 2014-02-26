@@ -36,6 +36,24 @@
 		echo '$( "#exptime2" ).change(function( event ) {
 				$( "#exptime2apply").prop("checked", true);
 			});';
+		echo '$( "#exptimekp1" ).change(function( event ) {
+				$( "#exptimekp1apply").prop("checked", true);
+			});';
+		echo '$( "#exptimekp2" ).change(function( event ) {
+				$( "#exptimekp2apply").prop("checked", true);
+			});';
+		echo '$( "#Vtfl2en" ).change(function( event ) {
+				$( "#Vtfl2enapply").prop("checked", true);
+			});';
+		echo '$( "#Vtfl2" ).change(function( event ) {
+				$( "#Vtfl2apply").prop("checked", true);
+			});';
+		echo '$( "#Vtfl3en" ).change(function( event ) {
+				$( "#Vtfl3enapply").prop("checked", true);
+			});';
+		echo '$( "#Vtfl3" ).change(function( event ) {
+				$( "#Vtfl3apply").prop("checked", true);
+			});';
 	?>
 	});
 	</script>
@@ -91,16 +109,18 @@ $registers = GetRegisters();
 $alert = "";
 if (isset($_POST["form1"])) {
 	if ($_POST["form1"] == "Apply") {
+		// Apply Register Changes
 		for ($j = 0; $j < 128; $j++) {
 			if ((isset($_POST[$j."apply"]) && ($_POST[$j."apply"] == "on"))) {
 				SetRegisterValue($j, $_POST[$j."dec"]);
+				$registers[$j] = strtoupper(dechex($_POST[$j."dec"]));
 				$alert .= "Register: ".$j." set to: ".$_POST[$j."dec"]."<br>\n";
 			}
 		}
 		
 		//Special Register handling
+		
 		if ((isset($_POST["exptimeapply"]) && ($_POST["exptimeapply"] == "on"))) {
-
 			$regs = CalcExposureRegisters($_POST["exptime"], $registers[82], $registers[85], 12, 300000000);
 			$alert .= "Exposure Time set to: ".$_POST["exptime"]." ms<br>\n";
 			$alert .= "Register 71 set to: ". $regs[0] ."<br>\n";
@@ -109,6 +129,47 @@ if (isset($_POST["form1"])) {
 			$registers[71] = strtoupper(dechex($regs[0]));
 			SetRegisterValue(72, $regs[1]);
 			$registers[72] = strtoupper(dechex($regs[1]));
+		}
+		if ((isset($_POST["exptime2apply"]) && ($_POST["exptime2apply"] == "on"))) {
+			$regs = CalcExposureRegisters($_POST["exptime2"], $registers[82], $registers[85], 12, 300000000);
+			$alert .= "Exposure Time 2 set to: ".$_POST["exptime2"]." ms<br>\n";
+			$alert .= "Register 73 set to: ". $regs[0] ."<br>\n";
+			$alert .= "Register 74 set to: ". $regs[1] ."<br>\n";
+			SetRegisterValue(73, $regs[0]);
+			$registers[73] = strtoupper(dechex($regs[0]));
+			SetRegisterValue(74, $regs[1]);
+			$registers[74] = strtoupper(dechex($regs[1]));
+		}
+		if ((isset($_POST["exptimekp1apply"]) && ($_POST["exptimekp1apply"] == "on"))) {
+			$regs = CalcExposureRegisters($_POST["exptimekp1"], $registers[82], $registers[85], 12, 300000000);
+			$alert .= "Exposure Time Kneepoint 1 set to: ".$_POST["exptimekp1"]." ms<br>\n";
+			$alert .= "Register 75 set to: ". $regs[0] ."<br>\n";
+			$alert .= "Register 76 set to: ". $regs[1] ."<br>\n";
+			SetRegisterValue(75, $regs[0]);
+			$registers[75] = strtoupper(dechex($regs[0]));
+			SetRegisterValue(76, $regs[1]);
+			$registers[76] = strtoupper(dechex($regs[1]));
+		}
+		if ((isset($_POST["exptimekp2apply"]) && ($_POST["exptimekp2apply"] == "on"))) {
+			$regs = CalcExposureRegisters($_POST["exptimekp2"], $registers[82], $registers[85], 12, 300000000);
+			$alert .= "Exposure Time Kneepoint 2 set to: ".$_POST["exptimekp2"]." ms<br>\n";
+			$alert .= "Register 77 set to: ". $regs[0] ."<br>\n";
+			$alert .= "Register 78 set to: ". $regs[1] ."<br>\n";
+			SetRegisterValue(77, $regs[0]);
+			$registers[77] = strtoupper(dechex($regs[0]));
+			SetRegisterValue(78, $regs[1]);
+			$registers[78] = strtoupper(dechex($regs[1]));
+		}
+				
+				
+		if ((isset($_POST["Vtfl3enapply"]) && ($_POST["Vtfl3enapply"] == "on")) || (isset($_POST["Vtfl2enapply"]) && ($_POST["Vtfl2enapply"] == "on")) || (isset($_POST["Vtfl3apply"]) && ($_POST["Vtfl3apply"] == "on")) || (isset($_POST["Vtfl2apply"]) && ($_POST["Vtfl2apply"] == "on"))) {
+			$Vtfl3en = $_POST["Vtfl3en"];
+			$Vtfl2en = $_POST["Vtfl2en"];
+			$Vtfl3 = $_POST["Vtfl3"];
+			$Vtfl2 = $_POST["Vtfl2"];
+			$tmpreg =  $Vtfl3en*pow(2, 13) + $Vtfl3*pow(2, 7) + $Vtfl2en*pow(2, 6) + $Vtfl2;
+			SetRegisterValue(106, $tmpreg);
+			$registers[106] = strtoupper(dechex($tmpreg));
 		}
 		
 		// Print Notice Alert
@@ -168,6 +229,60 @@ if ($page == "all") {
 				<td><input type=\"text\" id=\"exptime2\" name=\"exptime2\" size=\"8\" value=\"".round($exposure_ns, 3)."\"> ms</td>
 				<td></td>
 				<td><input type=\"checkbox\" id=\"exptime2apply\" name=\"exptime2apply\"></td></tr>";
+		}
+		if ($i == 76) {
+			$exposurekp1_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 300000000);
+			echo "<tr class=\"success\"><td></td>
+				<td>Exposure Time Kneepoint 1</td>
+				<td>".round($exposurekp1_ns, 3)." ms</td>
+				<td></td>
+				<td><input type=\"text\" id=\"exptimekp1\" name=\"exptimekp1\" size=\"8\" value=\"".round($exposurekp1_ns, 3)."\"> ms</td>
+				<td></td>
+				<td><input type=\"checkbox\" id=\"exptimekp1apply\" name=\"exptimekp1apply\"></td></tr>";
+		}
+		if ($i == 78) {
+			$exposurekp2_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 300000000);
+			echo "<tr class=\"success\"><td></td>
+				<td>Exposure Time Kneepoint 2</td>
+				<td>".round($exposurekp2_ns, 3)." ms</td>
+				<td></td>
+				<td><input type=\"text\" id=\"exptimekp2\" name=\"exptimekp2\" size=\"8\" value=\"".round($exposurekp2_ns, 3)."\"> ms</td>
+				<td></td>
+				<td><input type=\"checkbox\" id=\"exptimekp2apply\" name=\"exptimekp2apply\"></td></tr>";
+		}
+		if ($i == 106) {
+			$hdrvoltage2enabled = ExtractBits($registers[$i], 6);
+			$hdrvoltage3enabled = ExtractBits($registers[$i], 13);
+			$hdrvoltage2 = ExtractBits($registers[$i], 0, 6);
+			$hdrvoltage3 = ExtractBits($registers[$i], 7, 6);
+			echo "<tr class=\"success\"><td></td>
+				<td>HDR Voltage Level 2 Enabled</td>
+				<td>".($hdrvoltage2enabled ? 'enabled' : 'disabled')."</td>
+				<td></td>
+				<td></td>
+				<td><input type=\"text\" id=\"Vtfl2en\" name=\"Vtfl2en\" size=\"8\" value=\"".($hdrvoltage2enabled ? '1' : '0')."\"></td>
+				<td><input type=\"checkbox\" id=\"Vtfl2enapply\" name=\"Vtfl2enapply\"></td></tr>
+				<tr class=\"success\"><td></td>
+				<td>HDR Voltage Level 2 </td>
+				<td>".$hdrvoltage2."</td>
+				<td></td>
+				<td>Range: 0-63</td>
+				<td><input type=\"text\" id=\"Vtfl2\" name=\"Vtfl2\" size=\"8\" value=\"".$hdrvoltage2."\"></td>
+				<td><input type=\"checkbox\" id=\"Vtfl2apply\" name=\"Vtfl2apply\"></td></tr>
+				<tr class=\"success\"><td></td>
+				<td>HDR Voltage Level 3 Enabled</td>
+				<td>".($hdrvoltage3enabled ? 'enabled' : 'disabled')."</td>
+				<td></td>
+				<td></td>
+				<td><input type=\"text\" id=\"Vtfl3en\" name=\"Vtfl3en\" size=\"8\" value=\"".($hdrvoltage3enabled ? '1' : '0')."\"></td>
+				<td><input type=\"checkbox\" id=\"Vtfl3enapply\" name=\"Vtfl3enapply\"></td></tr>
+				<tr class=\"success\"><td></td>
+				<td>HDR Voltage Level 3 </td>
+				<td>".$hdrvoltage3."</td>
+				<td></td>
+				<td>Range: 0-63</td>
+				<td><input type=\"text\" id=\"Vtfl3\" name=\"Vtfl3\" size=\"8\" value=\"".$hdrvoltage3."\"></td>
+				<td><input type=\"checkbox\" id=\"Vtfl3apply\" name=\"Vtfl3apply\"></td></tr>";
 		}
 	}
 }

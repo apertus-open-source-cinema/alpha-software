@@ -13,7 +13,7 @@ function SetRegisterValue($register, $value) {
 } 
 
 function GetRegisters() {
-	$cmd = "busybox su -c \"./registers.sh\"";
+	$cmd = "busybox su -c \". ../libraries/registers.sh\"";
 	$return = shell_exec($cmd);
 	$registers = explode("\n", $return);
 	for ($i = 0; $i < 128; $i++) {
@@ -38,4 +38,31 @@ function  CalcExposureRegisters($time, $reg82, $reg85, $bits, $lvds) {
 	return $temp;
 }
 
+function ExtractBits($input, $position, $length = 1) {
+	$temp = decbin(hexdec($input));
+	$start = strlen($temp) - $position - $length;
+	return bindec(substr($temp, $start, $length));
+}
+
+function GetExposureTime() {
+	$registers = GetRegisters();
+	return CalcExposureTime(hexdec($registers[72])*65536+hexdec($registers[71]), $registers[82], $registers[85], 12, 300000000);
+}
+
+function SetExposureTime($time) {
+	$registers = GetRegisters();
+	$regs = CalcExposureRegisters($time, $registers[82], $registers[85], 12, 300000000);
+	SetRegisterValue(71, $regs[0]);
+	SetRegisterValue(72, $regs[1]);
+}
+
+function GetLUTs() {
+	$cmd = "busybox su -c \". ../libraries/lut.sh\"";
+	$return = shell_exec($cmd);
+	$registers = explode("\n", $return);
+	for ($i = 0; $i < 256; $i++) {
+		$registers[$i] = hexdec(substr($registers[$i], 6));
+	}
+	return $registers;
+} 
 ?>

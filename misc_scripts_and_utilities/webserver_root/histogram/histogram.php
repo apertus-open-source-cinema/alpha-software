@@ -1,6 +1,6 @@
 <?php
 function GetHistogram() {
-	$cmd = "busybox su -c \"../libraries/cmv_hist2 -s\"";
+	$cmd = "busybox su -c \"../libraries/cmv_hist3 -s\"";
 	$return = shell_exec($cmd);
 	$registers = explode("\n", $return);
 	return $registers;
