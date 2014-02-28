@@ -189,5 +189,5 @@ report_timing_summary -file timing.rpt
 # highlight_objects -rgb {255 64 0}	[get_cells par_match_inst/*]
 # highlight_objects -rgb {255 128 0}	[get_cells fifo_chop_inst/*]
 
-source ../vivado_program.tcl
+# source ../vivado_program.tcl
 # start_gui

@@ -28,10 +28,10 @@ entity row_col_noise is
 	ch2_in	: in std_logic_vector (15 downto 0);
 	ch3_in	: in std_logic_vector (15 downto 0);
 	--
-	c0_lut	: in std_logic_vector (8 downto 0);
-	c1_lut	: in std_logic_vector (8 downto 0);
-	r0_lut	: in std_logic_vector (8 downto 0);
-	r1_lut	: in std_logic_vector (8 downto 0);
+	c0_lut	: in std_logic_vector (11 downto 0);
+	c1_lut	: in std_logic_vector (11 downto 0);
+	r0_lut	: in std_logic_vector (11 downto 0);
+	r1_lut	: in std_logic_vector (11 downto 0);
 	--
 	ch0_out	: out std_logic_vector (15 downto 0);
 	ch1_out	: out std_logic_vector (15 downto 0);

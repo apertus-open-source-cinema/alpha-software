@@ -786,10 +786,10 @@ architecture RTL of top is
 
     constant CLUT_COUNT : natural := 4;
 
-    signal clut_addr : lut12_a (0 to CLUT_COUNT - 1);
-    signal clut_dout : lut9_a (0 to CLUT_COUNT - 1);
+    signal clut_addr : lut11_a (0 to CLUT_COUNT - 1);
+    signal clut_dout : lut12_a (0 to CLUT_COUNT - 1);
 
-    signal clut_dout_d : lut9_a (0 to CLUT_COUNT - 1);
+    signal clut_dout_d : lut12_a (0 to CLUT_COUNT - 1);
 
     constant DLUT_COUNT : natural := 4;
 
@@ -1346,7 +1346,7 @@ begin
     -- BRAM LUT Register File
     --------------------------------------------------------------------
 
-    reg_lut_inst0 : entity work.reg_lut_12x9
+    reg_lut_inst0 : entity work.reg_lut_11x12
 	generic map (
 	    LUT_COUNT => CLUT_COUNT )
 	port map (
@@ -1659,11 +1659,11 @@ begin
 	    clut_dout_d(2) <= clut_dout(2);
 	    clut_dout_d(3) <= clut_dout(3);
 
-	    clut_addr(0) <= '0' & std_logic_vector(ccnt_v);
-	    clut_addr(1) <= '0' & std_logic_vector(ccnt_v);
+	    clut_addr(0) <= std_logic_vector(ccnt_v);
+	    clut_addr(1) <= std_logic_vector(ccnt_v);
 
-	    clut_addr(2) <= '0' & std_logic_vector(rcnt_v);
-	    clut_addr(3) <= '0' & std_logic_vector(rcnt_v);
+	    clut_addr(2) <= std_logic_vector(rcnt_v);
+	    clut_addr(3) <= std_logic_vector(rcnt_v);
 
 	    lval_v := data_lval;
 	    fval_v := data_fval;
