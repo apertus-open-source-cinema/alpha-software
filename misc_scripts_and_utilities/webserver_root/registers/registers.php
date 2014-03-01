@@ -73,22 +73,22 @@ if (!isset($_GET['page'])) {
 
 ?>
 
-  <div style="padding:10px;">
-  <a class="btn btn-primary" href="/index.php">Back</a> 
-  <h1>apertus&deg; Axiom Alpha Registers</h1>
-  <!-- 
-  The top buttons group registers together in a somehow logical way.
-  The syntax: simply list all register indexes that should be displayed as GET parameters (key without value)
-  -->
-  <a class="btn <?php if ($page == "all") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=all">Show All</a> 
-  <a class="btn <?php if ($page == "window") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=window&1&2&3&4&5&6&7&8&9&10&11&12&13&14&15&16&17&18&19&20&21&22&23&24&25&26&27&28&29&30&31&32&33&34&35&36&37&38&39&40&41&42&43&44&45&46&47&48&49&50&51&52&53&54&55&56&57&58&59&60&61&62&63&64&65">Windowing</a> 
-  <a class="btn <?php if ($page == "gain") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=gain&87&88&115&116&117&118">Gain &amp; Levels</a> 
-  <a class="btn <?php if ($page == "colors") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=colors&68&118">Colors</a> 
-  <a class="btn <?php if ($page == "time") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=time&70&71&72">Timing</a> 
-  <a class="btn <?php if ($page == "hdr") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=hdr&71&72&73&74&75&76&77&78&79&80&106&118">HDR</a> 
-  <br />
-  <br />
-  
+  <div style="padding:0px;">
+	  <div style="float:left; padding-right:10px; padding-left:10px; padding-top:10px; width:120px; background-color:#f0f0f9; margin-right: 10px;">
+		<p><a class="btn btn-primary" href="/index.php">Back</a></p><br />
+		<!-- 
+		  The top buttons group registers together by topic.
+		  The syntax: simply list all register indexes that should be displayed as GET parameters (key without value)
+		-->
+		<p><a class="btn <?php if ($page == "all") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=all">Show All</a></p>
+		<p><a class="btn <?php if ($page == "window") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=window&1&2&3&4&5&6&7&8&9&10&11&12&13&14&15&16&17&18&19&20&21&22&23&24&25&26&27&28&29&30&31&32&33&34&35&36&37&38&39&40&41&42&43&44&45&46&47&48&49&50&51&52&53&54&55&56&57&58&59&60&61&62&63&64&65">Windowing</a></p> 
+		<p><a class="btn <?php if ($page == "gain") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=gain&87&88&115&116&117&118">Gain/Levels</a></p> 
+		<p><a class="btn <?php if ($page == "colors") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=colors&68&118">Colors</a></p>
+		<p><a class="btn <?php if ($page == "time") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=time&70&71&72">Timing</a></p>
+		<p><a class="btn <?php if ($page == "hdr") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=hdr&71&72&73&74&75&76&77&78&79&80&106&118">HDR</a></p>
+	  </div>
+  <h1 style="margin-top: 0px; padding-top:10px">apertus&deg; Axiom Alpha Registers</h1>
+
 <?php
 $registers_to_show = null;
 // Which registers to display?
