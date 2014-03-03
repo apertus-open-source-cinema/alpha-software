@@ -1,12 +1,14 @@
 /*
 ----------------------------------------------------------------------------
 -- metadatareader.c
---        read the 128x16bit block via piped stdin and display it in a human
+--        read the 128x16bit block from an image or from the camera via piped stdin and display it in a human
 --	      readable format
 --        Version 1.1
 --
--- Copyright (C) 2013 Sebastian Pichelhofer,
---                    Simon Larcher
+-- Copyright (C) 2013 - 2014
+--		Sebastian Pichelhofer,
+--		Simon Larcher,
+--		Georg Lippitsch
 --
 --        This program is free software: you can redistribute it and/or
 --        modify it under the terms of the GNU General Public License
@@ -23,6 +25,23 @@
 typedef int bool;
 #define true 1
 #define false 0
+
+static const uint16_t defaults[] = {     0,  3072,     0,     0,     0,     0,     0,     0,
+                                         0,     0,     0,     0,     0,     0,     0,     0,
+                                         0,     0,     0,     0,     0,     0,     0,     0,
+                                         0,     0,     0,     0,     0,     0,     0,     0,
+                                         0,     0,     0,     0,     0,     0,     0,     0,
+                                         0,     0,     0,     0,     0,     0,     0,     0,
+                                         0,     0,     0,     0,     0,     0,     0,     0,
+                                         0,     0,     0,     0,     0,     0,     0,     0,
+                                         0,     0,     0,     1,     9,     0,     0,  1536,
+                                         0,  1536,     0,     0,     0,     0,     0,     1,
+                                         1,     0,  5682,  5893,   130,   130,   130,   780,
+                                       780,    85, 65535, 65535, 65535, 65535,     7, 65535,
+                                     65535,     0, 34952, 34952,     0,     0,  8256,  4032,
+                                        64,  8256,  8256, 12384, 12384, 12384, 12384, 34952,
+                                         0,   778,    95,     0,   383,     4,     1,     0,
+                                         9,     1,    32,     0,     5,     2,   770,     0 };
 
 uint16_t swap_endian (uint16_t in, bool swap) {
 	if (swap)
@@ -123,6 +142,10 @@ int main (int argc, char* argv[]) {
 	}
 	int i;
 	for (i=0; i < 128; i++) {
+        // Switch color if value ist not default
+        if (registers[i] != defaults[i])
+            printf("\x1B[31m");
+
 		// Raw Registers
  		if (raw_register) {
 			printf ("\n");
@@ -560,6 +583,9 @@ int main (int argc, char* argv[]) {
 			printf("\n%u[15:0]\tTemp_sensor:\t\t%d\t\t", i, swap_endian(registers[i], swap_endianess));
 			printf("\t\t\tOn-chip digital temperature sensor value");
 		}
+
+        // Stop color scheme
+        printf("\x1B[0m");
 	}
 	printf("\n");
    	return 0;
