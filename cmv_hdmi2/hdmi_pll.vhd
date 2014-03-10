@@ -19,7 +19,8 @@ use IEEE.numeric_std.ALL;
 
 package hdmi_pll_pkg is
 
-    type hdmi_config is ( HDMI_160MHZ, HDMI_148MHZ );
+    type hdmi_config is (
+	HDMI_160MHZ, HDMI_148MHZ, HDMI_148500KHZ, HDMI_148571KHZ );
 
 end;
 
@@ -91,6 +92,28 @@ architecture RTL of hdmi_pll is
 	    CLKOUT1_PHASE => 0.0 ),
 
 	HDMI_148MHZ => (
+	    CLKIN1_PERIOD => 10.000,
+	    CLKFBOUT_MULT_F => 37.000,
+	    DIVCLK_DIVIDE => 5,
+	    --
+	    CLKOUT0_DIVIDE_F => 5.0,
+	    CLKOUT1_DIVIDE => 5,
+	    --
+	    CLKOUT0_PHASE => 0.0,
+	    CLKOUT1_PHASE => 0.0 ),
+
+	HDMI_148500KHZ => (
+	    CLKIN1_PERIOD => 10.000,
+	    CLKFBOUT_MULT_F => 37.125,
+	    DIVCLK_DIVIDE => 5,
+	    --
+	    CLKOUT0_DIVIDE_F => 5.0,
+	    CLKOUT1_DIVIDE => 5,
+	    --
+	    CLKOUT0_PHASE => 0.0,
+	    CLKOUT1_PHASE => 0.0 ),
+
+	HDMI_148571KHZ => (
 	    CLKIN1_PERIOD => 10.000,
 	    CLKFBOUT_MULT_F => 52.0,
 	    DIVCLK_DIVIDE => 5,

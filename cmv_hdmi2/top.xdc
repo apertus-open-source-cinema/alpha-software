@@ -74,8 +74,6 @@ set_false_path -to [get_pins reg_file_inst*/rdata_*/D]
 set_false_path -to [get_pins sync_*_inst*/shift_*/D]
 # set_false_path -to [get_pins sync_*_inst/shift_*/PRE]
 
-set_false_path -to [get_pins pmod_v*/D]
-
 # set_multicycle_path 2 -from [get_pins phase_*/C] -to [get_pins shift_*/D]
 # set_multicycle_path 1 -from [get_pins phase_*/C] -to [get_pins shift_*/D] -hold
 
@@ -95,7 +93,11 @@ resize_pblock [get_pblocks pblock_reader] -add {SLICE_X26Y50:SLICE_X31Y59}
 
 create_pblock pblock_ragen
 add_cells_to_pblock [get_pblocks pblock_ragen] [get_cells raddr_gen_inst]
-add_cells_to_pblock [get_pblocks pblock_ragen] [get_cells sync_r*_inst]
+add_cells_to_pblock [get_pblocks pblock_ragen] [get_cells sync_rblock_inst]
+add_cells_to_pblock [get_pblocks pblock_ragen] [get_cells sync_rreset_inst]
+add_cells_to_pblock [get_pblocks pblock_ragen] [get_cells sync_rload_inst]
+add_cells_to_pblock [get_pblocks pblock_ragen] [get_cells sync_rswitch_inst*]
+add_cells_to_pblock [get_pblocks pblock_ragen] [get_cells sync_rbuf*_inst]
 resize_pblock [get_pblocks pblock_ragen] -add {SLICE_X32Y35:SLICE_X35Y49}
 resize_pblock [get_pblocks pblock_ragen] -add {DSP48_X2Y14:DSP48_X2Y19}
 #resize_pblock [get_pblocks pblock_ragen] -add {SLICE_X32Y40:SLICE_X37Y49}
@@ -136,7 +138,11 @@ resize_pblock [get_pblocks pblock_writer] -add {SLICE_X26Y65:SLICE_X31Y74}
 
 create_pblock pblock_wagen
 add_cells_to_pblock [get_pblocks pblock_wagen] [get_cells waddr_gen_inst]
-add_cells_to_pblock [get_pblocks pblock_wagen] [get_cells sync_w*_inst]
+add_cells_to_pblock [get_pblocks pblock_wagen] [get_cells sync_wblock_inst]
+add_cells_to_pblock [get_pblocks pblock_wagen] [get_cells sync_wreset_inst]
+add_cells_to_pblock [get_pblocks pblock_wagen] [get_cells sync_wload_inst]
+add_cells_to_pblock [get_pblocks pblock_wagen] [get_cells sync_wswitch_inst*]
+add_cells_to_pblock [get_pblocks pblock_wagen] [get_cells sync_wbuf*_inst]
 resize_pblock [get_pblocks pblock_wagen] -add {SLICE_X32Y60:SLICE_X37Y69}
 resize_pblock [get_pblocks pblock_wagen] -add {DSP48_X2Y24:DSP48_X2Y27}
 # resize_pblock [get_pblocks pblock_wagen] -add {SLICE_X22Y45:SLICE_X25Y49}
@@ -159,10 +165,12 @@ resize_pblock [get_pblocks pblock_wfifo] -add {RAMB36_X2Y14:RAMB36_X2Y15}
 
 create_pblock pblock_rcn
 add_cells_to_pblock [get_pblocks pblock_rcn] [get_cells rc_noise_inst]
-resize_pblock [get_pblocks pblock_rcn] -add {SLICE_X32Y90:SLICE_X37Y99}
-resize_pblock [get_pblocks pblock_rcn] -add {DSP48_X2Y36:DSP48_X2Y39}
-#resize_pblock [get_pblocks pblock_rcn] -add {SLICE_X32Y100:SLICE_X37Y109}
-#resize_pblock [get_pblocks pblock_rcn] -add {DSP48_X2Y40:DSP48_X2Y43}
+resize_pblock [get_pblocks pblock_rcn] -add {SLICE_X32Y95:SLICE_X37Y104}
+resize_pblock [get_pblocks pblock_rcn] -add {DSP48_X2Y38:DSP48_X2Y41}
+#resize_pblock [get_pblocks pblock_rcn] -add {SLICE_X32Y90:SLICE_X37Y99}
+#resize_pblock [get_pblocks pblock_rcn] -add {DSP48_X2Y36:DSP48_X2Y39}
+# resize_pblock [get_pblocks pblock_rcn] -add {SLICE_X32Y100:SLICE_X37Y109}
+# resize_pblock [get_pblocks pblock_rcn] -add {DSP48_X2Y40:DSP48_X2Y43}
 
 
 create_pblock pblock_file0
@@ -184,8 +192,8 @@ resize_pblock [get_pblocks pblock_file1] -add {SLICE_X24Y25:SLICE_X25Y49}
 create_pblock pblock_file2
 add_cells_to_pblock [get_pblocks pblock_file2] [get_cells reg_file_inst2]
 resize_pblock [get_pblocks pblock_file2] -add {SLICE_X34Y0:SLICE_X35Y24}
-resize_pblock [get_pblocks pblock_file2] -add {SLICE_X48Y0:SLICE_X48Y49}
-resize_pblock [get_pblocks pblock_file2] -add {SLICE_X52Y0:SLICE_X52Y49}
+resize_pblock [get_pblocks pblock_file2] -add {SLICE_X48Y0:SLICE_X49Y49}
+resize_pblock [get_pblocks pblock_file2] -add {SLICE_X52Y0:SLICE_X53Y49}
 #resize_pblock [get_pblocks pblock_file2] -add {SLICE_X20Y0:SLICE_X21Y24}
 #resize_pblock [get_pblocks pblock_file2] -add {SLICE_X34Y0:SLICE_X35Y49}
 # resize_pblock [get_pblocks pblock_file2] -add {SLICE_X26Y0:SLICE_X27Y24}
@@ -245,7 +253,8 @@ resize_pblock [get_pblocks pblock_axi0] -add {SLICE_X26Y100:SLICE_X31Y124}
 create_pblock pblock_axi1
 add_cells_to_pblock [get_pblocks pblock_axi1] [get_cells axi_lite_inst1]
 add_cells_to_pblock [get_pblocks pblock_axi1] [get_cells axi_split_inst1]
-resize_pblock [get_pblocks pblock_axi1] -add {SLICE_X20Y40:SLICE_X23Y49}
+resize_pblock [get_pblocks pblock_axi1] -add {SLICE_X42Y40:SLICE_X45Y49}
+#resize_pblock [get_pblocks pblock_axi1] -add {SLICE_X20Y40:SLICE_X23Y49}
 # resize_pblock [get_pblocks pblock_axi1] -add {SLICE_X26Y25:SLICE_X31Y39}
 # resize_pblock [get_pblocks pblock_axi1] -add {SLICE_X26Y0:SLICE_X31Y24}
 

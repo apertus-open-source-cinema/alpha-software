@@ -88,6 +88,8 @@ entity top is
 	oled_sclk : out std_logic;			-- OLED SCLK
 	oled_sdin : out std_logic;			-- OLED SDIN
 	--
+	pmod_jal : out std_logic_vector (7 downto 0);
+	--
 	pmod_jcm : out std_logic_vector (3 downto 0);
 	pmod_jca : out std_logic_vector (3 downto 0);
 	--
@@ -301,7 +303,7 @@ architecture RTL of top is
     --------------------------------------------------------------------
 
     constant REG_SPLIT : natural := 8;
-    constant OREG_SIZE : natural := 12;
+    constant OREG_SIZE : natural := 16;
 
     signal reg_oreg : reg32_a(0 to OREG_SIZE - 1);
 
@@ -317,64 +319,79 @@ architecture RTL of top is
     alias waddr_pat1 : std_logic_vector (31 downto 0)
 	is reg_oreg(3)(31 downto 0);
 
-    alias waddr_cinc : std_logic_vector (31 downto 0)
+    alias waddr_buf2 : std_logic_vector (31 downto 0)
 	is reg_oreg(4)(31 downto 0);
 
-    alias waddr_rinc : std_logic_vector (31 downto 0)
+    alias waddr_pat2 : std_logic_vector (31 downto 0)
 	is reg_oreg(5)(31 downto 0);
 
+    alias waddr_buf3 : std_logic_vector (31 downto 0)
+	is reg_oreg(6)(31 downto 0);
+
+    alias waddr_pat3 : std_logic_vector (31 downto 0)
+	is reg_oreg(7)(31 downto 0);
+
+    alias waddr_cinc : std_logic_vector (31 downto 0)
+	is reg_oreg(8)(31 downto 0);
+
+    alias waddr_rinc : std_logic_vector (31 downto 0)
+	is reg_oreg(9)(31 downto 0);
+
     alias waddr_ccnt : std_logic_vector (11 downto 0)
-	is reg_oreg(6)(11 downto 0);
+	is reg_oreg(10)(11 downto 0);
 
-    alias fifo_data_reset : std_logic is reg_oreg(7)(0);
+    alias fifo_data_reset : std_logic is reg_oreg(11)(0);
 
-    alias oreg_wblock : std_logic is reg_oreg(7)(4);
-    alias oreg_wreset : std_logic is reg_oreg(7)(5);
-    alias oreg_wload : std_logic is reg_oreg(7)(6);
-    alias oreg_wswitch : std_logic is reg_oreg(7)(7);
+    alias oreg_wblock : std_logic is reg_oreg(11)(4);
+    alias oreg_wreset : std_logic is reg_oreg(11)(5);
+    alias oreg_wload : std_logic is reg_oreg(11)(6);
+    alias oreg_wswitch : std_logic is reg_oreg(11)(7);
 
-    alias serdes_reset : std_logic is reg_oreg(7)(8);
+    alias serdes_reset : std_logic is reg_oreg(11)(8);
 
-    alias rcn_clip : std_logic_vector (1 downto 0)
-	is reg_oreg(7)(13 downto 12);
+    alias wbuf_enable : std_logic_vector (3 downto 0)
+	is reg_oreg(11)(15 downto 12);
 
     alias writer_enable : std_logic_vector (3 downto 0)
-	is reg_oreg(7)(19 downto 16);
+	is reg_oreg(11)(19 downto 16);
+
+    alias rcn_clip : std_logic_vector (1 downto 0)
+	is reg_oreg(11)(21 downto 20);
 
     alias write_strobe : std_logic_vector (7 downto 0)
-	is reg_oreg(7)(31 downto 24);
+	is reg_oreg(11)(31 downto 24);
 
     alias reg_pattern : std_logic_vector (11 downto 0)
-	is reg_oreg(8)(11 downto 0);
+	is reg_oreg(12)(11 downto 0);
 
     alias reg_mval : std_logic_vector (2 downto 0)
-	is reg_oreg(9)(0 + 2 downto 0);
+	is reg_oreg(13)(0 + 2 downto 0);
 
     alias reg_mask : std_logic_vector (2 downto 0)
-	is reg_oreg(9)(8 + 2 downto 8);
+	is reg_oreg(13)(8 + 2 downto 8);
 
     alias reg_amsk : std_logic_vector (2 downto 0)
-	is reg_oreg(9)(16 + 2 downto 16);
+	is reg_oreg(13)(16 + 2 downto 16);
 
     alias led_val : std_logic_vector (7 downto 0)
-	is reg_oreg(10)(7 downto 0);
+	is reg_oreg(14)(7 downto 0);
+
+    alias led_done : std_logic is reg_oreg(14)(8);
 
     alias led_mask : std_logic_vector (7 downto 0)
-	is reg_oreg(10)(23 downto 16);
-
-    alias led_done : std_logic is reg_oreg(10)(8);
+	is reg_oreg(14)(23 downto 16);
 
     alias swi_val : std_logic_vector (7 downto 0)
-	is reg_oreg(11)(7 downto 0);
+	is reg_oreg(15)(7 downto 0);
 
     alias swi_mask : std_logic_vector (7 downto 0)
-	is reg_oreg(11)(23 downto 16);
+	is reg_oreg(15)(23 downto 16);
 
     alias btn_val : std_logic_vector (4 downto 0)
-	is reg_oreg(11)(8 + 4 downto 8);
+	is reg_oreg(15)(8 + 4 downto 8);
 
     alias btn_mask : std_logic_vector (4 downto 0)
-	is reg_oreg(11)(24 + 4 downto 24);
+	is reg_oreg(15)(24 + 4 downto 24);
 
 
     constant IREG_SIZE : natural := 7;
@@ -388,7 +405,7 @@ architecture RTL of top is
     --------------------------------------------------------------------
 
     constant GEN_SPLIT : natural := 8;
-    constant OGEN_SIZE : natural := 12;
+    constant OGEN_SIZE : natural := 16;
 
     signal reg_ogen : reg32_a(0 to OGEN_SIZE - 1);
 
@@ -404,39 +421,56 @@ architecture RTL of top is
     alias raddr_pat1 : std_logic_vector (31 downto 0)
 	is reg_ogen(3)(31 downto 0);
 
-    alias raddr_cinc : std_logic_vector (31 downto 0)
+    alias raddr_buf2 : std_logic_vector (31 downto 0)
 	is reg_ogen(4)(31 downto 0);
 
-    alias raddr_rinc : std_logic_vector (31 downto 0)
+    alias raddr_pat2 : std_logic_vector (31 downto 0)
 	is reg_ogen(5)(31 downto 0);
 
-    alias raddr_ccnt : std_logic_vector (11 downto 0)
-	is reg_ogen(6)(11 downto 0);
+    alias raddr_buf3 : std_logic_vector (31 downto 0)
+	is reg_ogen(6)(31 downto 0);
 
-    alias fifo_hdmi_reset : std_logic is reg_ogen(7)(0);
+    alias raddr_pat3 : std_logic_vector (31 downto 0)
+	is reg_ogen(7)(31 downto 0);
 
-    alias ogen_rblock : std_logic is reg_ogen(7)(4);
-    alias ogen_rreset : std_logic is reg_ogen(7)(5);
-    alias ogen_rload : std_logic is reg_ogen(7)(6);
-    alias ogen_rswitch : std_logic is reg_ogen(7)(7);
-
-    alias hdmi_pll_reset : std_logic is reg_ogen(7)(8);
-    alias hdmi_pll_pwrdwn : std_logic is reg_ogen(7)(9);
-
-    alias reader_enable : std_logic_vector (3 downto 0)
-	is reg_ogen(7)(19 downto 16);
-
-    alias ogen_code0 : std_logic_vector (31 downto 0)
+    alias raddr_cinc : std_logic_vector (31 downto 0)
 	is reg_ogen(8)(31 downto 0);
 
-    alias ogen_code1 : std_logic_vector (31 downto 0)
+    alias raddr_rinc : std_logic_vector (31 downto 0)
 	is reg_ogen(9)(31 downto 0);
 
+    alias raddr_ccnt : std_logic_vector (11 downto 0)
+	is reg_ogen(10)(11 downto 0);
+
+    alias fifo_hdmi_reset : std_logic is reg_ogen(11)(0);
+
+    alias ogen_rblock : std_logic is reg_ogen(11)(4);
+    alias ogen_rreset : std_logic is reg_ogen(11)(5);
+    alias ogen_rload : std_logic is reg_ogen(11)(6);
+    alias ogen_rswitch : std_logic is reg_ogen(11)(7);
+
+    alias hdmi_pll_reset : std_logic is reg_ogen(11)(8);
+    alias hdmi_pll_pwrdwn : std_logic is reg_ogen(11)(9);
+
+    alias rbuf_enable : std_logic_vector (3 downto 0)
+	is reg_ogen(11)(15 downto 12);
+
+    alias reader_enable : std_logic_vector (3 downto 0)
+	is reg_ogen(11)(19 downto 16);
+
+    alias overlay_enable : std_logic is reg_ogen(11)(24);
+
+    alias ogen_code0 : std_logic_vector (31 downto 0)
+	is reg_ogen(12)(31 downto 0);
+
+    alias ogen_code1 : std_logic_vector (31 downto 0)
+	is reg_ogen(13)(31 downto 0);
+
     alias ogen_code2 : std_logic_vector (31 downto 0)
-	is reg_ogen(10)(31 downto 0);
+	is reg_ogen(14)(31 downto 0);
 
     alias ogen_code3 : std_logic_vector (31 downto 0)
-	is reg_ogen(11)(31 downto 0);
+	is reg_ogen(15)(31 downto 0);
 
 
     constant IGEN_SIZE : natural := 3;
@@ -526,7 +560,10 @@ architecture RTL of top is
     signal raddr_empty : std_logic;
 
     signal raddr_match : std_logic;
-    signal raddr_sel : std_logic;
+    signal raddr_sel : std_logic_vector (1 downto 0);
+    signal raddr_sel_in : std_logic_vector (1 downto 0);
+
+    signal rbuf_sel : std_logic_vector (1 downto 0);
 
     alias reader_clk : std_logic is cmv_axi_clk;
 
@@ -557,7 +594,10 @@ architecture RTL of top is
     signal waddr_empty : std_logic;
 
     signal waddr_match : std_logic;
-    signal waddr_sel : std_logic;
+    signal waddr_sel : std_logic_vector (1 downto 0);
+    signal waddr_sel_in : std_logic_vector (1 downto 0);
+
+    signal wbuf_sel : std_logic_vector (1 downto 0);
 
     alias writer_clk : std_logic is cmv_axi_clk;
 
@@ -678,6 +718,9 @@ architecture RTL of top is
     alias hdmi_ch4 : std_logic_vector (15 downto 0)
 	is hdmi_in (15 downto 0);
 
+    signal hdmi_ch4_d : std_logic_vector (15 downto 0);
+
+    signal conv_out : std_logic_vector (63 downto 0);
     signal hdmi_out : std_logic_vector (63 downto 0);
 
     signal conv_ch0 : std_logic_vector(15 downto 0);
@@ -718,12 +761,13 @@ architecture RTL of top is
     signal scan_rblock : std_logic;
     signal scan_rreset : std_logic;
     signal scan_rload : std_logic;
-    signal scan_rswitch : std_logic;
+    signal scan_arm : std_logic;
 
     signal sync_rblock : std_logic;
     signal sync_rreset : std_logic;
     signal sync_rload : std_logic;
-    signal sync_rswitch : std_logic;
+    signal sync_rswitch : std_logic_vector (1 downto 0);
+
     signal event_event : std_logic_vector (7 downto 0);
     signal event_data : std_logic_vector (1 downto 0);
     signal event_data_d : std_logic_vector (1 downto 0);
@@ -745,17 +789,20 @@ architecture RTL of top is
     signal cseq_fcnt : std_logic_vector (11 downto 0)
 	:= (others => '0');
 
-    signal capt_req : std_logic;
-    signal capt_shift : std_logic_vector (31 downto 0)
+    signal cseq_req : std_logic;
+    signal cseq_shift : std_logic_vector (31 downto 0)
 	:= (others => '0');
 
-    signal capt_wblock : std_logic;
-    signal capt_wreset : std_logic;
-    signal capt_wload : std_logic;
-    signal capt_wswitch : std_logic;
+    signal cseq_wblock : std_logic;
+    signal cseq_wreset : std_logic;
+    signal cseq_wload : std_logic;
+    signal cseq_wswitch : std_logic;
 
-    signal capt_wempty : std_logic;
-    signal capt_frmreq : std_logic;
+    signal cseq_wempty : std_logic;
+    signal cseq_frmreq : std_logic;
+
+    signal cseq_flip : std_logic;
+    signal cseq_switch : std_logic;
 
     signal sync_wblock : std_logic;
     signal sync_wreset : std_logic;
@@ -766,6 +813,7 @@ architecture RTL of top is
     signal sync_wenable : std_logic;
     signal sync_winact : std_logic;
     signal sync_frmreq : std_logic;
+    signal sync_arm : std_logic;
 
     --------------------------------------------------------------------
     -- Cross Event Signals
@@ -1163,7 +1211,7 @@ begin
     -- CMV/LVDS/HDMI MMCM/PLL
     --------------------------------------------------------------------
 
-    cmv_pll_inst : entity work.cmv_pll (RTL_250MHZ)
+    cmv_pll_inst : entity work.cmv_pll (RTL_266MHZ)
 	port map (
 	    ref_clk_in => clk_100,
 	    --
@@ -1177,7 +1225,7 @@ begin
 
     cmv_clk <= cmv_cmd_clk;
 
-    lvds_pll_inst : entity work.lvds_pll (RTL_250MHZ)
+    lvds_pll_inst : entity work.lvds_pll (RTL_266MHZ)
 	port map (
 	    ref_clk_in => cmv_outclk,
 	    --
@@ -1188,7 +1236,7 @@ begin
 
     hdmi_pll_inst : entity work.hdmi_pll
 	generic map (
-	    PLL_CONFIG => HDMI_148MHZ )
+	    PLL_CONFIG => HDMI_148500KHZ )
 	port map (
 	    ref_clk_in => clk_100,
 	    --
@@ -1299,7 +1347,7 @@ begin
     reg_ireg(2) <= par_match(31 downto 0);
     reg_ireg(3) <= par_mismatch(31 downto 0);
     reg_ireg(4) <= waddr_in(31 downto 0);
-    reg_ireg(5) <= waddr_sel & "000" & writer_inactive &	-- 8bit
+    reg_ireg(5) <= waddr_sel & "00" & writer_inactive &		-- 8bit
 		   "00" & fifo_data_wrerr & fifo_data_rderr &	-- 4bit
 		   fifo_data_full & fifo_data_high &		-- 2bit
 		   fifo_data_low & fifo_data_empty &		-- 2bit
@@ -1469,16 +1517,20 @@ begin
     -- Address Generator
     --------------------------------------------------------------------
 
-    waddr_gen_inst : entity work.addr_dbuf
+    waddr_gen_inst : entity work.addr_qbuf
 	port map (
 	    clk => waddr_clk,
 	    reset => waddr_reset,
 	    load => waddr_load,
 	    enable => waddr_enable,
+	    --
+	    sel_in => waddr_sel_in,
 	    switch => waddr_switch,
 	    --
 	    buf0_addr => waddr_buf0,
 	    buf1_addr => waddr_buf1,
+	    buf2_addr => waddr_buf2,
+	    buf3_addr => waddr_buf3,
 	    --
 	    col_inc => waddr_cinc,
 	    col_cnt => waddr_ccnt,
@@ -1487,6 +1539,8 @@ begin
 	    --
 	    buf0_epat => waddr_pat0,
 	    buf1_epat => waddr_pat1,
+	    buf2_epat => waddr_pat2,
+	    buf3_epat => waddr_pat3,
 	    --
 	    addr => waddr_in,
 	    match => waddr_match,
@@ -1543,7 +1597,7 @@ begin
 	    clk	     => serdes_clkdiv,
 	    --
 	    dv_par   => par_valid,
-	    ctrl_in  => par_data(32),
+	    ctrl_in  => par_ctrl,
 	    par_din  => par_data(15 downto 0),
 	    --
 	    ctrl_out => map_ctrl,
@@ -1556,7 +1610,7 @@ begin
 	    clk	     => serdes_clkdiv,
 	    --
 	    dv_par   => par_valid,
-	    ctrl_in  => par_data(32),
+	    ctrl_in  => par_ctrl,
 	    par_din  => par_data(31 downto 16),
 	    --
 	    ctrl_out => open,
@@ -1570,6 +1624,8 @@ begin
 	    else
 		par_valid <= '0';
 	    end if;
+
+	    pmod_jal(7 downto 4) <= par_ctrl(5 downto 2);
 	end if;
     end process;
 
@@ -1797,72 +1853,73 @@ begin
     -- Capture Sequencer
     --------------------------------------------------------------------
 
-    capt_seq_proc : process (cseq_clk, capt_req)
+    cseq_frmreq_proc : process (cseq_clk)
 	variable done_v : std_logic := '0';
 	variable shift_v : std_logic_vector (15 downto 0)
 	    := (0 => '1', others => '0');
     begin
 	if rising_edge(cseq_clk) then
 	    if shift_v(0) = '1' then
-		if capt_req = '1' then
+		if cseq_req = '1' then
 		    shift_v(shift_v'high) := '1';
 		    shift_v(0) := '0';
 		end if;
 
-		capt_wblock <= '0';
-		capt_wreset <= '0';
-		capt_wload <= '0';
-		capt_wswitch <= '0';
+		cseq_wblock <= '0';
+		cseq_wreset <= '0';
+		cseq_wload <= '0';
+		cseq_wswitch <= '0';
 
-		capt_wempty <= '0';
-		capt_frmreq <= '0';
+		cseq_wempty <= '0';
+		cseq_frmreq <= '0';
 
 	    else
 		-- block address generator
 		if shift_v(shift_v'high - 1) = '1' then
-		    capt_wblock <= '1';
+		    cseq_wblock <= '1';
 		end if;
 
 		-- flush out fifo/writer queue
 		if shift_v(shift_v'high - 2) = '1' then
-		    capt_wempty <= '1';
+		    cseq_wempty <= '1';
 		end if;
 
-		-- switch buffers
-		capt_wswitch <= shift_v(8);
 
 		-- load address
-		capt_wload <= shift_v(7);
+		cseq_wload <= shift_v(8);
 
 		-- enable proper fifo
-		if shift_v(6) = '1' then
-		    capt_wempty <= '0';
+		if shift_v(7) = '1' then
+		    cseq_wempty <= '0';
 		end if;
 
 		-- unblock address generator
-		if shift_v(5) = '1' then
-		    capt_wblock <= '0';
+		if shift_v(6) = '1' then
+		    cseq_wblock <= '0';
 		end if;
 
 		-- capture done toggle
-		if shift_v(4) = '1' then
+		if shift_v(5) = '1' then
 		    done_v := cseq_done;
 		end if;
 
 		-- trigger framereq
-		capt_frmreq <= shift_v(2);
+		cseq_frmreq <= shift_v(4);
+
+		-- switch buffers
+		cseq_flip <= shift_v(2);
 
 		if shift_v(0) = '0' then
 		    -- wait for inactive writer
 		    if shift_v(9) = '1' and sync_winact = '0' then
 			null;
 
-		    -- wait for display flip
-		    elsif shift_v(3) = '1' and sync_flip = '1' then
+		    -- wait for capture complete
+		    elsif shift_v(3) = '1' and cseq_done = done_v then
 			null;
 
-		    -- wait for capture complete
-		    elsif shift_v(1) = '1' and cseq_done = done_v then
+		    -- wait for rearm event
+		    elsif shift_v(1) = '1' and sync_arm = '0' then
 			null;
 
 		    -- advance sequencer
@@ -1872,9 +1929,86 @@ begin
 		    end if;
 		end if;
 	    end if;
-	    capt_shift(shift_v'range) <= shift_v;
+	    cseq_shift(shift_v'range) <= shift_v;
+
+	    pmod_jal(0) <= shift_v(2);
+	    pmod_jal(1) <= shift_v(4);
+	    pmod_jal(2) <= cseq_done;
+	    pmod_jal(3) <= sync_arm;
 	end if;
     end process;
+
+
+
+    cseq_switch_proc : process (cseq_clk)
+	variable rbuf_sel_v : unsigned (1 downto 0) := "00";
+	variable wbuf_sel_v : unsigned (1 downto 0) := "00";
+
+	function switch_f (
+	    sel : unsigned (1 downto 0);
+	    valid : std_logic_vector (3 downto 0) )
+	    return unsigned is
+
+	    variable sel_v : natural := to_integer(unsigned(sel));
+	    variable sel_n_v : natural;
+	begin
+	    for I in 0 to 3 loop
+		sel_n_v := (sel_v + I + 1) mod 4;
+		if valid(sel_n_v) = '1' then
+		    return to_unsigned(sel_n_v, 2);
+		end if;
+	    end loop;
+	    return "00";
+	end function;
+
+    begin
+	if rising_edge(cseq_clk) then
+	    rbuf_sel <= std_logic_vector(rbuf_sel_v);
+	    wbuf_sel <= std_logic_vector(wbuf_sel_v);
+
+	    if cseq_flip = '1' then
+		rbuf_sel_v := wbuf_sel_v;
+		wbuf_sel_v := switch_f(wbuf_sel_v, wbuf_enable);
+		cseq_switch <= '1';
+	    else
+		cseq_switch <= '0';
+	    end if;
+	end if;
+    end process;
+
+
+    sync_rbuf_sel_inst : entity work.sync_delay
+	generic map (
+	    STAGES => 1,
+	    DATA_WIDTH => rbuf_sel'length )
+	port map (
+	    clk => raddr_clk,
+	    data_in => rbuf_sel,
+	    data_out => raddr_sel_in );
+
+    sync_wbuf_sel_inst : entity work.sync_delay
+	generic map (
+	    STAGES => 1,
+	    DATA_WIDTH => wbuf_sel'length )
+	port map (
+	    clk => waddr_clk,
+	    data_in => wbuf_sel,
+	    data_out => waddr_sel_in );
+
+
+
+    cseq_prio_proc : process (cseq_shift)
+    begin
+	for I in 15 downto 0 loop
+	    if cseq_shift(I) = '1' then
+		-- pmod_jal(7 downto 4) <=
+		--    std_logic_vector(to_unsigned(I, 4));
+		-- pmod_jal(7) <= std_logic(to_unsigned(I, 4)(0));
+		exit;
+	    end if;
+	end loop;
+    end process;
+
 
 --  div_cseq_inst : entity work.async_div
 --	generic map (
@@ -1899,6 +2033,23 @@ begin
 	cseq_done <= toggle_v;
     end process;
 
+    sync_done_inst : entity work.pulse_sync
+	generic map (
+	    ACTIVE_IN => '0',
+	    ACTIVE_OUT => '1' )
+	port map (
+	    clk => cseq_clk,
+	    async_in => cmv_active,
+	    sync_out => sync_done );
+
+    sync_arm_inst : entity work.pulse_sync
+	generic map (
+	    ACTIVE_IN => '1',
+	    ACTIVE_OUT => '1' )
+	port map (
+	    clk => cseq_clk,
+	    async_in => scan_arm,
+	    sync_out => sync_arm );
 
     --------------------------------------------------------------------
     -- Capture Event Synchronizers
@@ -1907,25 +2058,25 @@ begin
     sync_wblock_inst : entity work.data_sync
 	port map (
 	    clk => waddr_clk,
-	    async_in => capt_wblock,
+	    async_in => cseq_wblock,
 	    sync_out => sync_wblock );
 
     sync_wreset_inst : entity work.pulse_sync
 	port map (
 	    clk => waddr_clk,
-	    async_in => capt_wreset,
+	    async_in => cseq_wreset,
 	    sync_out => sync_wreset );
 
     sync_wload_inst : entity work.pulse_sync
 	port map (
 	    clk => waddr_clk,
-	    async_in => capt_wload,
+	    async_in => cseq_wload,
 	    sync_out => sync_wload );
 
     sync_wswitch_inst0 : entity work.pulse_sync
 	port map (
 	    clk => waddr_clk,
-	    async_in => capt_wswitch,
+	    async_in => cseq_switch,
 	    sync_out => sync_wswitch(0) );
 
     sync_wswitch_inst1 : entity work.pulse_sync
@@ -1942,7 +2093,7 @@ begin
     sync_wempty_inst : entity work.data_sync
 	port map (
 	    clk => wdata_clk,
-	    async_in => capt_wempty,
+	    async_in => cseq_wempty,
 	    sync_out => sync_wempty );
 
     sync_winact_inst : entity work.data_sync
@@ -1954,7 +2105,7 @@ begin
     sync_frmreq_inst : entity work.pulse_sync
 	port map (
 	    clk => cmv_cmd_clk,
-	    async_in => capt_frmreq,
+	    async_in => cseq_frmreq,
 	    sync_out => sync_frmreq );
 
     cmv_frame_req <= sync_frmreq;
@@ -1971,7 +2122,7 @@ begin
     -- Button input
     --------------------------------------------------------------------
 
-    capt_req <= btn_ovr(0);
+    cseq_req <= btn_ovr(0);
     cmv_t_exp1 <= btn_ovr(1);
     cmv_t_exp2 <= btn_ovr(2);
 
@@ -2143,7 +2294,7 @@ begin
     reg_igen(0) <= x"47454E" & x"0" &
 		   std_logic_vector(to_unsigned(GEN_SPLIT, 4));
     reg_igen(1) <= raddr_in(31 downto 0);
-    reg_igen(2) <= raddr_sel & "000" & reader_inactive &	-- 8bit
+    reg_igen(2) <= raddr_sel & "00" & reader_inactive &		-- 8bit
 		   "00" & fifo_hdmi_wrerr & fifo_hdmi_rderr &	-- 4bit
 		   fifo_hdmi_full & fifo_hdmi_high &		-- 2bit
 		   fifo_hdmi_low & fifo_hdmi_empty &		-- 2bit
@@ -2359,7 +2510,26 @@ begin
     conv_ch2 <= dlut_dout(2);
     conv_ch3 <= dlut_dout(3);
 
-    hdmi_out <= conv_ch0 & conv_ch1 & conv_ch2 & conv_ch3;
+
+    delay_inst3 : entity work.sync_delay
+	generic map (
+	    STAGES => 12,
+	    DATA_WIDTH => 16 )
+	port map (
+	    clk => data_clk,
+	    data_in => hdmi_ch4,
+	    data_out => hdmi_ch4_d );
+
+    conv_out <= conv_ch0 & conv_ch1 & conv_ch2 & conv_ch3;
+
+    overlay_inst : entity work.overlay
+	port map (
+	    clk => data_clk,
+	    enable => overlay_enable,
+	    --
+	    ctrl => hdmi_ch4_d,
+	    din => conv_out,
+	    dout => hdmi_out );
 
     -- hd_code(63 downto 16) <= hdmi_in(63 downto 16);
 
@@ -2373,9 +2543,9 @@ begin
 	    din => hdmi_out,
 	    dout => hd_code );
 
-    delay_inst3 : entity work.sync_delay
+    delay_inst4 : entity work.sync_delay
 	generic map (
-	    STAGES => 12,
+	    STAGES => 13,
 	    DATA_WIDTH => 2 )
 	port map (
 	    clk => data_clk,
@@ -2430,16 +2600,20 @@ begin
     -- Address Generator
     --------------------------------------------------------------------
 
-    raddr_gen_inst : entity work.addr_dbuf
+    raddr_gen_inst : entity work.addr_qbuf
 	port map (
 	    clk => raddr_clk,
 	    reset => raddr_reset,
 	    load => raddr_load,
 	    enable => raddr_enable,
+	    --
+	    sel_in => raddr_sel_in,
 	    switch => raddr_switch,
 	    --
 	    buf0_addr => raddr_buf0,
 	    buf1_addr => raddr_buf1,
+	    buf2_addr => raddr_buf2,
+	    buf3_addr => raddr_buf3,
 	    --
 	    col_inc => raddr_cinc,
 	    col_cnt => raddr_ccnt,
@@ -2448,6 +2622,8 @@ begin
 	    --
 	    buf0_epat => raddr_pat0,
 	    buf1_epat => raddr_pat1,
+	    buf2_epat => raddr_pat2,
+	    buf3_epat => raddr_pat3,
 	    --
 	    addr => raddr_in,
 	    match => raddr_match,
@@ -2566,64 +2742,27 @@ begin
 	    async_in => scan_rload,
 	    sync_out => sync_rload );
 
-    sync_rswitch_inst : entity work.pulse_sync
+    sync_rswitch_inst0 : entity work.pulse_sync
 	port map (
 	    clk => raddr_clk,
-	    async_in => scan_rswitch,
-	    sync_out => sync_rswitch );
+	    async_in => cseq_switch,
+	    sync_out => sync_rswitch(0) );
 
+    sync_rswitch_inst1 : entity work.pulse_sync
+	port map (
+	    clk => raddr_clk,
+	    async_in => ogen_rswitch,
+	    sync_out => sync_rswitch(1) );
 
     raddr_block <= sync_rblock or ogen_rblock;
     raddr_reset <= sync_rreset or ogen_rreset;
     raddr_load <= sync_rload or ogen_rload;
-    raddr_switch <= sync_rswitch or sync_switch;
+    raddr_switch <= or_reduce(sync_rswitch);
 
     scan_rblock <= event_event(0);
     scan_rreset <= event_event(1);
     scan_rload <= event_event(2);
-    scan_rswitch <= event_event(3) xor ogen_rswitch;
-
-    --------------------------------------------------------------------
-    -- Event Cross Connect
-    --------------------------------------------------------------------
-
-    sync_switch_inst : entity work.pulse_sync
-	generic map (
-	    ACTIVE_IN => '0',
-	    ACTIVE_OUT => '1' )
-	port map (
-	    clk => raddr_clk,
-	    async_in => cmv_active,
-	    sync_out => sync_switch );
-
-    sync_done_inst : entity work.pulse_sync
-	generic map (
-	    ACTIVE_IN => '0',
-	    ACTIVE_OUT => '1' )
-	port map (
-	    clk => cseq_clk,
-	    async_in => cmv_active,
-	    sync_out => sync_done );
-
-    sync_flip_inst : entity work.data_sync
-	port map (
-	    clk => cseq_clk,
-	    async_in => flip_active,
-	    sync_out => sync_flip );
-
-    flip_proc : process (raddr_clk)
-	variable wait_v : std_logic := '0';
-    begin
-	if rising_edge(raddr_clk) then
-	    if sync_switch = '1' then
-		wait_v := '1';
-	    elsif sync_rload = '1' then
-		wait_v := '0';
-	    end if;
-
-	    flip_active <= wait_v;
-	end if;
-    end process;
+    scan_arm <= event_event(3);
 
     --------------------------------------------------------------------
     -- PMOD Debug
@@ -2725,7 +2864,7 @@ begin
 		    pmod_v0 <= waddr_enable & '0' & waddr_empty & '0' &	    -- 4bit
 			       waddr_block & waddr_reset &		    -- 2bit
 			       waddr_load & waddr_switch &		    -- 2bit
-			       waddr_sel & waddr_match & "00" & x"00000" &
+			       waddr_sel & "0" & waddr_match & x"00000" &
 			       waddr_in;
 
 		    pmod_v1 <= (others => '0');
@@ -2747,22 +2886,27 @@ begin
 		    pmod_v0 <= raddr_enable & '0' & raddr_empty & '0' &	    -- 4bit
 			       raddr_block & raddr_reset &		    -- 2bit
 			       raddr_load & raddr_switch &		    -- 2bit
-			       raddr_sel & raddr_match & "00" & x"00000" &
+			       raddr_sel & "0" & raddr_match & x"00000" &
 			       raddr_in;
 
 		    pmod_v1 <= (others => '0');
 
-		when "1100" =>
-		    pmod_v0 <= capt_wswitch & capt_wload &		    -- 2bit
-			       capt_wreset & capt_wblock &		    -- 2bit
-			       "00" & capt_wempty & capt_frmreq &	    -- 4bit
-			       "000" & sync_winact &			    -- 4bit
-			       "000" & sync_flip &			    -- 4bit
-			       "00" & cseq_done & sync_done &		    -- 4bit
-			       x"000" & capt_shift;
-
-		    pmod_v1 <= x"00000" & cseq_fcnt &
-			       x"00000" & scan_fcnt;
+  		when "1100" =>
+  		    pmod_v0 <= cseq_wswitch & cseq_wload &		    -- 2bit
+  			       cseq_wreset & cseq_wblock &		    -- 2bit
+  			       "00" & cseq_wempty & cseq_frmreq &	    -- 4bit
+  			       "000" & sync_winact &			    -- 4bit
+  			       "000" & sync_flip &			    -- 4bit
+  			       "00" & cseq_done & sync_done &		    -- 4bit
+  			       x"000" & cseq_shift;
+  
+  		    pmod_v1 <= x"00000" & cseq_fcnt &
+  			       x"00000" & scan_fcnt;
+--
+--		when "1110" =>
+--		    pmod_v0 <= x"00000000000000" & 
+--			       "00" & emio_gpio_o(5 downto 0);
+--		    pmod_v1 <= (others => '0');
 
 		when others =>
 		    pmod_v0 <= (others => '0');

@@ -52,7 +52,7 @@ begin
 	CLKOUT0_PHASE => 0.0,
 	CLKOUT1_PHASE => 0.0,
 	--
-	DIVCLK_DIVIDE => 2 )
+	DIVCLK_DIVIDE => 1 )
     port map (
 	CLKIN1 => ref_clk_in,
 	CLKFBOUT => pll_fbout,
@@ -78,6 +78,98 @@ begin
 	    O => word_clk );
 
 end RTL_300MHZ;
+
+architecture RTL_288MHZ of lvds_pll is
+
+    signal pll_fbout : std_logic;
+    signal pll_fbin : std_logic;
+
+    signal pll_lvds_clk : std_logic;
+    signal pll_word_clk : std_logic;
+
+begin
+    pll_inst : PLLE2_BASE
+    generic map (
+	CLKIN1_PERIOD => 6.944,
+	CLKFBOUT_MULT => 10,
+	CLKOUT0_DIVIDE => 1440/288,	-- 288MHz LVDS clock
+	CLKOUT1_DIVIDE => 1440/288*6,	--  48MHz WORD clock
+	--
+	CLKOUT0_PHASE => 0.0,
+	CLKOUT1_PHASE => 0.0,
+	--
+	DIVCLK_DIVIDE => 1 )
+    port map (
+	CLKIN1 => ref_clk_in,
+	CLKFBOUT => pll_fbout,
+	CLKFBIN => pll_fbin,
+	--
+	CLKOUT0 => pll_lvds_clk,
+	CLKOUT1 => pll_word_clk,
+
+	LOCKED => pll_locked,
+	PWRDWN => '0',
+	RST => '0' );
+
+    pll_fbin <= pll_fbout;
+
+    BUFG_lvds_inst : BUFG
+	port map (
+	    I => pll_lvds_clk,
+	    O => lvds_clk );
+
+    BUFG_word_inst : BUFG
+	port map (
+	    I => pll_word_clk,
+	    O => word_clk );
+
+end RTL_288MHZ;
+
+architecture RTL_266MHZ of lvds_pll is
+
+    signal pll_fbout : std_logic;
+    signal pll_fbin : std_logic;
+
+    signal pll_lvds_clk : std_logic;
+    signal pll_word_clk : std_logic;
+
+begin
+    pll_inst : PLLE2_BASE
+    generic map (
+	CLKIN1_PERIOD => 7.500,
+	CLKFBOUT_MULT => 12,
+	CLKOUT0_DIVIDE => 1600/266,	-- 266MHz LVDS clock
+	CLKOUT1_DIVIDE => 1600/266*6,	--  44MHz WORD clock
+	--
+	CLKOUT0_PHASE => 0.0,
+	CLKOUT1_PHASE => 0.0,
+	--
+	DIVCLK_DIVIDE => 1 )
+    port map (
+	CLKIN1 => ref_clk_in,
+	CLKFBOUT => pll_fbout,
+	CLKFBIN => pll_fbin,
+	--
+	CLKOUT0 => pll_lvds_clk,
+	CLKOUT1 => pll_word_clk,
+
+	LOCKED => pll_locked,
+	PWRDWN => '0',
+	RST => '0' );
+
+    pll_fbin <= pll_fbout;
+
+    BUFG_lvds_inst : BUFG
+	port map (
+	    I => pll_lvds_clk,
+	    O => lvds_clk );
+
+    BUFG_word_inst : BUFG
+	port map (
+	    I => pll_word_clk,
+	    O => word_clk );
+
+end RTL_266MHZ;
 
 architecture RTL_250MHZ of lvds_pll is
 

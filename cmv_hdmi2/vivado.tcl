@@ -12,6 +12,7 @@ set_param place.sliceLegEffortLimit 2000
 
 read_vhdl ../addr_gen.vhd
 read_vhdl ../addr_dbuf.vhd
+read_vhdl ../addr_qbuf.vhd
 read_vhdl ../async_div.vhd
 read_vhdl ../axihp_reader.vhd
 read_vhdl ../axihp_writer.vhd
@@ -32,6 +33,7 @@ read_vhdl ../fifo_chop.vhd
 read_vhdl ../fifo_reset.vhd
 read_vhdl ../hdmi_pll.vhd
 read_vhdl ../lvds_pll.vhd
+read_vhdl ../overlay.vhd
 read_vhdl ../par_match.vhd
 read_vhdl ../pixel_remap.vhd
 read_vhdl ../pmod_debug.vhd
@@ -67,6 +69,7 @@ read_vhdl ../minmax.vhd
 read_vhdl ../top.vhd
 
 read_xdc ../pmod_debug.xdc
+read_xdc ../pmod_logic.xdc
 read_xdc ../hdmi.xdc
 read_xdc ../cmv.xdc
 read_xdc ../top.xdc

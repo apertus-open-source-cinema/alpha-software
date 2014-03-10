@@ -166,7 +166,7 @@ begin
 
 	type rw_state is (
 	    idle_s,
-	    r_addr_s, r_data_s,
+	    r_addr_s, r_wait_s, r_data_s,
 	    w_addr_s, w_data_s, w_resp_s );
 
 	variable state : rw_state := idle_s;
@@ -216,6 +216,11 @@ begin
 			mem_addr <= addr_f(araddr);
 			mem_index <= index_f(araddr);
 
+			-- mem_re(index_f(araddr)) <= '1';
+
+			state := r_wait_s;
+
+		    when r_wait_s =>
 			arready_v := '1';		-- ready for transfer
 
 			mem_re(mem_index) <= '1';

@@ -43,3 +43,6 @@ add_cells_to_pblock [get_pblocks pblock_pmod] [get_cells pmod_v0*]
 add_cells_to_pblock [get_pblocks pblock_pmod] [get_cells pmod_v1*]
 resize_pblock [get_pblocks pblock_pmod] -add {SLICE_X62Y0:SLICE_X69Y9}
 #resize_pblock [get_pblocks pblock_pmod] -add {SLICE_X62Y10:SLICE_X69Y19}
+
+
+set_false_path -to [get_pins pmod_v*/D]
