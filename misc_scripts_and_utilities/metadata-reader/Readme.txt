@@ -1,15 +1,10 @@
 ﻿metadatareader
---------------
-
-
-Copyright (C):
---------------
-Sebastian Pichelhofer, Simon Larcher (apertus°) 2013 - 2014
+==============
 
 
 About:
 ------
-read the 128x16bit metadata block of a RAW16 image via piped stdin and display it in a human readable format
+read the 128x16bit block from an image or from the camera via piped stdin and display it in a human readable format
 
 
 Compiling:
@@ -24,7 +19,7 @@ cat image.raw16 | dd bs=256 skip=98304 | ./metadatareader
 read.sh does the above and uses the raw16 file name as first argument and any arguments to be passed to metadatareader as second argument
 
 
-The included meta.dump is an example 128x16bit block extracted from a RAW16 image 
+The included meta.dump is an example 128x16bit block extracted from an image 
 cat meta.dump | ./metadatareader 
 
 
