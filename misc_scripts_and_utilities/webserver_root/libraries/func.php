@@ -95,6 +95,12 @@ function SetBlackSunProtection($option) {
 	return $option;
 }
 
+function SetGamma($gamma) {
+	$cmd = "busybox su -c \"cd ../libraries/; ./gamma_conf.sh ".$gamma."\"";
+
+	return shell_exec($cmd);
+}
+
 /*
 function GetLUTs() {
 	$cmd = "busybox su -c \". ../libraries/lut.sh\"";

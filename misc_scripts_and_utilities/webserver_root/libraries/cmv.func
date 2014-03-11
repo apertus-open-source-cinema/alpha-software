@@ -8,14 +8,14 @@ cmv_reg() {
 }
 
 fil_reg() {
-    addr=$(( 0x60010000 + ($1 * 4) ))
+    addr=$(( 0x60100100 + ($1 * 4) ))
     [ $# -gt 1 ] \
 	&& /sbin/devmem $addr 32 $2 \
 	|| /sbin/devmem $addr 32
 }
 
 del_reg() {
-    addr=$(( 0x60100000 + ($1 * 4) ))
+    addr=$(( 0x60200000 + ($1 * 4) ))
     [ $# -gt 1 ] \
 	&& /sbin/devmem $addr 32 $2 \
 	|| /sbin/devmem $addr 32
