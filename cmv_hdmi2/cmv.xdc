@@ -1,6 +1,7 @@
 
-create_clock -period 6.666 -name lvds_outclk -waveform {0.000 3.333} [get_ports cmv_lvds_outclk*]
-# create_clock -period 8.000 -name lvds_outclk -waveform {0.000 4.000} [get_ports cmv_lvds_outclk*]
+# create_clock -period 6.666 -name lvds_outclk -waveform {0.000 3.333} [get_ports cmv_lvds_outclk*]
+# create_clock -period 7.5 -name lvds_outclk -waveform {0.000 3.75} [get_ports cmv_lvds_outclk*]
+create_clock -period 8.000 -name lvds_outclk -waveform {0.000 4.000} [get_ports cmv_lvds_outclk*]
 
 # set_input_delay -clock pll_lvds_clk -max  3.0 [get_ports cmv_lvds_data*]
 # set_input_delay -clock pll_lvds_clk -max  3.0 [get_ports cmv_lvds_data*] -clock_fall -add_delay

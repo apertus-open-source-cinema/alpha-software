@@ -378,6 +378,9 @@ architecture RTL of top is
 
     alias led_done : std_logic is reg_oreg(14)(8);
 
+    alias led_jal : std_logic_vector (4 downto 0)
+	is reg_oreg(14)(13 downto 9);
+
     alias led_mask : std_logic_vector (7 downto 0)
 	is reg_oreg(14)(23 downto 16);
 
@@ -1211,7 +1214,7 @@ begin
     -- CMV/LVDS/HDMI MMCM/PLL
     --------------------------------------------------------------------
 
-    cmv_pll_inst : entity work.cmv_pll (RTL_266MHZ)
+    cmv_pll_inst : entity work.cmv_pll (RTL_250MHZ)
 	port map (
 	    ref_clk_in => clk_100,
 	    --
@@ -1225,7 +1228,7 @@ begin
 
     cmv_clk <= cmv_cmd_clk;
 
-    lvds_pll_inst : entity work.lvds_pll (RTL_266MHZ)
+    lvds_pll_inst : entity work.lvds_pll (RTL_250MHZ)
 	port map (
 	    ref_clk_in => cmv_outclk,
 	    --
@@ -1625,7 +1628,7 @@ begin
 		par_valid <= '0';
 	    end if;
 
-	    pmod_jal(7 downto 4) <= par_ctrl(5 downto 2);
+	    -- pmod_jal(7 downto 4) <= par_ctrl(5 downto 2);
 	end if;
     end process;
 
@@ -1931,10 +1934,10 @@ begin
 	    end if;
 	    cseq_shift(shift_v'range) <= shift_v;
 
-	    pmod_jal(0) <= shift_v(2);
-	    pmod_jal(1) <= shift_v(4);
-	    pmod_jal(2) <= cseq_done;
-	    pmod_jal(3) <= sync_arm;
+	    -- pmod_jal(0) <= shift_v(2);
+	    -- pmod_jal(1) <= shift_v(4);
+	    -- pmod_jal(2) <= cseq_done;
+	    -- pmod_jal(3) <= sync_arm;
 	end if;
     end process;
 
@@ -2891,17 +2894,17 @@ begin
 
 		    pmod_v1 <= (others => '0');
 
-  		when "1100" =>
-  		    pmod_v0 <= cseq_wswitch & cseq_wload &		    -- 2bit
-  			       cseq_wreset & cseq_wblock &		    -- 2bit
-  			       "00" & cseq_wempty & cseq_frmreq &	    -- 4bit
-  			       "000" & sync_winact &			    -- 4bit
-  			       "000" & sync_flip &			    -- 4bit
-  			       "00" & cseq_done & sync_done &		    -- 4bit
-  			       x"000" & cseq_shift;
-  
-  		    pmod_v1 <= x"00000" & cseq_fcnt &
-  			       x"00000" & scan_fcnt;
+		when "1100" =>
+		    pmod_v0 <= cseq_wswitch & cseq_wload &		    -- 2bit
+			       cseq_wreset & cseq_wblock &		    -- 2bit
+			       "00" & cseq_wempty & cseq_frmreq &	    -- 4bit
+			       "000" & sync_winact &			    -- 4bit
+			       "000" & sync_flip &			    -- 4bit
+			       "00" & cseq_done & sync_done &		    -- 4bit
+			       x"000" & cseq_shift;
+
+		    pmod_v1 <= x"00000" & cseq_fcnt &
+			       x"00000" & scan_fcnt;
 --
 --		when "1110" =>
 --		    pmod_v0 <= x"00000000000000" & 
@@ -2915,5 +2918,11 @@ begin
 	    end case;
 	end if;
     end process;
+
+    pmod_jal(0) <= led_jal(3);
+    pmod_jal(1) <= led_jal(2);
+    pmod_jal(2) <= led_jal(1);
+    pmod_jal(3) <= led_jal(0);
+    pmod_jal(7) <= led_jal(4);
 
 end RTL;
