@@ -54,6 +54,15 @@
 		echo '$( "#Vtfl3" ).change(function( event ) {
 				$( "#Vtfl3apply").prop("checked", true);
 			});';
+		echo '$( "#flipping" ).change(function( event ) {
+				$( "#flippingapply").prop("checked", true);
+			});';
+		echo '$( "#blacksun" ).change(function( event ) {
+				$( "#blacksunapply").prop("checked", true);
+			});';	
+		echo '$( "#gain" ).change(function( event ) {
+				$( "#gainapply").prop("checked", true);
+			});';
 	?>
 	});
 	</script>
@@ -80,9 +89,11 @@ if (!isset($_GET['page'])) {
 		  The top buttons group registers together by topic.
 		  The syntax: simply list all register indexes that should be displayed as GET parameters (key without value)
 		-->
-		<p><a class="btn <?php if ($page == "all") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=all">Show All</a></p>
+		<p><a class="btn <?php if ($page == "all") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=all">All</a></p>
+		<p><a class="btn <?php if ($page == "abstractions") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=abstractions&&1&2&3&4&5&6&7&8&9&10&11&12&13&14&15&16&17&18&19&20&21&22&23&24&25&26&27&28&29&30&31&32&33&34&35&36&37&38&39&40&41&42&43&44&45&46&47&48&49&50&51&52&53&54&55&56&57&58&59&60&61&62&63&64&65&66&67&68&69&70&71&72&73&74&75&76&77&78&79&80&81&82&83&84&85&86&87&88&89&90&91&92&93&94&95&96&97&98&99&100&101&102&103&104&105&106&107&108&109&110&111&112&113&114&115&116&117&118&119&120&121&123&124&125&126&127&128">Abstractions</a></p>
 		<p><a class="btn <?php if ($page == "window") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=window&1&2&3&4&5&6&7&8&9&10&11&12&13&14&15&16&17&18&19&20&21&22&23&24&25&26&27&28&29&30&31&32&33&34&35&36&37&38&39&40&41&42&43&44&45&46&47&48&49&50&51&52&53&54&55&56&57&58&59&60&61&62&63&64&65">Windowing</a></p> 
-		<p><a class="btn <?php if ($page == "gain") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=gain&87&88&115&116&117&118">Gain/Levels</a></p> 
+		<p><a class="btn <?php if ($page == "image") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=image&68&69">Image</a></p> 
+		<p><a class="btn <?php if ($page == "gain") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=gain&87&88&102&115&116&117&118">Gain/Levels</a></p> 
 		<p><a class="btn <?php if ($page == "colors") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=colors&68&118">Colors</a></p>
 		<p><a class="btn <?php if ($page == "time") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=time&70&71&72">Timing</a></p>
 		<p><a class="btn <?php if ($page == "hdr") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=hdr&71&72&73&74&75&76&77&78&79&80&106&118">HDR</a></p>
@@ -119,7 +130,11 @@ if (isset($_POST["form1"])) {
 		}
 		
 		//Special Register handling
-		
+		if ((isset($_POST["flippingapply"]) && ($_POST["flippingapply"] == "on"))) {
+			SetImageFlipping($_POST["flipping"]);
+			$alert .= "Register 69 set to: ". $_POST["flipping"] ."<br>\n";
+			$registers[69] = $_POST["flipping"];
+		}
 		if ((isset($_POST["exptimeapply"]) && ($_POST["exptimeapply"] == "on"))) {
 			$regs = CalcExposureRegisters($_POST["exptime"], $registers[82], $registers[85], 12, 300000000);
 			$alert .= "Exposure Time set to: ".$_POST["exptime"]." ms<br>\n";
@@ -160,8 +175,10 @@ if (isset($_POST["form1"])) {
 			SetRegisterValue(78, $regs[1]);
 			$registers[78] = strtoupper(dechex($regs[1]));
 		}
-				
-				
+		if ((isset($_POST["blacksunapply"]) && ($_POST["blacksunapply"] == "on"))) {
+			$alert .= "Register 102 set to: ". $_POST["blacksun"]+8192 ."<br>\n";
+			$registers[102] = dechex(SetBlackSunProtection($_POST["blacksun"])+8192);
+		}	
 		if ((isset($_POST["Vtfl3enapply"]) && ($_POST["Vtfl3enapply"] == "on")) || (isset($_POST["Vtfl2enapply"]) && ($_POST["Vtfl2enapply"] == "on")) || (isset($_POST["Vtfl3apply"]) && ($_POST["Vtfl3apply"] == "on")) || (isset($_POST["Vtfl2apply"]) && ($_POST["Vtfl2apply"] == "on"))) {
 			$Vtfl3en = $_POST["Vtfl3en"];
 			$Vtfl2en = $_POST["Vtfl2en"];
@@ -171,6 +188,15 @@ if (isset($_POST["form1"])) {
 			SetRegisterValue(106, $tmpreg);
 			$registers[106] = strtoupper(dechex($tmpreg));
 		}
+		if ((isset($_POST["gainapply"]) && ($_POST["gainapply"] == "on"))) {
+			$temp = SetGain($_POST["gain"]);
+			if ($temp >= 0 ) {
+				$registers[115] = $temp;
+				$alert .= "Register 115 set to: ". $temp ."<br>\n";
+			}
+		}
+		
+		
 		
 		// Print Notice Alert
 		echo "<div class=\"alert alert-success\">";
@@ -210,6 +236,32 @@ if ($page == "all") {
 		<td><input type=\"checkbox\" id=\"".$i."apply\" name=\"".$i."apply\"></td></tr>";
 		
 		// Special Register Fields to make some more human read-/writeable
+		if ($i == 69) {
+			echo "<tr class=\"success\"><td></td>
+				<td>Image Flipping</td>
+				<td></td>
+				<td></td>
+				<td><select name=\"flipping\" id=\"flipping\">
+					<option value=\"0\" ";
+					if ($registers[69] == 0)
+						echo "selected";
+					echo ">No image flipping</option>
+					<option value=\"1\"";
+					if ($registers[69] == 1)
+						echo "selected";
+					echo ">Image flipping in X</option>
+					<option value=\"2\"";
+					if ($registers[69] == 2)
+						echo "selected";
+					echo ">Image flipping in Y</option>
+					<option value=\"3\"";
+					if ($registers[69] == 3)
+						echo "selected";
+					echo ">Image flipping in X and Y</option>
+				</select></td>
+				<td></td>
+				<td><input type=\"checkbox\" id=\"flippingapply\" name=\"flippingapply\"></td></tr>";
+		}
 		if ($i == 72) {
 			$exposure_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 300000000);
 			echo "<tr class=\"success\"><td></td>
@@ -250,6 +302,15 @@ if ($page == "all") {
 				<td></td>
 				<td><input type=\"checkbox\" id=\"exptimekp2apply\" name=\"exptimekp2apply\"></td></tr>";
 		}
+		if ($i == 102) {
+			echo "<tr class=\"success\"><td></td>
+				<td>Black Sun Protection</td>
+				<td></td>
+				<td>Default: 120</td>
+				<td><input type=\"text\" id=\"blacksun\" name=\"blacksun\" size=\"8\" value=\"".GetBlackSunProtection()."\"></td>
+				<td></td>
+				<td><input type=\"checkbox\" id=\"blacksunapply\" name=\"blacksunapply\"></td></tr>";
+		}
 		if ($i == 106) {
 			$hdrvoltage2enabled = ExtractBits($registers[$i], 6);
 			$hdrvoltage3enabled = ExtractBits($registers[$i], 13);
@@ -283,6 +344,32 @@ if ($page == "all") {
 				<td>Range: 0-63</td>
 				<td><input type=\"text\" id=\"Vtfl3\" name=\"Vtfl3\" size=\"8\" value=\"".$hdrvoltage3."\"></td>
 				<td><input type=\"checkbox\" id=\"Vtfl3apply\" name=\"Vtfl3apply\"></td></tr>";
+		}
+		if ($i == 115) {
+			echo "<tr class=\"success\"><td></td>
+				<td>Analog Gain</td>
+				<td></td>
+				<td></td>
+				<td><select name=\"gain\" id=\"gain\">
+					<option value=\"0\" ";
+					if ($registers[115] == 0)
+						echo "selected";
+					echo ">1x</option>
+					<option value=\"1\"";
+					if ($registers[115] == 1)
+						echo "selected";
+					echo ">2x</option>
+					<option value=\"3\"";
+					if ($registers[115] == 3)
+						echo "selected";
+					echo ">3x</option>
+					<option value=\"7\"";
+					if ($registers[115] == 7)
+						echo "selected";
+					echo ">4x</option>
+				</select></td>
+				<td></td>
+				<td><input type=\"checkbox\" id=\"gainapply\" name=\"gainapply\"></td></tr>";
 		}
 	}
 }
