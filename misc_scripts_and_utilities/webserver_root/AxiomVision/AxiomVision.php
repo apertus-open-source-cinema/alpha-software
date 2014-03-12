@@ -16,7 +16,7 @@
   </head>
   <body>
   <script src="../libraries/jquery-2.0.3.min.js"></script>
-  
+  <p><a class="btn btn-primary" href="/index.php">Back</a></p>
 <?php
 // This reads all the register values into one big array via a shell script
 include("../libraries/func.php");
@@ -47,12 +47,12 @@ if (isset($_GET["set"])) {
 }
 
 if ((isset($_GET["cmd"])) && ($_GET["cmd"] == "livevideostart")) {
-	$cmd = "busybox su -c \". ../libraries/cmv.func ; fil_reg 11 0x01000100\"";
+	$cmd = "busybox su -c \". ../libraries/cmv.func ; fil_reg 15 0x01000100\"";
 	$value = shell_exec($cmd);
 	echo $value;
 }
 if ((isset($_GET["cmd"])) && ($_GET["cmd"] == "livevideostop")) {
-	$cmd = "busybox su -c \". ../libraries/cmv.func ; fil_reg 11 0x0\"";
+	$cmd = "busybox su -c \". ../libraries/cmv.func ; fil_reg 15 0x0\"";
 	$value = shell_exec($cmd);
 	echo $value;
 }
@@ -68,6 +68,12 @@ if ((isset($_GET["cmd"])) && ($_GET["cmd"] == "hdmifull")) {
 }
 if ((isset($_GET["cmd"])) && ($_GET["cmd"] == "sawtoothlut")) {
 	$cmd = "busybox su -c \"cd ../libraries/; ./lut_conf.sh -M 0x100000 -N 4096\"";
+	shell_exec($cmd);
+}
+if ((isset($_GET["cmd"])) && ($_GET["cmd"] == "disableleds")) {
+	$cmd = "busybox su -c \". ../libraries/cmv.func ; fil_reg 14 0xFFFF0000\"";
+	shell_exec($cmd);
+	$cmd = "busybox su -c \". ../libraries/cmv.func ; fil_reg 15 0x01FF01FF\"";
 	shell_exec($cmd);
 }
 
@@ -87,6 +93,7 @@ echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gammaindex&
 
 // LUTs
 echo "<p><a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?cmd=sawtoothlut\">Sawtooth LUT</a></p>";
+echo "<p><a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?cmd=disableleds\">Disable LEDs</a></p>";
 
 // Misc
 echo "<p><a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?cmd=livevideostart\">Start Live Video</a></p>";

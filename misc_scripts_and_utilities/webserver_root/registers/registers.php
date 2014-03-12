@@ -136,7 +136,7 @@ if (isset($_POST["form1"])) {
 			$registers[69] = $_POST["flipping"];
 		}
 		if ((isset($_POST["exptimeapply"]) && ($_POST["exptimeapply"] == "on"))) {
-			$regs = CalcExposureRegisters($_POST["exptime"], $registers[82], $registers[85], 12, 300000000);
+			$regs = CalcExposureRegisters($_POST["exptime"], $registers[82], $registers[85], 12, 250000000);
 			$alert .= "Exposure Time set to: ".$_POST["exptime"]." ms<br>\n";
 			$alert .= "Register 71 set to: ". $regs[0] ."<br>\n";
 			$alert .= "Register 72 set to: ". $regs[1] ."<br>\n";
@@ -146,7 +146,7 @@ if (isset($_POST["form1"])) {
 			$registers[72] = strtoupper(dechex($regs[1]));
 		}
 		if ((isset($_POST["exptime2apply"]) && ($_POST["exptime2apply"] == "on"))) {
-			$regs = CalcExposureRegisters($_POST["exptime2"], $registers[82], $registers[85], 12, 300000000);
+			$regs = CalcExposureRegisters($_POST["exptime2"], $registers[82], $registers[85], 12, 250000000);
 			$alert .= "Exposure Time 2 set to: ".$_POST["exptime2"]." ms<br>\n";
 			$alert .= "Register 73 set to: ". $regs[0] ."<br>\n";
 			$alert .= "Register 74 set to: ". $regs[1] ."<br>\n";
@@ -156,7 +156,7 @@ if (isset($_POST["form1"])) {
 			$registers[74] = strtoupper(dechex($regs[1]));
 		}
 		if ((isset($_POST["exptimekp1apply"]) && ($_POST["exptimekp1apply"] == "on"))) {
-			$regs = CalcExposureRegisters($_POST["exptimekp1"], $registers[82], $registers[85], 12, 300000000);
+			$regs = CalcExposureRegisters($_POST["exptimekp1"], $registers[82], $registers[85], 12, 250000000);
 			$alert .= "Exposure Time Kneepoint 1 set to: ".$_POST["exptimekp1"]." ms<br>\n";
 			$alert .= "Register 75 set to: ". $regs[0] ."<br>\n";
 			$alert .= "Register 76 set to: ". $regs[1] ."<br>\n";
@@ -166,7 +166,7 @@ if (isset($_POST["form1"])) {
 			$registers[76] = strtoupper(dechex($regs[1]));
 		}
 		if ((isset($_POST["exptimekp2apply"]) && ($_POST["exptimekp2apply"] == "on"))) {
-			$regs = CalcExposureRegisters($_POST["exptimekp2"], $registers[82], $registers[85], 12, 300000000);
+			$regs = CalcExposureRegisters($_POST["exptimekp2"], $registers[82], $registers[85], 12, 250000000);
 			$alert .= "Exposure Time Kneepoint 2 set to: ".$_POST["exptimekp2"]." ms<br>\n";
 			$alert .= "Register 77 set to: ". $regs[0] ."<br>\n";
 			$alert .= "Register 78 set to: ". $regs[1] ."<br>\n";
@@ -263,7 +263,7 @@ if ($page == "all") {
 				<td><input type=\"checkbox\" id=\"flippingapply\" name=\"flippingapply\"></td></tr>";
 		}
 		if ($i == 72) {
-			$exposure_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 300000000);
+			$exposure_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 250000000);
 			echo "<tr class=\"success\"><td></td>
 				<td>Exposure Time</td>
 				<td>".round($exposure_ns, 3)." ms</td>
@@ -273,7 +273,7 @@ if ($page == "all") {
 				<td><input type=\"checkbox\" id=\"exptimeapply\" name=\"exptimeapply\"></td></tr>";
 		}
 		if ($i == 74) {
-			$exposure_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 300000000);
+			$exposure_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 250000000);
 			echo "<tr class=\"success\"><td></td>
 				<td>Exposure Time 2</td>
 				<td>".round($exposure_ns, 3)." ms</td>
@@ -283,7 +283,7 @@ if ($page == "all") {
 				<td><input type=\"checkbox\" id=\"exptime2apply\" name=\"exptime2apply\"></td></tr>";
 		}
 		if ($i == 76) {
-			$exposurekp1_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 300000000);
+			$exposurekp1_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 250000000);
 			echo "<tr class=\"success\"><td></td>
 				<td>Exposure Time Kneepoint 1</td>
 				<td>".round($exposurekp1_ns, 3)." ms</td>
@@ -293,7 +293,7 @@ if ($page == "all") {
 				<td><input type=\"checkbox\" id=\"exptimekp1apply\" name=\"exptimekp1apply\"></td></tr>";
 		}
 		if ($i == 78) {
-			$exposurekp2_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 300000000);
+			$exposurekp2_ns = CalcExposureTime(hexdec($registers[$i])*65536+hexdec($registers[$i-1]), $registers[82], $registers[85], 12, 250000000);
 			echo "<tr class=\"success\"><td></td>
 				<td>Exposure Time Kneepoint 2</td>
 				<td>".round($exposurekp2_ns, 3)." ms</td>
