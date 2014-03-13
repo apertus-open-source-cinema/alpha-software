@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --  row_col_noise.vhd
 --	Correct Row/Col Noise
---	Version 1.0
+--	Version 1.1
 --
 --  Copyright (C) 2014 H.Poetzl
 --
@@ -44,6 +44,11 @@ end entity row_col_noise;
 architecture RTL of row_col_noise is
 
     attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
+
+    signal ch0_res : std_logic_vector (15 downto 0);
+    signal ch1_res : std_logic_vector (15 downto 0);
+    signal ch2_res : std_logic_vector (15 downto 0);
+    signal ch3_res : std_logic_vector (15 downto 0);
 
     signal ab0 : std_logic_vector (47 downto 0);
 
@@ -112,15 +117,15 @@ architecture RTL of row_col_noise is
 
 begin
 
-    ab0_v0 <= std_logic_vector(resize(signed(c1_lut), ab0_v0'length));
-    ab0_v1 <= std_logic_vector(resize(signed(c0_lut), ab0_v1'length));
-    ab0_v2 <= std_logic_vector(resize(signed(c1_lut), ab0_v2'length));
-    ab0_v3 <= std_logic_vector(resize(signed(c0_lut), ab0_v3'length));
+    ab0_v0 <= not c0_lut(c0_lut'high) & c0_lut(c0_lut'high - 1 downto 0);
+    ab0_v1 <= not c1_lut(c1_lut'high) & c1_lut(c1_lut'high - 1 downto 0);
+    ab0_v2 <= not c0_lut(c0_lut'high) & c0_lut(c0_lut'high - 1 downto 0);
+    ab0_v3 <= not c1_lut(c1_lut'high) & c1_lut(c1_lut'high - 1 downto 0);
 
-    c0_v0 <= std_logic_vector(resize(signed(r1_lut), c0_v0'length));
-    c0_v1 <= std_logic_vector(resize(signed(r1_lut), c0_v1'length));
-    c0_v2 <= std_logic_vector(resize(signed(r0_lut), c0_v2'length));
-    c0_v3 <= std_logic_vector(resize(signed(r0_lut), c0_v3'length));
+    c0_v0 <= not r0_lut(r0_lut'high) & r0_lut(r0_lut'high - 1 downto 0);
+    c0_v1 <= not r0_lut(r0_lut'high) & r0_lut(r0_lut'high - 1 downto 0);
+    c0_v2 <= not r1_lut(r1_lut'high) & r1_lut(r1_lut'high - 1 downto 0);
+    c0_v3 <= not r1_lut(r1_lut'high) & r1_lut(r1_lut'high - 1 downto 0);
 
     DSP48E1_row_col : entity work.dsp48_wrap
 	generic map (
@@ -138,11 +143,11 @@ begin
 	    P => p0,			-- 48-bit output: Primary data output
 	    CARRYOUT => flags0 );	-- 4-bit carry output
 
-    ab1_v0 <= std_logic_vector(resize(signed(p0_v0), ab1_v0'length));
-    ab1_v1 <= std_logic_vector(resize(signed(p0_v1), ab1_v1'length));
+    ab1_v0 <= std_logic_vector(resize(signed(not flags0(0) & p0_v0), ab1_v0'length));
+    ab1_v1 <= std_logic_vector(resize(signed(not flags0(1) & p0_v1), ab1_v1'length));
 
-    c1_v0 <= std_logic_vector(resize(signed(ch0_in), c1_v0'length));
-    c1_v1 <= std_logic_vector(resize(signed(ch1_in), c1_v1'length));
+    c1_v0 <= std_logic_vector(resize(unsigned(ch0_in), c1_v0'length));
+    c1_v1 <= std_logic_vector(resize(unsigned(ch1_in), c1_v1'length));
 
     DSP48E1_ch0_ch1 : entity work.dsp48_wrap
 	generic map (
@@ -160,20 +165,22 @@ begin
 	    P => p1,			-- 48-bit output: Primary data output
 	    CARRYOUT => flags1 );	-- 4-bit carry output
 
-    ch0_out <=
+    ch0_out <= ch0_res;
+    ch0_res <=
 	(others => '0') when p1_v0(23) = '1' and clip(0) = '1' else
 	(others => '1') when p1_v0(16) = '1' and clip(1) = '1' else
-	 std_logic_vector(resize(signed(p1_v0), ch0_out'length));
-    ch1_out <=
+	 std_logic_vector(resize(unsigned(p1_v0), ch0_out'length));
+    ch1_out <= ch1_res;
+    ch1_res <=
 	(others => '0') when p1_v1(23) = '1' and clip(0) = '1' else
 	(others => '1') when p1_v1(16) = '1' and clip(1) = '1' else
-	 std_logic_vector(resize(signed(p1_v1), ch1_out'length));
+	 std_logic_vector(resize(unsigned(p1_v1), ch1_out'length));
 
-    ab2_v0 <= std_logic_vector(resize(signed(p0_v2), ab2_v0'length));
-    ab2_v1 <= std_logic_vector(resize(signed(p0_v3), ab2_v1'length));
+    ab2_v0 <= std_logic_vector(resize(signed(not flags0(2) & p0_v2), ab2_v0'length));
+    ab2_v1 <= std_logic_vector(resize(signed(not flags0(3) & p0_v3), ab2_v1'length));
 
-    c2_v0 <= std_logic_vector(resize(signed(ch2_in), c2_v0'length));
-    c2_v1 <= std_logic_vector(resize(signed(ch3_in), c2_v1'length));
+    c2_v0 <= std_logic_vector(resize(unsigned(ch2_in), c2_v0'length));
+    c2_v1 <= std_logic_vector(resize(unsigned(ch3_in), c2_v1'length));
 
     DSP48E1_ch2_ch3 : entity work.dsp48_wrap
 	generic map (
@@ -191,13 +198,15 @@ begin
 	    P => p2,			-- 48-bit output: Primary data output
 	    CARRYOUT => flags2 );	-- 4-bit carry output
 
-    ch2_out <=
+    ch2_out <= ch2_res;
+    ch2_res <=
 	(others => '0') when p2_v0(23) = '1' and clip(0) = '1' else
 	(others => '1') when p2_v0(16) = '1' and clip(1) = '1' else
-	 std_logic_vector(resize(signed(p2_v0), ch2_out'length));
-    ch3_out <=
+	 std_logic_vector(resize(unsigned(p2_v0), ch2_out'length));
+    ch3_out <= ch3_res;
+    ch3_res <=
 	(others => '0') when p2_v1(23) = '1' and clip(0) = '1' else
 	(others => '1') when p2_v1(16) = '1' and clip(1) = '1' else
-	 std_logic_vector(resize(signed(p2_v1), ch3_out'length));
+	 std_logic_vector(resize(unsigned(p2_v1), ch3_out'length));
 
 end RTL;

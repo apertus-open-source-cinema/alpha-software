@@ -1,0 +1,126 @@
+
+
+Sensor Pipeline
+
+0x600xxxxx	CMV SPI register mapping
+0x601xxxxx	Capture Control/Address Gen.
+0x602xxxxx	LVDS input delay registers
+0x603xxxxx	RCN noise correction LUTs
+0x604xxxxx	CMV/AXI PLL dynalic reconf (disabled)
+0x605xxxxx	Linearization LUTs
+
+
+
+Display Pipeline
+
+0x800xxxxx	Display Scan Generator
+0x801xxxxx	Display Control/Address Gen.
+0x802xxxxx	Component Matrix 4x4
+0x803xxxxx	Gamma Correction LUTs
+0x804xxxxx	HDMI PLL dynamic reconf
+0x805xxxxx	Illumination Control (testing)
+
+
+
+0x600xxxxx		CMV SPI register mapping
+========================================================================
+0x60000000 RW [15:0]	CMV Register 0
+0x60000004 RW [15:0]	CMV Register 1
+..........    ......	..............
+0x600001F8 RW [15:0]	CMV Register 126
+0x600001FC RO [15:0]	CMV Register 127
+
+
+
+0x601xxxxx	Capture Control/Address Gen. (Read Only Data)
+========================================================================
+0x60100000 RO [31:8]	0x524547	Identifier	"REG"
+	   RO  [7:4]	0x0		Revision	0
+	   RO  [3:0]	0x8		Split		x0100
+------------------------------------------------------------------------
+0x60100004 RO [31:0]			User Access
+------------------------------------------------------------------------
+0x60100008 RO [31:0]			LVDS Match (ch 0-31)
+------------------------------------------------------------------------
+0x6010000C RO [31:0]			LVDS Mismatch (ch 0-31)
+------------------------------------------------------------------------
+0x60100010 RO [31:0]			Current Writer Address
+------------------------------------------------------------------------
+0x60100014 RO [31:30]			Write Buffer Selection
+	   RO [29:28]	0x0		Zero Padding
+	   RO [27:24]			Writer Inactive (0-3)
+	   RO [23:22]	0x0		Zero Padding
+	   RO [21]			Fifo Write Error
+	   RO [20]			Fifo Read Error
+	   RO [19]			Fifo Full
+	   RO [18]			Fifo High
+	   RO [17]			Fifo Low
+	   RO [16]			Fifo Empty
+	   RO [15:13]	0x0		Zero Padding
+	   RO [12]			Button Down State
+	   RO [11]			Button Up State
+	   RO [10]			Button Right State
+	   RO  [9]			Button Left State
+	   RO  [8]			Button Center State
+	   RO  [7:0]			Switch State (0-7)
+------------------------------------------------------------------------
+0x60100018 RO [31]			Capture Sequencer Done
+	   RO [30:28]			Zero Padding
+	   RO [27:16]			CSeq Frame Count
+	   RO [15:0]			Zero Padding
+
+
+0x601xxxxx	Capture Control/Address Gen. (Read/Write Data)
+========================================================================
+0x60100100 RW [31:0]	0x18000000	Write Buffer 0 Base
+0x60100104 RW [31:0]	0x19FF0000	Write Buffer 0 End Pattern
+------------------------------------------------------------------------
+0x60100108 RW [31:0]	0x1A000000	Write Buffer 1 Base
+0x6010010C RW [31:0]	0x1BFF0000	Write Buffer 1 End Pattern
+------------------------------------------------------------------------
+0x60100110 RW [31:0]	0x1C000000	Write Buffer 2 Base
+0x60100114 RW [31:0]	0x1DFF0000	Write Buffer 2 End Pattern
+------------------------------------------------------------------------
+0x60100118 RW [31:0]	0x1E000000	Write Buffer 3 Base
+0x6010011C RW [31:0]	0x1FFF0000	Write Buffer 3 End Pattern
+------------------------------------------------------------------------
+0x60100120 RW [31:0]	0x00000080	Column Increment
+------------------------------------------------------------------------
+0x60100124 RW [31:0]	0x00000080	Row Increment
+------------------------------------------------------------------------
+0x60100128 RW [11:0]	0x0000007E	Column Burst Count 
+------------------------------------------------------------------------
+0x6010012C RW [31:24]	0xFC		Write Address Strobe
+	   RW [21]	0x1		RCN Clip Overflow
+	   RW [20]	0x1		RCN Clip Underflow
+	   RW [19:16]	0xF		Writer Enable
+	   RW [15:12]	0xF		Buffer Enable
+	   RW  [8]	0x0		SerDes Reset
+	   RW  [7]	0x0		Buffer Switch Request
+	   RW  [6]	0x0		Buffer Load Request
+	   RW  [5]	0x0		Buffer Reset Request
+	   RW  [4]	0x0		Buffer Block Request
+	   RW  [0]	0x0		Fifo Reset
+------------------------------------------------------------------------
+0x60100130 RW [11:0]	0xA95		LVDS Training Pattern
+------------------------------------------------------------------------
+0x60100134 RW [18:16]	0x07		Active Data Mask
+	   RW [10:8]	0x07		Capture Data Mask
+	   RW  [2:0]	0x07		Capture Data Value
+------------------------------------------------------------------------
+0x60100138 RW [23:16]	0x00		LED Override Mask (0-7)
+	   RW  [8]	0x0		Done LED Value
+	   RW  [7:0]	0x00		LED Override Value (0-7)
+------------------------------------------------------------------------
+0x6010013C RW [28]	0x0		Button Down Override Enable
+	   RW [27]	0x0		Button Up Override Enable
+	   RW [26]	0x0		Button Right Override Enable
+	   RW [25]	0x0		Button Left Override Enable
+	   RW [24]	0x0		Button Center Override Enable
+	   RW [23:16]	0x00		Switch Override Enable (0-7)
+	   RW [12]	0x0		Button Down Override
+	   RW [11]	0x0		Button Up Override
+	   RW [10]	0x0		Button Right Override
+	   RW  [9]	0x0		Button Left Override
+	   RW  [8]	0x0		Button Center Override
+	   RW  [7:0]	0x00		Switch Override (0-7)

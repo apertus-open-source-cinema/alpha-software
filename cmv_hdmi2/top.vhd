@@ -378,9 +378,6 @@ architecture RTL of top is
 
     alias led_done : std_logic is reg_oreg(14)(8);
 
-    alias led_jal : std_logic_vector (4 downto 0)
-	is reg_oreg(14)(13 downto 9);
-
     alias led_mask : std_logic_vector (7 downto 0)
 	is reg_oreg(14)(23 downto 16);
 
@@ -492,6 +489,44 @@ architecture RTL of top is
     constant ISCN_SIZE : natural := 2;
 
     signal reg_iscn : reg32_a(0 to ISCN_SIZE - 1);
+
+    --------------------------------------------------------------------
+    -- Illumination Register File Signals
+    --------------------------------------------------------------------
+
+    constant ILU_SPLIT : natural := 8;
+    constant OILU_SIZE : natural := 10;
+
+    signal reg_oilu : reg32_a(0 to OILU_SIZE - 1);
+
+    alias ilu_on0 : std_logic_vector (31 downto 0)
+	is reg_oilu(0)(31 downto 0);
+    alias ilu_off0 : std_logic_vector (31 downto 0)
+	is reg_oilu(1)(31 downto 0);
+
+    alias ilu_on1 : std_logic_vector (31 downto 0)
+	is reg_oilu(2)(31 downto 0);
+    alias ilu_off1 : std_logic_vector (31 downto 0)
+	is reg_oilu(3)(31 downto 0);
+
+    alias ilu_on2 : std_logic_vector (31 downto 0)
+	is reg_oilu(4)(31 downto 0);
+    alias ilu_off2 : std_logic_vector (31 downto 0)
+	is reg_oilu(5)(31 downto 0);
+
+    alias ilu_on3 : std_logic_vector (31 downto 0)
+	is reg_oilu(6)(31 downto 0);
+    alias ilu_off3 : std_logic_vector (31 downto 0)
+	is reg_oilu(7)(31 downto 0);
+
+    alias ilu_on4 : std_logic_vector (31 downto 0)
+	is reg_oilu(8)(31 downto 0);
+    alias ilu_off4 : std_logic_vector (31 downto 0)
+	is reg_oilu(9)(31 downto 0);
+
+    constant IILU_SIZE : natural := 1;
+
+    signal reg_iilu : reg32_a(0 to IILU_SIZE - 1);
 
     --------------------------------------------------------------------
     -- Matrix Register File Signals
@@ -668,10 +703,10 @@ architecture RTL of top is
 
     signal data_rcn : std_logic_vector (DATA_WIDTH - 1 downto 0);
 
-    signal data_in_d_ch0 : std_logic_vector (15 downto 0);
-    signal data_in_d_ch1 : std_logic_vector (15 downto 0);
-    signal data_in_d_ch2 : std_logic_vector (15 downto 0);
-    signal data_in_d_ch3 : std_logic_vector (15 downto 0);
+    signal llut_dout_ch0 : std_logic_vector (15 downto 0);
+    signal llut_dout_ch1 : std_logic_vector (15 downto 0);
+    signal llut_dout_ch2 : std_logic_vector (15 downto 0);
+    signal llut_dout_ch3 : std_logic_vector (15 downto 0);
 
     signal data_rcn_ch0 : std_logic_vector (15 downto 0);
     signal data_rcn_ch1 : std_logic_vector (15 downto 0);
@@ -831,6 +866,16 @@ architecture RTL of top is
 
     signal sync_flip : std_logic;
 
+    signal ilu_clk : std_logic;
+    signal ilu_frmreq : std_logic;
+
+    signal ilu_led0 : std_logic := '0';
+    signal ilu_led1 : std_logic := '0';
+    signal ilu_led2 : std_logic := '0';
+
+    signal ilu_led3 : std_logic := '0';
+    signal ilu_led4 : std_logic := '0';
+
     --------------------------------------------------------------------
     -- BRAM LUT Signals
     --------------------------------------------------------------------
@@ -839,8 +884,14 @@ architecture RTL of top is
 
     signal clut_addr : lut11_a (0 to CLUT_COUNT - 1);
     signal clut_dout : lut12_a (0 to CLUT_COUNT - 1);
-
     signal clut_dout_d : lut12_a (0 to CLUT_COUNT - 1);
+    signal clut_dout_dd : lut12_a (0 to CLUT_COUNT - 1);
+
+    constant LLUT_COUNT : natural := 4;
+
+    signal llut_addr : lut12_a (0 to LLUT_COUNT - 1);
+    signal llut_dout : lut16_a (0 to LLUT_COUNT - 1);
+    signal llut_dout_d : lut16_a (0 to LLUT_COUNT - 1);
 
     constant DLUT_COUNT : natural := 4;
 
@@ -1394,7 +1445,27 @@ begin
 	    bitslip => serdes_bitslip );	-- out
 
     --------------------------------------------------------------------
-    -- BRAM LUT Register File
+    -- BRAM LUT Register File (Linearization)
+    --------------------------------------------------------------------
+
+    reg_lut_inst2 : entity work.reg_lut_12x16
+	generic map (
+	    LUT_COUNT => LLUT_COUNT )
+	port map (
+	    s_axi_aclk => m_axi0a_aclk(5),
+	    s_axi_areset_n => m_axi0a_areset_n(5),
+	    --
+	    s_axi_ro => m_axi0a_ri(5),
+	    s_axi_ri => m_axi0a_ro(5),
+	    s_axi_wo => m_axi0a_wi(5),
+	    s_axi_wi => m_axi0a_wo(5),
+	    --
+	    lut_clk => fifo_data_wclk,
+	    lut_addr => llut_addr,
+	    lut_dout => llut_dout );
+
+    --------------------------------------------------------------------
+    -- BRAM LUT Register File (ColRow Noise)
     --------------------------------------------------------------------
 
     reg_lut_inst0 : entity work.reg_lut_11x12
@@ -1680,6 +1751,33 @@ begin
 	map_data(16 downto 16) & map_data(17 downto 17) &
 	map_data( 0 downto  0) & map_data( 1 downto  1);
 
+    llut_proc : process (fifo_data_wclk)
+    begin
+	if rising_edge(fifo_data_wclk) then
+	    llut_dout_ch0 <= llut_dout_d(0);
+	    llut_dout_ch1 <= llut_dout_d(1);
+	    llut_dout_ch2 <= llut_dout_d(2);
+	    llut_dout_ch3 <= llut_dout_d(3);
+
+	    llut_dout_d <= llut_dout;
+
+	    llut_addr(0) <= data_in_d(63 downto 52);
+	    llut_addr(1) <= data_in_d(51 downto 40);
+	    llut_addr(2) <= data_in_d(39 downto 28);
+	    llut_addr(3) <= data_in_d(27 downto 16);
+	end if;
+    end process;
+
+--  delay_inst0 : entity work.sync_delay
+--	generic map (
+--	    STAGES => 2,
+--	    DATA_WIDTH => data_in'length )
+--	port map (
+--	    clk => fifo_data_wclk,
+--	    data_in => data_in,
+--	    data_out => data_in_d );
+
+    data_in_d <= data_in;
 
     track_proc : process (fifo_data_wclk)
 	variable lval_v : std_logic := '0';
@@ -1713,10 +1811,8 @@ begin
 	--  clut_addr(1) <= data_fot & data_inte1 & data_inte2 &
 	--	std_logic_vector(ccnt_v);
 
-	    clut_dout_d(0) <= clut_dout(0);
-	    clut_dout_d(1) <= clut_dout(1);
-	    clut_dout_d(2) <= clut_dout(2);
-	    clut_dout_d(3) <= clut_dout(3);
+	    clut_dout_dd <= clut_dout_d;
+	    clut_dout_d <= clut_dout;
 
 	    clut_addr(0) <= std_logic_vector(ccnt_v);
 	    clut_addr(1) <= std_logic_vector(ccnt_v);
@@ -1731,18 +1827,9 @@ begin
 
     end process;
 
-    delay_inst0 : entity work.sync_delay
-	generic map (
-	    STAGES => 2,
-	    DATA_WIDTH => data_in'length )
-	port map (
-	    clk => fifo_data_wclk,
-	    data_in => data_in,
-	    data_out => data_in_d );
-
     delay_inst1 : entity work.sync_delay
 	generic map (
-	    STAGES => 2,
+	    STAGES => 3,
 	    DATA_WIDTH => data_ctrl'length )
 	port map (
 	    clk => fifo_data_wclk,
@@ -1751,7 +1838,7 @@ begin
 
     delay_inst2 : entity work.sync_delay
 	generic map (
-	    STAGES => 3,
+	    STAGES => 4,
 	    DATA_WIDTH => 1 )
 	port map (
 	    clk => fifo_data_wclk,
@@ -1764,30 +1851,25 @@ begin
 	    clk => fifo_data_wclk,
 	    clip => rcn_clip,
 	    --
-	    ch0_in => data_in_d_ch0,
-	    ch1_in => data_in_d_ch1,
-	    ch2_in => data_in_d_ch2,
-	    ch3_in => data_in_d_ch3,
+	    ch0_in => llut_dout_ch0,
+	    ch1_in => llut_dout_ch1,
+	    ch2_in => llut_dout_ch2,
+	    ch3_in => llut_dout_ch3,
 	    --
-	    c0_lut => clut_dout_d(0),
-	    c1_lut => clut_dout_d(1),
-	    r0_lut => clut_dout_d(2),
-	    r1_lut => clut_dout_d(3),
+	    c0_lut => clut_dout_dd(0),
+	    c1_lut => clut_dout_dd(1),
+	    r0_lut => clut_dout_dd(2),
+	    r1_lut => clut_dout_dd(3),
 	    --
 	    ch0_out => data_rcn_ch0,
 	    ch1_out => data_rcn_ch1,
 	    ch2_out => data_rcn_ch2,
 	    ch3_out => data_rcn_ch3 );
 
-    data_in_d_ch0 <= "0000" & data_in_d(63 downto 52);
-    data_in_d_ch1 <= "0000" & data_in_d(51 downto 40);
-    data_in_d_ch2 <= "0000" & data_in_d(39 downto 28);
-    data_in_d_ch3 <= "0000" & data_in_d(27 downto 16);
-
-    data_rcn(63 downto 52) <= data_rcn_ch0(11 downto 0);
-    data_rcn(51 downto 40) <= data_rcn_ch1(11 downto 0);
-    data_rcn(39 downto 28) <= data_rcn_ch2(11 downto 0);
-    data_rcn(27 downto 16) <= data_rcn_ch3(11 downto 0);
+    data_rcn(63 downto 52) <= data_rcn_ch0(15 downto 4);
+    data_rcn(51 downto 40) <= data_rcn_ch1(15 downto 4);
+    data_rcn(39 downto 28) <= data_rcn_ch2(15 downto 4);
+    data_rcn(27 downto 16) <= data_rcn_ch3(15 downto 4);
 
     -- data_in_c(63 downto 16) <= data_in(63 downto 16);
 
@@ -2105,13 +2187,19 @@ begin
 	    async_in => writer_inactive(0),
 	    sync_out => sync_winact );
 
-    sync_frmreq_inst : entity work.pulse_sync
+    sync_frmreq_inst0 : entity work.pulse_sync
 	port map (
 	    clk => cmv_cmd_clk,
 	    async_in => cseq_frmreq,
 	    sync_out => sync_frmreq );
 
     cmv_frame_req <= sync_frmreq;
+
+    sync_frmreq_inst1 : entity work.pulse_sync
+	port map (
+	    clk => ilu_clk,
+	    async_in => sync_frmreq,
+	    sync_out => ilu_frmreq );
 
     --------------------------------------------------------------------
     -- LED/Button/Switch Override
@@ -2768,6 +2856,74 @@ begin
     scan_arm <= event_event(3);
 
     --------------------------------------------------------------------
+    -- Illumination Register File
+    --------------------------------------------------------------------
+
+    reg_file_inst4 : entity work.reg_file
+	generic map (
+	    REG_SPLIT => ILU_SPLIT,
+	    OREG_SIZE => OILU_SIZE,
+	    IREG_SIZE => IILU_SIZE )
+	port map (
+	    s_axi_aclk => m_axi1a_aclk(5),
+	    s_axi_areset_n => m_axi1a_areset_n(5),
+	    --
+	    s_axi_ro => m_axi1a_ri(5),
+	    s_axi_ri => m_axi1a_ro(5),
+	    s_axi_wo => m_axi1a_wi(5),
+	    s_axi_wi => m_axi1a_wo(5),
+	    --
+	    oreg => reg_oilu,
+	    ireg => reg_iilu );
+
+    reg_iilu(0) <= x"494C55" & x"0" &
+		   std_logic_vector(to_unsigned(ILU_SPLIT, 4));
+
+    ilu_proc : process (ilu_clk)
+	variable ilu_cnt_v : unsigned (23 downto 0) := x"000000";
+    begin
+	if rising_edge(ilu_clk) then
+	    if ilu_frmreq = '1' then
+		ilu_cnt_v := x"000000";
+	    else
+		ilu_cnt_v := ilu_cnt_v + "1";
+	    end if;
+
+	    if ilu_cnt_v = unsigned(ilu_off0) then
+		ilu_led0 <= '0';
+	    elsif ilu_cnt_v = unsigned(ilu_on0) then
+		ilu_led0 <= '1';
+	    end if;
+
+	    if ilu_cnt_v = unsigned(ilu_off1) then
+		ilu_led1 <= '0';
+	    elsif ilu_cnt_v = unsigned(ilu_on1) then
+		ilu_led1 <= '1';
+	    end if;
+
+	    if ilu_cnt_v = unsigned(ilu_off2) then
+		ilu_led2 <= '0';
+	    elsif ilu_cnt_v = unsigned(ilu_on2) then
+		ilu_led2 <= '1';
+	    end if;
+
+	    if ilu_cnt_v = unsigned(ilu_off3) then
+		ilu_led3 <= '0';
+	    elsif ilu_cnt_v = unsigned(ilu_on3) then
+		ilu_led3 <= '1';
+	    end if;
+
+	    if ilu_cnt_v = unsigned(ilu_off4) then
+		ilu_led4 <= '0';
+	    elsif ilu_cnt_v = unsigned(ilu_on4) then
+		ilu_led4 <= '1';
+	    end if;
+	end if;
+    end process;
+
+    ilu_clk <= clk_100;
+
+    --------------------------------------------------------------------
     -- PMOD Debug
     --------------------------------------------------------------------
 
@@ -2919,10 +3075,11 @@ begin
 	end if;
     end process;
 
-    pmod_jal(0) <= led_jal(3);
-    pmod_jal(1) <= led_jal(2);
-    pmod_jal(2) <= led_jal(1);
-    pmod_jal(3) <= led_jal(0);
-    pmod_jal(7) <= led_jal(4);
+    pmod_jal(3) <= not ilu_led0;
+    pmod_jal(2) <= not ilu_led1;
+    pmod_jal(1) <= not ilu_led2;
+
+    pmod_jal(6) <= ilu_led3;
+    pmod_jal(5) <= ilu_led4;
 
 end RTL;

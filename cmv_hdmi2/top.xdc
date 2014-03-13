@@ -165,10 +165,10 @@ resize_pblock [get_pblocks pblock_wfifo] -add {RAMB36_X2Y14:RAMB36_X2Y15}
 
 create_pblock pblock_rcn
 add_cells_to_pblock [get_pblocks pblock_rcn] [get_cells rc_noise_inst]
-resize_pblock [get_pblocks pblock_rcn] -add {SLICE_X32Y95:SLICE_X37Y104}
-resize_pblock [get_pblocks pblock_rcn] -add {DSP48_X2Y38:DSP48_X2Y41}
-#resize_pblock [get_pblocks pblock_rcn] -add {SLICE_X32Y90:SLICE_X37Y99}
-#resize_pblock [get_pblocks pblock_rcn] -add {DSP48_X2Y36:DSP48_X2Y39}
+# resize_pblock [get_pblocks pblock_rcn] -add {SLICE_X32Y95:SLICE_X37Y104}
+# resize_pblock [get_pblocks pblock_rcn] -add {DSP48_X2Y38:DSP48_X2Y41}
+resize_pblock [get_pblocks pblock_rcn] -add {SLICE_X32Y90:SLICE_X37Y99}
+resize_pblock [get_pblocks pblock_rcn] -add {DSP48_X2Y36:DSP48_X2Y39}
 # resize_pblock [get_pblocks pblock_rcn] -add {SLICE_X32Y100:SLICE_X37Y109}
 # resize_pblock [get_pblocks pblock_rcn] -add {DSP48_X2Y40:DSP48_X2Y43}
 
@@ -221,6 +221,16 @@ resize_pblock [get_pblocks pblock_clut] -add {SLICE_X54Y100:SLICE_X57Y124}
 resize_pblock [get_pblocks pblock_clut] -add {RAMB18_X3Y40:RAMB18_X3Y49}
 resize_pblock [get_pblocks pblock_clut] -add {RAMB36_X3Y20:RAMB36_X3Y24}
 
+create_pblock pblock_llut
+add_cells_to_pblock [get_pblocks pblock_llut] [get_cells reg_lut_inst2]
+# add_cells_to_pblock [get_pblocks pblock_llut] [get_cells llut_dout*reg]
+resize_pblock [get_pblocks pblock_llut] -add {SLICE_X32Y100:SLICE_X35Y124}
+resize_pblock [get_pblocks pblock_llut] -add {SLICE_X54Y125:SLICE_X57Y149}
+resize_pblock [get_pblocks pblock_llut] -add {RAMB18_X3Y50:RAMB18_X3Y59}
+resize_pblock [get_pblocks pblock_llut] -add {RAMB36_X3Y25:RAMB36_X3Y29}
+resize_pblock [get_pblocks pblock_llut] -add {RAMB18_X2Y40:RAMB18_X2Y49}
+resize_pblock [get_pblocks pblock_llut] -add {RAMB36_X2Y20:RAMB36_X2Y24}
+
 create_pblock pblock_shuffle
 add_cells_to_pblock [get_pblocks pblock_shuffle] [get_cells shuffle_inst]
 resize_pblock [get_pblocks pblock_shuffle] -add {SLICE_X36Y25:SLICE_X45Y34}
@@ -242,7 +252,8 @@ resize_pblock [get_pblocks pblock_glut] -add {RAMB36_X4Y0:RAMB36_X4Y9}
 
 create_pblock pblock_spi
 add_cells_to_pblock [get_pblocks pblock_spi] [get_cells reg_spi_inst]
-resize_pblock [get_pblocks pblock_spi] -add {SLICE_X32Y115:SLICE_X49Y119}
+resize_pblock [get_pblocks pblock_spi] -add {SLICE_X32Y125:SLICE_X49Y129}
+# resize_pblock [get_pblocks pblock_spi] -add {SLICE_X32Y115:SLICE_X49Y119}
 
 
 create_pblock pblock_axi0
