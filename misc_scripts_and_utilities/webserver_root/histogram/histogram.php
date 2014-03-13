@@ -153,7 +153,6 @@ image flipping in X and Y
 <body style="padding:10px;">
     <a class="btn btn-primary" href="/index.php">Back</a> 
     <h1>apertus&deg; Axiom Alpha Histogram</h1>
-	<?php echo $registers[69]; ?>
 	<div class="container">
 		<div id="placeholder" class="placeholder"></div>
 	</div>
