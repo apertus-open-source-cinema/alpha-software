@@ -46,12 +46,12 @@ function ExtractBits($input, $position, $length = 1) {
 
 function GetExposureTime() {
 	$registers = GetRegisters();
-	return CalcExposureTime(hexdec($registers[72])*65536+hexdec($registers[71]), $registers[82], $registers[85], 12, 300000000);
+	return CalcExposureTime(hexdec($registers[72])*65536+hexdec($registers[71]), $registers[82], $registers[85], 12, 250000000);
 }
 
 function SetExposureTime($time) {
 	$registers = GetRegisters();
-	$regs = CalcExposureRegisters($time, $registers[82], $registers[85], 12, 300000000);
+	$regs = CalcExposureRegisters($time, $registers[82], $registers[85], 12, 250000000);
 	SetRegisterValue(71, $regs[0]);
 	SetRegisterValue(72, $regs[1]);
 }

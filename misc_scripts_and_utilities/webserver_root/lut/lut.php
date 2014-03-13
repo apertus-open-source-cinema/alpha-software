@@ -21,7 +21,6 @@ $lut[3] = GetLUTs(3);
     <link href="../libraries/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   </head>
   <body>
-  <body>
     <p><a class="btn btn-primary" href="/index.php">Back</a></p>
     <h1 style="margin-top: 0px; padding-top:10px">apertus&deg; Axiom Alpha LUT Graph</h1>
     <div style="float:left; padding-right:10px" id="container1"></div>
