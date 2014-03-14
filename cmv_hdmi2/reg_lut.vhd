@@ -675,3 +675,79 @@ begin
     end generate;
 
 end RTL;
+
+------------------------------------------------------------------------
+--	12 x 18 BRAM LUT
+------------------------------------------------------------------------
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.ALL;
+
+use work.axi3ml_pkg.ALL;	-- AXI3 Lite Master
+use work.vivado_pkg.ALL;	-- Vivado Attributes
+use work.helper_pkg.ALL;	-- Helpers
+use work.lut_array_pkg.ALL;
+
+
+entity reg_lut_12x18 is
+    generic (
+	LUT_COUNT : natural := 4
+    );
+    port (
+	s_axi_aclk : in std_logic;
+	s_axi_areset_n : in std_logic;
+	--	write address
+	s_axi_ro : out axi3ml_read_in_r;
+	s_axi_ri : in axi3ml_read_out_r;
+	s_axi_wo : out axi3ml_write_in_r;
+	s_axi_wi : in axi3ml_write_out_r;
+	--
+	lut_clk : in std_logic;
+	lut_addr : in lut12_a (0 to LUT_COUNT - 1);
+	lut_dout : out lut18_a (0 to LUT_COUNT - 1)
+    );
+end entity reg_lut_12x18;
+
+
+architecture RTL of reg_lut_12x18 is
+
+    attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
+
+    constant ADDR_WIDTH : natural := 12;
+    constant DATA_WIDTH : natural := 18;
+
+    constant ADDRN_WIDTH : natural := LUT_COUNT * ADDR_WIDTH;
+    constant DATAN_WIDTH : natural := LUT_COUNT * DATA_WIDTH;
+
+    signal lutn_addr : std_logic_vector (ADDRN_WIDTH - 1 downto 0);
+    signal lutn_dout : std_logic_vector (DATAN_WIDTH - 1 downto 0);
+
+begin
+
+    reg_lutn_inst : entity work.reg_lutn
+	generic map (
+	    DATA_WIDTH => DATA_WIDTH,
+	    ADDR_WIDTH => ADDR_WIDTH,
+	    LUT_COUNT => LUT_COUNT )
+	port map (
+	    s_axi_aclk => s_axi_aclk,
+	    s_axi_areset_n => s_axi_areset_n,
+	    --
+	    s_axi_ro => s_axi_ro,
+	    s_axi_ri => s_axi_ri,
+	    s_axi_wo => s_axi_wo,
+	    s_axi_wi => s_axi_wi,
+	    --
+	    lut_clk => lut_clk,
+	    lut_addr => lutn_addr,
+	    lut_dout => lutn_dout );
+
+    GEN_LUT: for I in 0 to LUT_COUNT - 1 generate
+    begin
+	lutn_addr((I + 1) * ADDR_WIDTH - 1 downto I * ADDR_WIDTH)
+	    <= lut_addr(I);
+	lut_dout(I) <= slice(lutn_dout, DATA_WIDTH, I);
+    end generate;
+
+end RTL;

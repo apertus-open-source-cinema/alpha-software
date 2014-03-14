@@ -384,11 +384,11 @@ architecture RTL of top is
     alias swi_val : std_logic_vector (7 downto 0)
 	is reg_oreg(15)(7 downto 0);
 
-    alias swi_mask : std_logic_vector (7 downto 0)
-	is reg_oreg(15)(23 downto 16);
-
     alias btn_val : std_logic_vector (4 downto 0)
 	is reg_oreg(15)(8 + 4 downto 8);
+
+    alias swi_mask : std_logic_vector (7 downto 0)
+	is reg_oreg(15)(23 downto 16);
 
     alias btn_mask : std_logic_vector (4 downto 0)
 	is reg_oreg(15)(24 + 4 downto 24);
@@ -703,10 +703,10 @@ architecture RTL of top is
 
     signal data_rcn : std_logic_vector (DATA_WIDTH - 1 downto 0);
 
-    signal llut_dout_ch0 : std_logic_vector (15 downto 0);
-    signal llut_dout_ch1 : std_logic_vector (15 downto 0);
-    signal llut_dout_ch2 : std_logic_vector (15 downto 0);
-    signal llut_dout_ch3 : std_logic_vector (15 downto 0);
+    signal llut_dout_ch0 : std_logic_vector (17 downto 0);
+    signal llut_dout_ch1 : std_logic_vector (17 downto 0);
+    signal llut_dout_ch2 : std_logic_vector (17 downto 0);
+    signal llut_dout_ch3 : std_logic_vector (17 downto 0);
 
     signal data_rcn_ch0 : std_logic_vector (15 downto 0);
     signal data_rcn_ch1 : std_logic_vector (15 downto 0);
@@ -890,8 +890,8 @@ architecture RTL of top is
     constant LLUT_COUNT : natural := 4;
 
     signal llut_addr : lut12_a (0 to LLUT_COUNT - 1);
-    signal llut_dout : lut16_a (0 to LLUT_COUNT - 1);
-    signal llut_dout_d : lut16_a (0 to LLUT_COUNT - 1);
+    signal llut_dout : lut18_a (0 to LLUT_COUNT - 1);
+    signal llut_dout_d : lut18_a (0 to LLUT_COUNT - 1);
 
     constant DLUT_COUNT : natural := 4;
 
@@ -1448,7 +1448,7 @@ begin
     -- BRAM LUT Register File (Linearization)
     --------------------------------------------------------------------
 
-    reg_lut_inst2 : entity work.reg_lut_12x16
+    reg_lut_inst2 : entity work.reg_lut_12x18
 	generic map (
 	    LUT_COUNT => LLUT_COUNT )
 	port map (
