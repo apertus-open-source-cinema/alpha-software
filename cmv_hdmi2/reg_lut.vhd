@@ -43,7 +43,7 @@ end lut_array_pkg;
 
 
 library IEEE;
-use IEEE.std_logic_1164.all;
+use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 
 library unisim;
@@ -301,7 +301,7 @@ end RTL;
 ------------------------------------------------------------------------
 
 library IEEE;
-use IEEE.std_logic_1164.all;
+use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 
 use work.axi3ml_pkg.ALL;	-- AXI3 Lite Master
@@ -377,7 +377,7 @@ end RTL;
 ------------------------------------------------------------------------
 
 library IEEE;
-use IEEE.std_logic_1164.all;
+use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 
 use work.axi3ml_pkg.ALL;	-- AXI3 Lite Master
@@ -453,7 +453,7 @@ end RTL;
 ------------------------------------------------------------------------
 
 library IEEE;
-use IEEE.std_logic_1164.all;
+use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 
 use work.axi3ml_pkg.ALL;	-- AXI3 Lite Master
@@ -529,7 +529,7 @@ end RTL;
 ------------------------------------------------------------------------
 
 library IEEE;
-use IEEE.std_logic_1164.all;
+use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 
 use work.axi3ml_pkg.ALL;	-- AXI3 Lite Master
@@ -605,7 +605,7 @@ end RTL;
 ------------------------------------------------------------------------
 
 library IEEE;
-use IEEE.std_logic_1164.all;
+use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 
 use work.axi3ml_pkg.ALL;	-- AXI3 Lite Master
@@ -681,7 +681,7 @@ end RTL;
 ------------------------------------------------------------------------
 
 library IEEE;
-use IEEE.std_logic_1164.all;
+use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 
 use work.axi3ml_pkg.ALL;	-- AXI3 Lite Master

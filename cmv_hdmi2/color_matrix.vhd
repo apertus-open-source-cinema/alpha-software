@@ -109,7 +109,7 @@ end vec_mat_pkg;
 
 
 library IEEE;
-use IEEE.std_logic_1164.all;
+use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 
 use work.vivado_pkg.ALL;	-- Vivado Attributes

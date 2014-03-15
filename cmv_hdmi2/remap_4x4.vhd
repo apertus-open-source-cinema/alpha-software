@@ -13,10 +13,10 @@
 
 
 library IEEE;
-use IEEE.std_logic_1164.all;
+use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 
-use work.vivado_pkg.all;	-- Vivado Attributes
+use work.vivado_pkg.ALL;	-- Vivado Attributes
 
 
 entity remap_4x4 is
