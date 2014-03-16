@@ -57,6 +57,97 @@ $PLR_vtfl2 = ExtractBits($registers[106], 0, 6); //range 0..63
 $PLR_vtfl3 = ExtractBits($registers[106], 7, 6); //range 0..63
 $slopes = hexdec($registers[79]);
 
+// angle of the first part of the response curve in degrees
+$alpha = 45;
+$alpha= $alpha / 180 * M_PI; // convert to RAD
+
+//Defaults
+$width_scale = 0.5;
+$ExtendedDR_x = 0;
+$kp1_x = 0;
+$kp1_y = 0;
+$kp2_x = 0;
+$kp2_y = 0;
+$beta = 1;
+$gamma = 1;
+
+
+if ($slopes == 2) {
+	// vertical length of the first part of the response curve
+	$height_alpha = 1-($PLR_vtfl2/63); // range 0..1
+
+	// vertical length of the second part of the response curve
+	$height_beta = 1-($PLR_vtfl3/63); // range 0..1
+	
+	// angle of the second part of the response curve
+	$beta = atan($exposure2_ns/$exposure1_ns);
+
+	// angle of the third part of the response curve
+	$gamma = atan($exposure3_ns/$exposure1_ns);
+}
+if ($slopes == 3) {
+// Notice that the kneepoint numers are swapped on 3 slope mode as per Image Sensor Datasheet page 34
+
+	// vertical length of the first part of the response curve
+	$height_alpha = 1-($PLR_vtfl3/63); // range 0..1
+
+	// vertical length of the second part of the response curve
+	$height_beta = 1-($PLR_vtfl2/63); // range 0..1
+	
+	// angle of the second part of the response curve
+	$beta = atan($exposure3_ns/$exposure1_ns);
+
+	// angle of the third part of the response curve
+	$gamma = atan($exposure2_ns/$exposure1_ns);
+}
+// vertical length of the third part of the response curve
+$height_gamma = 0;
+
+
+
+if ($slopes == 2) {
+	//Kneepoint 1
+	$kp1_x = $height_alpha/tan($alpha);
+	$kp1_y = $height_alpha;
+
+	// Extended Dynamic Range Target
+	$ExtendedDR_x = $kp1_x+ (1-$height_alpha)/tan($beta);
+	$ExtendedDR_y = 1;
+}
+
+if ($slopes == 3) {
+// Notice that the kneepoint numers are swapped on 3 slope mode as per Image Sensor Datasheet page 34
+
+	//Kneepoint 1
+	$kp2_x = $height_alpha/tan($alpha);
+	$kp2_y = $height_alpha;
+
+	//Kneepoint 2
+	$kp1_x = $kp2_x + ($height_beta - $height_alpha)/tan($beta);
+	$kp1_y = $height_beta;
+
+	// Extended Dynamic Range Target
+	$ExtendedDR_x = $kp1_x + (1-$height_beta)/tan($gamma);
+	$ExtendedDR_y = 1;
+}
+
+
+//Native Dynamic Range
+$NativeDR_x = 1/tan($alpha);
+$NativeDR_y = 1;
+
+//Native Exposure Time 2 
+$Exp02_x = 1/tan($beta);
+$Exp02_y = 1;
+
+//Native Exposure Time 3 
+$Exp03_x = 1/tan($gamma);
+$Exp03_y = 1;
+
+//Rescale the width to show out of bounds values
+if (($width*$ExtendedDR_x*$width_scale) > 600)
+	$width_scale = 1 / (($width*$ExtendedDR_x)/600);
+
 ?>
 
 <!DOCTYPE HTML>
@@ -95,17 +186,17 @@ $slopes = hexdec($registers[79]);
 		echo "<input class=\"val-input\" type=\"text\" id=\"slopes\" name=\"slopes\" size=\"6\" value=\"".$slopes."\"></p>"; 
 		echo "<p><div class=\"val-label\">Exposure Time 1:</div>";
 		echo "<input class=\"val-input\" type=\"text\" id=\"exptime1\" name=\"exptime1\" size=\"6\" value=\"".round($exposure1_ns, 3)."\"> ms</p>"; 
-		echo "<p><div class=\"val-label\">Exposure Time 2:</div>";
+		echo "<p><div class=\"val-label\">Exposure Time Kneepoint 1:</div>";
 		echo "<input class=\"val-input\" type=\"text\" id=\"exptime2\" name=\"exptime2\" size=\"6\" value=\"".round($exposure2_ns, 3)."\"> ms</p>"; 
-		echo "<p><div class=\"val-label\">Exposure Time 3:</div>";
+		echo "<p><div class=\"val-label\">Exposure Time Kneepoint 2:</div>";
 		echo "<input class=\"val-input\" type=\"text\" id=\"exptime3\" name=\"exptime3\" size=\"6\" value=\"".round($exposure3_ns, 3)."\"> ms</p>"; 
-		echo "<p><div class=\"val-label\">VTFL2 enabled:</div>";
+		echo "<p><div class=\"val-label\">Kneepoint 1 enabled:</div>";
 		echo "<input class=\"val-input\" type=\"text\" id=\"VTFL2en\" name=\"VTFL2en\" size=\"6\" value=\"".$hdrvoltage2enabled."\"></p>"; 
-		echo "<p><div class=\"val-label\">VTFL2:</div>";
+		echo "<p><div class=\"val-label\">Level Kneepoint 1:</div>";
 		echo "<input class=\"val-input\" type=\"text\" id=\"VTFL2\" name=\"VTFL2\" size=\"6\" value=\"".$PLR_vtfl2."\"></p>";
-		echo "<p><div class=\"val-label\">VTFL3 enabled:</div>";
+		echo "<p><div class=\"val-label\">Kneepoint 2 enabled:</div>";
 		echo "<input class=\"val-input\" type=\"text\" id=\"VTFL3en\" name=\"VTFL3en\" size=\"6\" value=\"".$hdrvoltage3enabled."\"></p>"; 
-		echo "<p><div class=\"val-label\">VTFL3:</div>";
+		echo "<p><div class=\"val-label\">Level Kneepoint 2:</div>";
 		echo "<input class=\"val-input\" type=\"text\" id=\"VTFL3\" name=\"VTFL3\" size=\"6\" value=\"".$PLR_vtfl3."\"></p>"; 
 		echo "<input class=\"btn btn-primary\" type=\"submit\" name=\"form1\" value=\"Apply\"></form>";
 		?>
@@ -290,12 +381,21 @@ $slopes = hexdec($registers[79]);
 	  
 	  var PLRLine = new Kinetic.Line({
 		<?php 
-		//echo "points: [ ".$padding.", ".$height+$padding.", ".$width/3+$padding.", ".$padding+$height-$PLR_vtfl2*$height." ],";
 		echo "points: [ ";
 		echo $padding.", ".($height+$padding).", ";
-		echo ($width-($width*$PLR_exp2) + $padding).", ".($padding+$height-(($PLR_vtfl2/63)*$height)).", ";
-		echo ($width-($width*$PLR_exp3) + $padding).", ".($padding+$height-(($PLR_vtfl3/63)*$height)).", ";
-		echo ($width+$padding).", ".($padding)." ],\n";
+		if ($slopes == 1) {
+			echo ($width+$padding).", ".($padding)." ],\n";
+		}
+		if ($slopes == 2) {
+			echo (($width*$kp1_x*$width_scale) + $padding).", ".($padding+$height-($kp1_y*$height)).", ";
+			echo (($width*$ExtendedDR_x*$width_scale) + $padding).", ".($padding+$height-($height*$ExtendedDR_y))." ],\n";
+		}
+		if ($slopes == 3) {
+			echo (($width*$kp2_x*$width_scale) + $padding).", ".($padding+$height-($height*$kp2_y)).",\n";
+			echo (($width*$kp1_x*$width_scale) + $padding).", ".($padding+$height-($kp1_y*$height)).",\n";
+			echo (($width*$ExtendedDR_x*$width_scale) + $padding).", ".($padding+$height-($height*$ExtendedDR_y))." ],\n";
+		}
+		
 		?>
         stroke: '#FF0000',
         strokeWidth: 2,
@@ -304,28 +404,187 @@ $slopes = hexdec($registers[79]);
       });
       layer.add(PLRLine);
 	  
+	  //Native DR Line
+	  var NativeDRLine = new Kinetic.Line({
+		<?php 
+		echo "points: [ ";
+		if ($slopes == 1) {
+			echo " ],\n";
+		}
+		if ($slopes == 2) {
+			echo (($width*$kp1_x*$width_scale) + $padding).", ".($padding+$height-($kp1_y*$height)).", ";
+			echo (($width*$width_scale*$NativeDR_x)+$padding).", ".($padding)." ],\n";
+		}
+		if ($slopes == 3) {
+			echo (($width*$kp2_x*$width_scale) + $padding).", ".($padding+$height-($kp2_y*$height)).", ";
+			echo (($width*$width_scale*$NativeDR_x)+$padding).", ".($padding)." ],\n";
+		}
+		?>
+        stroke: '#555',
+        strokeWidth: 1,
+        lineCap: 'round',
+		dash: [6, 6],
+        lineJoin: 'round'
+      });
+      layer.add(NativeDRLine);
+	  
+	  // Native Exp2 Line
+	  var NativeExp2 = new Kinetic.Line({
+		<?php 
+		echo "points: [ ";
+		if ($slopes == 1) {
+			echo " ],\n";
+		}
+		if ($slopes > 1) {
+			echo ($padding).", ".($padding+$height).", ";
+			echo (($width*$width_scale*$Exp02_x) + $padding).", ".($padding)." ],\n";
+		}
+		?>
+        stroke: '#555',
+        strokeWidth: 1,
+        lineCap: 'round',
+		dash: [6, 6],
+        lineJoin: 'round'
+      });
+      <?php
+		if ($slopes > 1)
+			echo "layer.add(NativeExp2);";
+	  ?>
+	  
+	  // Native Exp3 Line
+	  var NativeExp3 = new Kinetic.Line({
+		<?php 
+		echo "points: [ ";
+		if ($slopes == 1) {
+			echo " ],\n";
+		}
+		if ($slopes > 1) {
+			echo ($padding).", ".($padding+$height).", ";
+			echo (($width*$width_scale*$Exp03_x) + $padding).", ".($padding)." ],\n";
+		}
+		?>
+        stroke: '#555',
+        strokeWidth: 1,
+        lineCap: 'round',
+		dash: [6, 6],
+        lineJoin: 'round'
+      });
+      <?php
+		if ($slopes > 2)
+			echo "layer.add(NativeExp3);";
+	  ?>
+
+	  //Native DR Target
+	  var NativeDRText01 = new Kinetic.Text({
+	  <?php
+	    if ($slopes == 1) {
+			echo "x: ". (($width) + $padding - 78) .",\n";
+			echo "y: 3,\n";
+		} else {
+			echo "x: ".(($width*$width_scale*$NativeDR_x)+ $padding + 2) .",";
+			echo "y: ".($height - ($height*$NativeDR_y) + $padding + 3) .",";
+		}
+		?>
+        text: 'Native Dynamic Range',
+        fontSize: 7,
+        fontFamily: 'Arial',
+        fill: '#777'
+      });
+	  layer.add(NativeDRText01);
+	  
+	  //Extended DR Target
+	  var ExtDRText01 = new Kinetic.Text({
+        x: 
+		<? 
+		
+		if ($slopes == 1) {
+			$diff_log = 0;
+			echo 0;
+		}
+		if ($slopes == 2) {
+			$diff_factor = $ExtendedDR_x / $NativeDR_x;
+			$diff_log = log($diff_factor, 2);
+			echo ($width*$ExtendedDR_x*$width_scale)+$padding+2; 
+		}
+		if ($slopes == 3) {
+			$diff_factor = $ExtendedDR_x / $NativeDR_x;
+			$diff_log = log($diff_factor, 2);
+			//$target_x = $kp1_x+(1-$height_beta)/tan($gamma);
+			echo ($width*$ExtendedDR_x*$width_scale)+$padding+2; 
+		}
+		?>,
+        y: <? echo $padding+3; ?>,
+        text: 'Extended Dynamic Range:\n+<? echo round($diff_log, 2); ?> F-Stops',
+        fontSize: 10,
+        fontFamily: 'Arial',
+        fill: '#777'
+      });
+	   <?php
+		if ($slopes > 1)
+			echo "layer.add(ExtDRText01);";
+	  ?>
 	  
 	  //kneepoint1
 	  var kneepoint1 = new Kinetic.Circle({
-	    x: <? echo ($width-($width*$PLR_exp2) + $padding); ?>,
-        y: <? echo ($padding+$height-(($PLR_vtfl2/63)*$height)); ?>,
+	    x: <?php echo (($width*$kp1_x*$width_scale) + $padding); ?>,
+        y: <?php echo ($padding+$height-($kp1_y*$height)); ?>,
 	    radius: 4,
 	    stroke: 'red',
 		fill: '#222',
 	    strokeWidth: 2
 	  });
-	  layer.add(kneepoint1);
+	  <?php
+		if ($slopes > 1)
+			echo "layer.add(kneepoint1);";
+	  ?>
+	  
+	  //kneepoint1 label
+	  var KP1Label = new Kinetic.Text({
+	  <?php
+		echo "x: ". (($width*$kp1_x*$width_scale) + $padding + 6) .",\n";
+		echo "y: ". ($padding+$height-($kp1_y*$height)-3).",\n";
+		?>
+        text: 'Kneepoint 1',
+        fontSize: 7,
+        fontFamily: 'Arial',
+        fill: '#777'
+      });
+	  <?php 
+	  if ($slopes > 1) {
+		echo "layer.add(KP1Label);";
+	  }
+	  ?>
 	  
 	  //kneepoint2
 	  var kneepoint2 = new Kinetic.Circle({
-	    x: <? echo ($width-($width*$PLR_exp3) + $padding); ?>,
-        y: <? echo ($padding+$height-(($PLR_vtfl3/63)*$height)); ?>,
+	    x: <?php echo (($width*$kp2_x*$width_scale) + $padding); ?>,
+        y: <?php echo ($padding+$height-($kp2_y*$height)); ?>,
 	    radius: 4,
 	    stroke: 'red',
 		fill: '#222',
 	    strokeWidth: 2
 	  });
-	  layer.add(kneepoint2);
+	  <?php
+		if ($slopes > 2)
+			echo "layer.add(kneepoint2);";
+	  ?>
+	  
+	  //kneepoint2 label
+	  var KP2Label = new Kinetic.Text({
+	  <?php
+		echo "x: ". (($width*$kp2_x*$width_scale) + $padding + 6) .",\n";
+		echo "y: ". ($padding+$height-($kp2_y*$height)-3).",\n";
+		?>
+        text: 'Kneepoint 2',
+        fontSize: 7,
+        fontFamily: 'Arial',
+        fill: '#777'
+      });
+	  <?php 
+	  if ($slopes > 2) {
+		echo "layer.add(KP2Label);";
+	  }
+	  ?>
 	  
       stage.add(layer);
     </script>
