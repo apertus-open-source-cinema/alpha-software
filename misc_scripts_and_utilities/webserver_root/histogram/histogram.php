@@ -11,19 +11,46 @@ $histogram = GetHistogram();
 // This reads all the register values into one big array via a shell script
 //$registers = GetRegisters();
 $registers[69] = 2;
-/*
 
+/*
 $registers[69] == 0
 No image flipping
+Bayer Order:
+R  G1
+G2 B
+Channel Order:
+1  2
+3  4
+
 
 $registers[69] == 1
 Image flipping in X
+Bayer Order:
+G1 R 
+B  G2
+Channel Order:
+2  1
+4  3
+
 
 $registers[69] == 2
 Image flipping in Y
+Bayer Order:
+G2 B 
+R G1
+Channel Order:
+3  4
+1  2
+
 
 $registers[69] == 3
 image flipping in X and Y
+Bayer Order:
+B G2 
+G1 R 
+Channel Order:
+4  3
+2  1
 
 */
 ?>
@@ -71,20 +98,19 @@ image flipping in X and Y
 	<script type="text/javascript">
 
 	$(function() {
-		
 		var green = [
 		<?php
 			for ($i = 0; $i < 256; $i++) {
 				$channels = preg_replace('/\s+/', ';', $histogram[$i]);
 				$channel = explode(";", $channels);
 				if ($registers[69] == 0)
-					echo "[". $i .", ".$channel[1]."],";
+					echo "[". $i .", ".@$channel[1]."],";
 				if ($registers[69] == 1)
-					echo "[". $i .", ".$channel[2]."],";
+					echo "[". $i .", ".@$channel[2]."],";
 				if ($registers[69] == 2)
-					echo "[". $i .", ".$channel[3]."],";
+					echo "[". $i .", ".@$channel[2]."],";
 				if ($registers[69] == 3)
-					echo "[". $i .", ".$channel[4]."],";
+					echo "[". $i .", ".@$channel[0]."],";
 			}
 		?>
 			];
@@ -95,13 +121,13 @@ image flipping in X and Y
 				$channels = preg_replace('/\s+/', ';', $histogram[$i]);
 				$channel = explode(";", $channels);
 				if ($registers[69] == 0)
-					echo "[". $i.", ".$channel[3]."],";
+					echo "[". $i.", ".@$channel[0]."],";
 				if ($registers[69] == 1)
-					echo "[". $i.", ".$channel[4]."],";
+					echo "[". $i.", ".@$channel[0]."],";
 				if ($registers[69] == 2)
-					echo "[". $i.", ".$channel[1]."],";
+					echo "[". $i.", ".@$channel[4]."],";
 				if ($registers[69] == 3)
-					echo "[". $i.", ".$channel[2]."],";
+					echo "[". $i.", ".@$channel[2]."],";
 				
 			}
 		?>
@@ -113,13 +139,13 @@ image flipping in X and Y
 				$channels = preg_replace('/\s+/', ';', $histogram[$i]);
 				$channel = explode(";", $channels);
 				if ($registers[69] == 0)
-					echo "[". $i.", ".$channel[4]."],";
+					echo "[". $i.", ".@$channel[0]."],";
 				if ($registers[69] == 1)
-					echo "[". $i.", ".$channel[3]."],";
+					echo "[". $i.", ".@$channel[3]."],";
 				if ($registers[69] == 2)
-					echo "[". $i.", ".$channel[2]."],";
+					echo "[". $i.", ".@$channel[3]."],";
 				if ($registers[69] == 3)
-					echo "[". $i.", ".$channel[1]."],";
+					echo "[". $i.", ".@$channel[1]."],";
 			}
 		?>
 			];
@@ -130,13 +156,13 @@ image flipping in X and Y
 				$channels = preg_replace('/\s+/', ';', $histogram[$i]);
 				$channel = explode(";", $channels);
 				if ($registers[69] == 0)
-					echo "[". $i.", ".$channel[2]."],";
+					echo "[". $i.", ".@$channel[0]."],";
 				if ($registers[69] == 1)
-					echo "[". $i.", ".$channel[1]."],";
+					echo "[". $i.", ".@$channel[1]."],";
 				if ($registers[69] == 2)
-					echo "[". $i.", ".$channel[4]."],";
+					echo "[". $i.", ".@$channel[1]."],";
 				if ($registers[69] == 3)
-					echo "[". $i.", ".$channel[3]."],";
+					echo "[". $i.", ".@$channel[3]."],";
 			}
 		?>
 			];
