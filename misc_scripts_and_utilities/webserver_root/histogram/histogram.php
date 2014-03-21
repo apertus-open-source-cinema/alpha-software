@@ -2,14 +2,15 @@
 include("../libraries/func.php");
 
 function GetHistogram() {
-	$cmd = "busybox su -c \"../libraries/cmv_hist3\"";
+	$cmd = "busybox su -c \"../libraries/cmv_hist3 -d 3 -b 256\"";
 	$return = shell_exec($cmd);
 	$registers = explode("\n", $return);
 	return $registers;
 } 
 $histogram = GetHistogram();
 // This reads all the register values into one big array via a shell script
-$registers = GetRegisters();
+//$registers = GetRegisters();
+$registers[69] = 2;
 /*
 
 $registers[69] == 0
@@ -31,7 +32,7 @@ image flipping in X and Y
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<meta http-equiv="refresh" content="1" >
+	<meta http-equiv="refresh" content="0.5" >
 	<title>apertus° Axiom Alpha Histogram</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
@@ -74,16 +75,16 @@ image flipping in X and Y
 		var green = [
 		<?php
 			for ($i = 0; $i < 256; $i++) {
-				$channels = preg_replace('/\s+/', ';', $histogram[$i*16]);
+				$channels = preg_replace('/\s+/', ';', $histogram[$i]);
 				$channel = explode(";", $channels);
 				if ($registers[69] == 0)
-					echo "[". $i*16 .", ".$channel[1]."],";
+					echo "[". $i .", ".$channel[1]."],";
 				if ($registers[69] == 1)
-					echo "[". $i*16 .", ".$channel[2]."],";
+					echo "[". $i .", ".$channel[2]."],";
 				if ($registers[69] == 2)
-					echo "[". $i*16 .", ".$channel[3]."],";
+					echo "[". $i .", ".$channel[3]."],";
 				if ($registers[69] == 3)
-					echo "[". $i*16 .", ".$channel[4]."],";
+					echo "[". $i .", ".$channel[4]."],";
 			}
 		?>
 			];
@@ -91,16 +92,16 @@ image flipping in X and Y
 		var blue = [
 		<?php
 			for ($i = 0; $i < 256; $i++) {
-				$channels = preg_replace('/\s+/', ';', $histogram[$i*16]);
+				$channels = preg_replace('/\s+/', ';', $histogram[$i]);
 				$channel = explode(";", $channels);
 				if ($registers[69] == 0)
-					echo "[". $i*16 .", ".$channel[3]."],";
+					echo "[". $i.", ".$channel[3]."],";
 				if ($registers[69] == 1)
-					echo "[". $i*16 .", ".$channel[4]."],";
+					echo "[". $i.", ".$channel[4]."],";
 				if ($registers[69] == 2)
-					echo "[". $i*16 .", ".$channel[1]."],";
+					echo "[". $i.", ".$channel[1]."],";
 				if ($registers[69] == 3)
-					echo "[". $i*16 .", ".$channel[2]."],";
+					echo "[". $i.", ".$channel[2]."],";
 				
 			}
 		?>
@@ -109,16 +110,16 @@ image flipping in X and Y
 		var green2 = [
 		<?php
 			for ($i = 0; $i < 256; $i++) {
-				$channels = preg_replace('/\s+/', ';', $histogram[$i*16]);
+				$channels = preg_replace('/\s+/', ';', $histogram[$i]);
 				$channel = explode(";", $channels);
 				if ($registers[69] == 0)
-					echo "[". $i*16 .", ".$channel[4]."],";
+					echo "[". $i.", ".$channel[4]."],";
 				if ($registers[69] == 1)
-					echo "[". $i*16 .", ".$channel[3]."],";
+					echo "[". $i.", ".$channel[3]."],";
 				if ($registers[69] == 2)
-					echo "[". $i*16 .", ".$channel[2]."],";
+					echo "[". $i.", ".$channel[2]."],";
 				if ($registers[69] == 3)
-					echo "[". $i*16 .", ".$channel[1]."],";
+					echo "[". $i.", ".$channel[1]."],";
 			}
 		?>
 			];
@@ -126,16 +127,16 @@ image flipping in X and Y
 		var red = [
 		<?php
 			for ($i = 0; $i < 256; $i++) {
-				$channels = preg_replace('/\s+/', ';', $histogram[$i*16]);
+				$channels = preg_replace('/\s+/', ';', $histogram[$i]);
 				$channel = explode(";", $channels);
 				if ($registers[69] == 0)
-					echo "[". $i*16 .", ".$channel[2]."],";
+					echo "[". $i.", ".$channel[2]."],";
 				if ($registers[69] == 1)
-					echo "[". $i*16 .", ".$channel[1]."],";
+					echo "[". $i.", ".$channel[1]."],";
 				if ($registers[69] == 2)
-					echo "[". $i*16 .", ".$channel[4]."],";
+					echo "[". $i.", ".$channel[4]."],";
 				if ($registers[69] == 3)
-					echo "[". $i*16 .", ".$channel[3]."],";
+					echo "[". $i.", ".$channel[3]."],";
 			}
 		?>
 			];
