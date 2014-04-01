@@ -8,10 +8,20 @@ set_property PACKAGE_PIN AA18 [get_ports i2c0_scl]
 
 set_property IOSTANDARD LVCMOS33 [get_ports {i2c0_*}]
 
-set_property PACKAGE_PIN U7 [get_ports i2c1_sda]
-set_property PACKAGE_PIN R7 [get_ports i2c1_scl]
+set_property PACKAGE_PIN U7 [get_ports i2c1_sda0]
+set_property PACKAGE_PIN R7 [get_ports i2c1_scl0]
 
-set_property IOSTANDARD LVCMOS33 [get_ports {i2c1_*}]
+set_property IOSTANDARD LVCMOS33 [get_ports {i2c1_*0}]
+
+set_property PACKAGE_PIN Y10 [get_ports i2c1_sda1]
+set_property PACKAGE_PIN AA9 [get_ports i2c1_scl1]
+
+set_property IOSTANDARD LVCMOS33 [get_ports {i2c1_*1}]
+
+set_property PACKAGE_PIN AB9 [get_ports i2c1_sda2]
+set_property PACKAGE_PIN AA8 [get_ports i2c1_scl2]
+
+set_property IOSTANDARD LVCMOS33 [get_ports {i2c1_*2}]
 
 set_property PACKAGE_PIN V12 [get_ports spi_en]
 set_property PACKAGE_PIN W11 [get_ports spi_clk]
@@ -203,10 +213,20 @@ resize_pblock [get_pblocks pblock_file2] -add {SLICE_X52Y0:SLICE_X53Y49}
 
 create_pblock pblock_file3
 add_cells_to_pblock [get_pblocks pblock_file3] [get_cells reg_file_inst3]
-resize_pblock [get_pblocks pblock_file3] -add {SLICE_X54Y13:SLICE_X57Y49}
+resize_pblock [get_pblocks pblock_file3] -add {SLICE_X54Y13:SLICE_X59Y49}
+#resize_pblock [get_pblocks pblock_file3] -add {SLICE_X54Y13:SLICE_X57Y49}
 resize_pblock [get_pblocks pblock_file3] -add {SLICE_X84Y0:SLICE_X87Y49}
-#resize_pblock [get_pblocks pblock_file3] -add {SLICE_X54Y25:SLICE_X69Y44}
-#resize_pblock [get_pblocks pblock_file3] -add {SLICE_X54Y30:SLICE_X67Y49}
+# resize_pblock [get_pblocks pblock_file3] -add {SLICE_X54Y25:SLICE_X69Y44}
+# resize_pblock [get_pblocks pblock_file3] -add {SLICE_X54Y30:SLICE_X67Y49}
+
+create_pblock pblock_file4
+add_cells_to_pblock [get_pblocks pblock_file4] [get_cells reg_file_inst4]
+resize_pblock [get_pblocks pblock_file4] -add {SLICE_X54Y50:SLICE_X59Y79}
+
+create_pblock pblock_file5
+add_cells_to_pblock [get_pblocks pblock_file5] [get_cells reg_file_inst5]
+resize_pblock [get_pblocks pblock_file5] -add {SLICE_X44Y50:SLICE_X53Y79}
+resize_pblock [get_pblocks pblock_file5] -add {SLICE_X40Y50:SLICE_X43Y59}
 
 create_pblock pblock_scan
 add_cells_to_pblock [get_pblocks pblock_scan] [get_cells hdmi_scan_inst]
@@ -264,7 +284,7 @@ resize_pblock [get_pblocks pblock_axi0] -add {SLICE_X26Y100:SLICE_X31Y124}
 create_pblock pblock_axi1
 add_cells_to_pblock [get_pblocks pblock_axi1] [get_cells axi_lite_inst1]
 add_cells_to_pblock [get_pblocks pblock_axi1] [get_cells axi_split_inst1]
-resize_pblock [get_pblocks pblock_axi1] -add {SLICE_X42Y40:SLICE_X45Y49}
+resize_pblock [get_pblocks pblock_axi1] -add {SLICE_X40Y35:SLICE_X45Y49}
 #resize_pblock [get_pblocks pblock_axi1] -add {SLICE_X20Y40:SLICE_X23Y49}
 # resize_pblock [get_pblocks pblock_axi1] -add {SLICE_X26Y25:SLICE_X31Y39}
 # resize_pblock [get_pblocks pblock_axi1] -add {SLICE_X26Y0:SLICE_X31Y24}

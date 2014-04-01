@@ -55,6 +55,7 @@ read_vhdl ../row_col_noise.vhd
 read_vhdl ../scan_comp.vhd
 read_vhdl ../scan_hdmi.vhd
 read_vhdl ../scan_event.vhd
+read_vhdl ../scan_pong.vhd
 read_vhdl ../ser_to_par.vhd
 read_vhdl ../sync_delay.vhd
 read_vhdl ../sync_div.vhd

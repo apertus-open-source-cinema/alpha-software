@@ -41,6 +41,7 @@ use work.par_array_pkg.ALL;	-- Parallel Data
 use work.lut_array_pkg.ALL;	-- Block RAM Arrays
 use work.hdmi_pll_pkg.ALL;	-- HDMI PLL Configs
 use work.vec_mat_pkg.ALL;	-- Vector/Matrix
+use work.pong_pkg.ALL;		-- PONG Record
 
 
 entity top is
@@ -50,8 +51,14 @@ entity top is
 	i2c0_sda : inout std_ulogic;
 	i2c0_scl : inout std_ulogic;
 	--
-	i2c1_sda : inout std_ulogic;
-	i2c1_scl : inout std_ulogic;
+	i2c1_sda0 : inout std_ulogic;
+	i2c1_scl0 : inout std_ulogic;
+	--
+	i2c1_sda1 : inout std_ulogic;
+	i2c1_scl1 : inout std_ulogic;
+	--
+	i2c1_sda2 : inout std_ulogic;
+	i2c1_scl2 : inout std_ulogic;
 	--
 	spi_en : out std_ulogic;
 	spi_clk : out std_ulogic;
@@ -208,13 +215,35 @@ architecture RTL of top is
 
     signal i2c1_sda_i : std_ulogic;
     signal i2c1_sda_o : std_ulogic;
-    signal i2c1_sda_t : std_ulogic;
     signal i2c1_sda_t_n : std_ulogic;
+
+    signal i2c1_sda0_i : std_ulogic;
+    signal i2c1_sda0_o : std_ulogic;
+    signal i2c1_sda0_t : std_ulogic;
+
+    signal i2c1_sda1_i : std_ulogic;
+    signal i2c1_sda1_o : std_ulogic;
+    signal i2c1_sda1_t : std_ulogic;
+
+    signal i2c1_sda2_i : std_ulogic;
+    signal i2c1_sda2_o : std_ulogic;
+    signal i2c1_sda2_t : std_ulogic;
 
     signal i2c1_scl_i : std_ulogic;
     signal i2c1_scl_o : std_ulogic;
-    signal i2c1_scl_t : std_ulogic;
     signal i2c1_scl_t_n : std_ulogic;
+
+    signal i2c1_scl0_i : std_ulogic;
+    signal i2c1_scl0_o : std_ulogic;
+    signal i2c1_scl0_t : std_ulogic;
+
+    signal i2c1_scl1_i : std_ulogic;
+    signal i2c1_scl1_o : std_ulogic;
+    signal i2c1_scl1_t : std_ulogic;
+
+    signal i2c1_scl2_i : std_ulogic;
+    signal i2c1_scl2_o : std_ulogic;
+    signal i2c1_scl2_t : std_ulogic;
 
     --------------------------------------------------------------------
     -- CMV MMCM Signals
@@ -377,6 +406,9 @@ architecture RTL of top is
 	is reg_oreg(14)(7 downto 0);
 
     alias led_done : std_logic is reg_oreg(14)(8);
+
+    alias i2c1_sel : std_logic_vector (1 downto 0)
+	is reg_oreg(14)(13 downto 12);
 
     alias led_mask : std_logic_vector (7 downto 0)
 	is reg_oreg(14)(23 downto 16);
@@ -551,6 +583,37 @@ architecture RTL of top is
 
     signal mat_v_in   : vec12_4;
     signal mat_v_out  : vec12_4;
+
+    --------------------------------------------------------------------
+    -- Pong Signals
+    --------------------------------------------------------------------
+
+    signal pong_left : pong_block_r;
+    signal pong_right : pong_block_r;
+    signal pong_ball : pong_block_r;
+    signal pong_net : pong_block_r;
+
+    signal pong_lscore : pong_score_r;
+    signal pong_rscore : pong_score_r;
+
+    signal pong_color : std_logic_vector (31 downto 0);
+    signal pong_ecolor : std_logic_vector (31 downto 0);
+    signal pong_ocolor : std_logic_vector (31 downto 0);
+    signal pong_overlay : std_logic;
+
+    --------------------------------------------------------------------
+    -- PONG Register File Signals
+    --------------------------------------------------------------------
+
+    constant PON_SPLIT : natural := 8;
+    constant OPON_SIZE : natural := 18;
+
+    signal reg_opon : reg32_a(0 to OPON_SIZE - 1);
+    signal reg_opon_d : reg32_a(0 to OPON_SIZE - 1);
+
+    constant IPON_SIZE : natural := 1;
+
+    signal reg_ipon : reg32_a(0 to IPON_SIZE - 1);
 
     --------------------------------------------------------------------
     -- Override Signals
@@ -1227,25 +1290,77 @@ begin
     -- I2C bus #1
     --------------------------------------------------------------------
 
-    i2c1_sda_t <= not i2c1_sda_t_n;
+    i2c1_sda0_t <= not i2c1_sda_t_n when i2c1_sel = "00" else '1';
+    i2c1_sda1_t <= not i2c1_sda_t_n when i2c1_sel = "01" else '1';
+    i2c1_sda2_t <= not i2c1_sda_t_n when i2c1_sel = "10" else '1';
 
-    IOBUF_sda_inst1 : IOBUF
+    i2c1_sda0_o <= i2c1_sda_o;
+    i2c1_sda1_o <= i2c1_sda_o;
+    i2c1_sda2_o <= i2c1_sda_o;
+
+    IOBUF_sda_inst10 : IOBUF
 	generic map (
 	    IOSTANDARD => "LVCMOS33",
 	    DRIVE => 4 )
 	port map (
-	    I => i2c1_sda_o, O => i2c1_sda_i,
-	    T => i2c1_sda_t, IO => i2c1_sda );
+	    I => i2c1_sda0_o, O => i2c1_sda0_i,
+	    T => i2c1_sda0_t, IO => i2c1_sda0 );
 
-    i2c1_scl_t <= not i2c1_scl_t_n;
-
-    IOBUF_scl_inst1 : IOBUF
+    IOBUF_sda_inst11 : IOBUF
 	generic map (
 	    IOSTANDARD => "LVCMOS33",
 	    DRIVE => 4 )
 	port map (
-	    I => i2c1_scl_o, O => i2c1_scl_i,
-	    T => i2c1_scl_t, IO => i2c1_scl );
+	    I => i2c1_sda1_o, O => i2c1_sda1_i,
+	    T => i2c1_sda1_t, IO => i2c1_sda1 );
+
+    IOBUF_sda_inst12 : IOBUF
+	generic map (
+	    IOSTANDARD => "LVCMOS33",
+	    DRIVE => 4 )
+	port map (
+	    I => i2c1_sda2_o, O => i2c1_sda2_i,
+	    T => i2c1_sda2_t, IO => i2c1_sda2 );
+
+    i2c1_sda_i <= i2c1_sda0_i when i2c1_sel = "00" else
+		  i2c1_sda1_i when i2c1_sel = "01" else
+		  i2c1_sda2_i when i2c1_sel = "10" else '1';
+
+    i2c1_scl0_t <= not i2c1_scl_t_n when i2c1_sel = "00" else '1';
+    i2c1_scl1_t <= not i2c1_scl_t_n when i2c1_sel = "01" else '1';
+    i2c1_scl2_t <= not i2c1_scl_t_n when i2c1_sel = "10" else '1';
+
+    i2c1_scl0_o <= i2c1_scl_o;
+    i2c1_scl1_o <= i2c1_scl_o;
+    i2c1_scl2_o <= i2c1_scl_o;
+
+    IOBUF_scl_inst10 : IOBUF
+	generic map (
+	    IOSTANDARD => "LVCMOS33",
+	    DRIVE => 4 )
+	port map (
+	    I => i2c1_scl0_o, O => i2c1_scl0_i,
+	    T => i2c1_scl0_t, IO => i2c1_scl0 );
+
+    IOBUF_scl_inst11 : IOBUF
+	generic map (
+	    IOSTANDARD => "LVCMOS33",
+	    DRIVE => 4 )
+	port map (
+	    I => i2c1_scl1_o, O => i2c1_scl1_i,
+	    T => i2c1_scl1_t, IO => i2c1_scl1 );
+
+    IOBUF_scl_inst12 : IOBUF
+	generic map (
+	    IOSTANDARD => "LVCMOS33",
+	    DRIVE => 4 )
+	port map (
+	    I => i2c1_scl2_o, O => i2c1_scl2_i,
+	    T => i2c1_scl2_t, IO => i2c1_scl2 );
+
+    i2c1_scl_i <= i2c1_scl0_i when i2c1_sel = "00" else
+		  i2c1_scl1_i when i2c1_sel = "01" else
+		  i2c1_scl2_i when i2c1_sel = "10" else '1';
 
     --------------------------------------------------------------------
     -- EMIO GPIO Interface
@@ -2644,9 +2759,11 @@ begin
 	    data_out => event_data_d );
 
     hd_edata <= x"00000000" when event_data_d(0) = '0'
+	else pong_ecolor when pong_overlay = '1'
 	else hd_code(47 downto 32) & hd_code(63 downto 48);
 
     hd_odata <= x"00000000" when event_data_d(0) = '0'
+	else pong_ocolor when pong_overlay = '1'
 	else hd_code(31 downto 16) & hd_code(15 downto 0);
 
     hd_sdata <= hd_edata when event_data_d(1) = '1'
@@ -2922,6 +3039,102 @@ begin
     end process;
 
     ilu_clk <= clk_100;
+
+    --------------------------------------------------------------------
+    -- PONG Register File
+    --------------------------------------------------------------------
+
+    reg_file_inst5 : entity work.reg_file
+	generic map (
+	    REG_SPLIT => PON_SPLIT,
+	    OREG_SIZE => OPON_SIZE,
+	    IREG_SIZE => IPON_SIZE )
+	port map (
+	    s_axi_aclk => m_axi1a_aclk(7),
+	    s_axi_areset_n => m_axi1a_areset_n(7),
+	    --
+	    s_axi_ro => m_axi1a_ri(7),
+	    s_axi_ri => m_axi1a_ro(7),
+	    s_axi_wo => m_axi1a_wi(7),
+	    s_axi_wi => m_axi1a_wo(7),
+	    --
+	    oreg => reg_opon,
+	    ireg => reg_ipon );
+
+    reg_ipon(0) <= x"504F4E" & x"0" &
+		   std_logic_vector(to_unsigned(PON_SPLIT, 4));
+
+    pong_ecolor <= pong_color(23 downto 16) & x"00" &
+		   pong_color(31 downto 24) & x"00";
+    pong_ocolor <= pong_color(15 downto 8) & x"00" &
+		   pong_color(7 downto 0) & x"00";
+
+    pong_inst : entity work.scan_pong
+	port map (
+	    clk => data_clk,
+	    reset_n => '1',
+	    --
+	    hcnt_in => scan_hcnt,
+	    vcnt_in => scan_vcnt,
+	    fcnt_in => scan_fcnt,
+	    --
+	    data_eo => scan_eo,
+	    --
+	    left => pong_left,
+	    right => pong_right,
+	    ball => pong_ball,
+	    net => pong_net,
+	    --
+	    lscore => pong_lscore,
+	    rscore => pong_rscore,
+	    --
+	    overlay => pong_overlay,
+	    color => pong_color );
+
+    pong_left.hpos_s <= reg_opon_d(0)(11 downto 0);
+    pong_left.hpos_e <= reg_opon_d(0)(27 downto 16);
+    pong_left.vpos_s <= reg_opon_d(1)(11 downto 0);
+    pong_left.vpos_e <= reg_opon_d(1)(27 downto 16);
+    pong_left.color <= reg_opon_d(2);
+
+    pong_right.hpos_s <= reg_opon_d(3)(11 downto 0);
+    pong_right.hpos_e <= reg_opon_d(3)(27 downto 16);
+    pong_right.vpos_s <= reg_opon_d(4)(11 downto 0);
+    pong_right.vpos_e <= reg_opon_d(4)(27 downto 16);
+    pong_right.color <= reg_opon_d(5);
+
+    pong_ball.hpos_s <= reg_opon_d(6)(11 downto 0);
+    pong_ball.hpos_e <= reg_opon_d(6)(27 downto 16);
+    pong_ball.vpos_s <= reg_opon_d(7)(11 downto 0);
+    pong_ball.vpos_e <= reg_opon_d(7)(27 downto 16);
+    pong_ball.color <= reg_opon_d(8);
+
+    pong_net.hpos_s <= reg_opon_d(9)(11 downto 0);
+    pong_net.hpos_e <= reg_opon_d(9)(27 downto 16);
+    pong_net.vpos_s <= reg_opon_d(10)(11 downto 0);
+    pong_net.vpos_e <= reg_opon_d(10)(27 downto 16);
+    pong_net.color <= reg_opon_d(11);
+
+    pong_lscore.hpos <= reg_opon_d(12)(11 downto 0);
+    pong_lscore.vpos <= reg_opon_d(12)(27 downto 16);
+    pong_lscore.mask <= reg_opon_d(13);
+    pong_lscore.color <= reg_opon_d(14);
+
+    pong_rscore.hpos <= reg_opon_d(15)(11 downto 0);
+    pong_rscore.vpos <= reg_opon_d(15)(27 downto 16);
+    pong_rscore.mask <= reg_opon_d(16);
+    pong_rscore.color <= reg_opon_d(17);
+
+    pong_fsync_proc : process (data_clk)
+	variable fsync_v : std_logic := '0';
+    begin
+	if rising_edge(data_clk) then
+	    if fsync_v = '0' and scan_arm = '1' then
+		reg_opon_d <= reg_opon;
+	    end if;
+	    fsync_v := scan_arm;
+	end if;
+    end process;
 
     --------------------------------------------------------------------
     -- PMOD Debug
