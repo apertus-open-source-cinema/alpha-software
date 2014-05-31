@@ -36,10 +36,33 @@ if (isset($_POST["form1"])) {
 		$registers[79] = strtoupper(dechex($_POST["slopes"]));
 		
 		// Vtfl3 & Vtfl2
-		$Vtfl3en = $_POST["VTFL3en"];
+		
+		//range checks
+		if ($_POST["VTFL2"] < 0)
+			$_POST["VTFL2"] = 0;
+		if ($_POST["VTFL2"] > 63)
+			$_POST["VTFL2"] = 63;
+			
+		if ($_POST["VTFL3"] < 0)
+			$_POST["VTFL3"] = 0;
+		if ($_POST["VTFL3"] > 63)
+			$_POST["VTFL3"] = 63;
+			
+		if ($_POST["VTFL2en"] < 0)
+			$_POST["VTFL2en"] = 0;
+		if ($_POST["VTFL2en"] > 1)
+			$_POST["VTFL2en"] = 1;
+		
+		if ($_POST["VTFL3en"] < 0)
+			$_POST["VTFL3en"] = 0;
+		if ($_POST["VTFL3en"] > 1)
+			$_POST["VTFL3en"] = 1;
+			
 		$Vtfl2en = $_POST["VTFL2en"];
-		$Vtfl3 = $_POST["VTFL3"];
+		$Vtfl3en = $_POST["VTFL3en"];
 		$Vtfl2 = $_POST["VTFL2"];
+		$Vtfl3 = $_POST["VTFL3"];
+
 		$tmpreg =  $Vtfl3en*pow(2, 13) + $Vtfl3*pow(2, 7) + $Vtfl2en*pow(2, 6) + $Vtfl2;
 		SetRegisterValue(106, $tmpreg);
 		$registers[106] = strtoupper(dechex($tmpreg));
@@ -181,7 +204,7 @@ if (($width*$ExtendedDR_x*$width_scale) > 600)
 	<div style="float:left; padding-right:10px" id="settings">
 		Settings:</br>
 		<?php 
-		echo "<form method=\"POST\">";
+		echo "<form method=\"POST\" id=\"form1\">";
 		echo "<p><div class=\"val-label\">Number of Slopes:</div>";
 		echo "<input class=\"val-input\" type=\"text\" id=\"slopes\" name=\"slopes\" size=\"6\" value=\"".$slopes."\"></p>"; 
 		echo "<p><div class=\"val-label\">Exposure Time 1:</div>";
@@ -193,18 +216,91 @@ if (($width*$ExtendedDR_x*$width_scale) > 600)
 		echo "<p><div class=\"val-label\">Kneepoint 1 enabled:</div>";
 		echo "<input class=\"val-input\" type=\"text\" id=\"VTFL2en\" name=\"VTFL2en\" size=\"6\" value=\"".$hdrvoltage2enabled."\"></p>"; 
 		echo "<p><div class=\"val-label\">Level Kneepoint 1:</div>";
-		echo "<input class=\"val-input\" type=\"text\" id=\"VTFL2\" name=\"VTFL2\" size=\"6\" value=\"".$PLR_vtfl2."\"></p>";
+		echo "<input class=\"val-input\" type=\"text\" id=\"VTFL2\" name=\"VTFL2\" size=\"6\" value=\"".$PLR_vtfl2."\"><br />
+			Range 0 - 63 <input type=\"button\" id=\"VTFL2minus5\" value=\"-5\"> <input type=\"button\" id=\"VTFL2minus1\" value=\"-1\"> 
+			<input type=\"button\" id=\"VTFL2plus1\" value=\"+1\"> <input type=\"button\" id=\"VTFL2plus5\" value=\"+5\"></p>";
 		echo "<p><div class=\"val-label\">Kneepoint 2 enabled:</div>";
 		echo "<input class=\"val-input\" type=\"text\" id=\"VTFL3en\" name=\"VTFL3en\" size=\"6\" value=\"".$hdrvoltage3enabled."\"></p>"; 
 		echo "<p><div class=\"val-label\">Level Kneepoint 2:</div>";
-		echo "<input class=\"val-input\" type=\"text\" id=\"VTFL3\" name=\"VTFL3\" size=\"6\" value=\"".$PLR_vtfl3."\"></p>"; 
-		echo "<input class=\"btn btn-primary\" type=\"submit\" name=\"form1\" value=\"Apply\"></form>";
+		echo "<input class=\"val-input\" type=\"text\" id=\"VTFL3\" name=\"VTFL3\" size=\"6\" value=\"".$PLR_vtfl3."\"><br />
+			Range 0 - 63 <input type=\"button\" id=\"VTFL3minus5\" value=\"-5\"> <input type=\"button\" id=\"VTFL3minus1\" value=\"-1\"> 
+			<input type=\"button\" id=\"VTFL3plus1\" value=\"+1\"> <input type=\"button\" id=\"VTFL3plus5\" value=\"+5\"></p>"; 
+		echo "<input class=\"btn btn-primary\" type=\"submit\" id=\"formsubmit\" name=\"form1\" value=\"Apply\"></form>";
 		?>
 	</div>
 	
     <script src="kinetic-v5.0.1.min.js"></script>
     <script defer="defer">
+	  // button handlers
+	  $( "#VTFL2minus5" ).click(function() {
+		$( "#VTFL2" ).val(parseInt($( "#VTFL2" ).val())-5);
+		
+		if ($( "#VTFL2" ).val() < 0)
+			$( "#VTFL2" ).val(0);
+			
+		$( "#formsubmit" ).click();	
+	  });
+	   $( "#VTFL2minus1" ).click(function() {
+	  	$( "#VTFL2" ).val(parseInt($( "#VTFL2" ).val())-1);
+		
+		if ($( "#VTFL2" ).val() < 0)
+			$( "#VTFL2" ).val(0);
+		
+		$( "#formsubmit" ).click();	
+	  });
+	   $( "#VTFL2plus1" ).click(function() {
+	  	$( "#VTFL2" ).val(parseInt($( "#VTFL2" ).val())+1);
+		
+		if ($( "#VTFL2" ).val() > 63)
+			$( "#VTFL2" ).val(63);
+			
+		$( "#formsubmit" ).click();	
+	  });
+	   $( "#VTFL2plus5" ).click(function() {
+	  	$( "#VTFL2" ).val(parseInt($( "#VTFL2" ).val())+5);
+		
+		if ($( "#VTFL2" ).val() > 63)
+			$( "#VTFL2" ).val(63);
+		
+		$( "#formsubmit" ).click();	
+	  });
+	  	  
+		  
+	  $( "#VTFL3minus5" ).click(function() {
+		$( "#VTFL3" ).val(parseInt($( "#VTFL3" ).val())-5);
+		
+		if ($( "#VTFL3" ).val() < 0)
+			$( "#VTFL3" ).val(0);
+			
+		$( "#formsubmit" ).click();	
+	  });
+	   $( "#VTFL3minus1" ).click(function() {
+	  	$( "#VTFL3" ).val(parseInt($( "#VTFL3" ).val())-1);
+		
+		if ($( "#VTFL3" ).val() < 0)
+			$( "#VTFL3" ).val(0);
+		
+		$( "#formsubmit" ).click();	
+	  });
+	   $( "#VTFL3plus1" ).click(function() {
+	  	$( "#VTFL3" ).val(parseInt($( "#VTFL3" ).val())+1);
+		
+		if ($( "#VTFL3" ).val() > 63)
+			$( "#VTFL3" ).val(63);
+			
+		$( "#formsubmit" ).click();	
+	  });
+	   $( "#VTFL3plus5" ).click(function() {
+	  	$( "#VTFL3" ).val(parseInt($( "#VTFL3" ).val())+5);
+		
+		if ($( "#VTFL3" ).val() > 63)
+			$( "#VTFL3" ).val(63);
+		
+		$( "#formsubmit" ).click();	
+	  });
 	
+	
+	  // Dynamic range graphic drawing
       var stage = new Kinetic.Stage({
         container: 'container1',
         width: <? echo $width+2*$padding; ?>,
