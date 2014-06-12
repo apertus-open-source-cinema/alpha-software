@@ -129,7 +129,7 @@ echo "<div class=\"exposuretime-label\">Whitebalance: </div><br />";
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=matrix&value=1   0  1   0  1   0\">Unity (1 1 1)</a> ";
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=matrix&value=1.3 0  1.3 0  1.3 0\">Unity 130% (1.3 1.3 1.3)</a> ";
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=matrix&value=1.3 0  1.3 0  1.3 0\">Daylight (1.3 1.3 1.3)</a> ";
-echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=matrix&value=1.0 0  1.3 0  1.3 0\">Tungsten (1.0 1.3 1.3)</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=matrix&value=0.75 0 1.3 0 2.4 0\">Tungsten (0.75 1.3 2.4)</a> ";
 
 /*
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=evindex&evindex=". ($EVIndex-1) ."\">-</a> ";
