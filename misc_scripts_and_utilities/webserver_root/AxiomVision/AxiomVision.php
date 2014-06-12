@@ -12,6 +12,7 @@
 		.exposuretime-value { font-size:2em; display: inline; }
 		.gamma-label { font-size:1.5em; display: inline; }
 		.gamma-value { font-size:2em; display: inline; }
+		.btn-lg { margin:5px; }
     </style>
   </head>
   <body>
@@ -33,7 +34,7 @@ else
 if (isset($_GET["value"]))
 	$value = $_GET["value"];
 else
-	$value = 19.5;
+	$value = 0;
 	
 	
 if (isset($_GET["gammaindex"]))
@@ -54,6 +55,9 @@ if (isset($_GET["set"])) {
 			break;
 		case "gamma":
 			echo SetYCbCrGamma($value);
+			break;
+		case "matrix":
+			echo SetLinLut($value);
 			break;
 	}
 }
@@ -118,6 +122,15 @@ echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gamma&value
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gamma&value=0.8\">0.8</a> ";
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gamma&value=0.9\">0.9</a> ";
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gamma&value=1\">1</a> ";
+
+echo "<br /><br />";
+
+echo "<div class=\"exposuretime-label\">Whitebalance: </div><br />";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=matrix&value=1   0  1   0  1   0\">Unity (1 1 1)</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=matrix&value=1.3 0  1.3 0  1.3 0\">Unity 130% (1.3 1.3 1.3)</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=matrix&value=1.3 0  1.3 0  1.3 0\">Daylight (1.3 1.3 1.3)</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=matrix&value=1.0 0  1.3 0  1.3 0\">Tungsten (1.0 1.3 1.3)</a> ";
+
 /*
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=evindex&evindex=". ($EVIndex-1) ."\">-</a> ";
 echo "<div class=\"exposuretime-label\">Exposure: </div> ";

@@ -107,6 +107,18 @@ function SetYCbCrGamma($gamma) {
 	return shell_exec($cmd);
 }
 
+function SetMat4($parameter) {
+	$cmd = "busybox su -c \"cd ../libraries/; ./mat4_conf.sh ".$parameter."\"";
+
+	return shell_exec($cmd);
+}
+
+function SetLinLut($parameter) {
+	$cmd = "busybox su -c \"cd ../libraries/; ./linear_rgb_conf.sh ".$parameter."\"";
+
+	return shell_exec($cmd);
+}
+
 /*
 function GetLUTs() {
 	$cmd = "busybox su -c \". ../libraries/lut.sh\"";
