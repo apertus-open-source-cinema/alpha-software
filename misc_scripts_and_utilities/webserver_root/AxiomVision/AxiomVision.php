@@ -7,7 +7,7 @@
     <link href="../libraries/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 	
 	<style>
-		body { background-color:black; color:white; }
+		body { background-color:black; color:white; padding:10px; }
 		.exposuretime-label { font-size:1.5em; display: inline; }
 		.exposuretime-value { font-size:2em; display: inline; }
 		.gamma-label { font-size:1.5em; display: inline; }
@@ -30,6 +30,12 @@ if (isset($_GET["evindex"]))
 else
 	$EVIndex = 5;
 	
+if (isset($_GET["value"]))
+	$value = $_GET["value"];
+else
+	$value = 19.5;
+	
+	
 if (isset($_GET["gammaindex"]))
 	$GammaIndex = $_GET["gammaindex"];
 else
@@ -37,11 +43,17 @@ else
 	
 if (isset($_GET["set"])) {
 	switch ($_GET["set"]) {
+		case "exposure":
+			SetExposureTime($value);
+			break;
 		case "evindex":
 			SetExposureTime($EVRow[$EVIndex]*1000);
 			break;
 		case "gammaindex":
 			echo SetGamma($GammaRow[$GammaIndex]);
+			break;
+		case "gamma":
+			echo SetYCbCrGamma($value);
 			break;
 	}
 }
@@ -80,16 +92,45 @@ if ((isset($_GET["cmd"])) && ($_GET["cmd"] == "disableleds")) {
 $exposure_ns = GetExposureTime();
 
 // Exposure Time
+echo "<div class=\"exposuretime-label\">Exposure: </div> ";
+echo "<div class=\"exposuretime-value\">".round($exposure_ns, 3)." ms</div><br /><br />";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=19.5\">1/50</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=10\">1/100</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=6.67\">1/150</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=5\">1/200</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=3.34\">1/300</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=2.5\">1/400</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=2\">1/500</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=1.4\">1/700</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=1\">1/1000</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=0.667\">1/1500</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=0.5\">1/2000</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=0.3\">1/3000</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=exposure&value=0.1\">1/10000</a> ";
+
+echo "<br /><br />";
+
+echo "<div class=\"exposuretime-label\">Gamma: </div><br />";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gamma&value=0.4\">0.4</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gamma&value=0.5\">0.5</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gamma&value=0.6\">0.6</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gamma&value=0.7\">0.7</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gamma&value=0.8\">0.8</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gamma&value=0.9\">0.9</a> ";
+echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gamma&value=1\">1</a> ";
+/*
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=evindex&evindex=". ($EVIndex-1) ."\">-</a> ";
 echo "<div class=\"exposuretime-label\">Exposure: </div> ";
 echo "<div class=\"exposuretime-value\">".round($exposure_ns, 3)." ms</div> ";
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=evindex&evindex=". ($EVIndex+1) ."\">+</a><br /><br />";
-
+*/
 // Gamma
+/*
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gammaindex&gammaindex=". ($GammaIndex-1) ."\">-</a> ";
 echo "<div class=\"exposuretime-label\">Gamma: </div> ";
 echo "<div class=\"exposuretime-value\">".$GammaRow[$GammaIndex]."</div> ";
 echo "<a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?set=gammaindex&gammaindex=". ($GammaIndex+1) ."\">+</a><br /><br />";
+
 
 // LUTs
 echo "<p><a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?cmd=sawtoothlut\">Sawtooth LUT</a></p>";
@@ -101,7 +142,7 @@ echo "<p><a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?cmd=livevide
 echo "<p><a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?cmd=hdmihalf\">Set HDMI to Half Frequency</a></p>";
 echo "<p><a class=\"btn btn-primary btn-lg\" href=\"AxiomVision.php?cmd=hdmifull\">Set HDMI to Full Frequency</a></p>";
 //echo "<div class=\"gamma-label\">Gamma: </div>";
-//echo "<div class=\"gamma-value\">".round($exposure_ns, 3)." ms</div>";
+//echo "<div class=\"gamma-value\">".round($exposure_ns, 3)." ms</div>";*/
 ?>
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->

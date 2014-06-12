@@ -101,6 +101,12 @@ function SetGamma($gamma) {
 	return shell_exec($cmd);
 }
 
+function SetYCbCrGamma($gamma) {
+	$cmd = "busybox su -c \"cd ../libraries/; ./ycbcr_gamma_conf.sh ".$gamma."\"";
+
+	return shell_exec($cmd);
+}
+
 /*
 function GetLUTs() {
 	$cmd = "busybox su -c \". ../libraries/lut.sh\"";
