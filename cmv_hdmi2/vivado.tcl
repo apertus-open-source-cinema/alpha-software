@@ -100,8 +100,8 @@ set_property TARGET_LANGUAGE VHDL [current_project]
 #synth_design -top top -flatten rebuilt -directive RuntimeOptimized
 synth_design -top top -flatten rebuilt
 write_checkpoint -force $ODIR/post_synth
-write_verilog -force -quiet -mode timesim -sdf_anno true post_synth.v
-write_sdf -force -quiet post_synth.sdf
+# write_verilog -force -quiet -mode timesim -sdf_anno true post_synth.v
+# write_sdf -force -quiet post_synth.sdf
 
 # STEP#3: run placement and logic optimzation, write checkpoint design
 
@@ -113,8 +113,8 @@ opt_design -propconst -sweep -retarget -remap
 # power_opt_design
 
 write_checkpoint -force $ODIR/post_opt
-write_verilog -force -quiet -mode timesim -sdf_anno true post_opt.v
-write_sdf -force -quiet post_opt.sdf
+# write_verilog -force -quiet -mode timesim -sdf_anno true post_opt.v
+# write_sdf -force -quiet post_opt.sdf
 
 if { [file exists $ODIR/post_route.dcp] == 1 } {
     read_checkpoint -incremental $ODIR/post_route.dcp
@@ -122,31 +122,32 @@ if { [file exists $ODIR/post_route.dcp] == 1 } {
 
 # place_design -directive Quick
 # place_design -directive RuntimeOptimized
-# place_design -directive Explore
-place_design -directive ExtraNetDelay_high
+place_design -directive Explore
+# place_design -directive ExtraNetDelay_high
 # place_design -directive SpreadLogic_high
 
 # phys_opt_design -placement_opt -critical_pin_opt -hold_fix -rewire -retime
 phys_opt_design -critical_cell_opt -critical_pin_opt -placement_opt -hold_fix -rewire -retime
 power_opt_design
 write_checkpoint -force $ODIR/post_place
-write_verilog -force -quiet -mode timesim -sdf_anno true post_place.v
-write_sdf -force -quiet post_place.sdf
+# write_verilog -force -quiet -mode timesim -sdf_anno true post_place.v
+# write_sdf -force -quiet post_place.sdf
 
 # STEP#4: run router, write checkpoint design
 
 # route_design
 # route_design -directive Quick
-# route_design -directive Explore
+route_design -directive Explore
 # route_design -directive RuntimeOptimized
 # route_design -directive NoTimingRelaxation -free_resource_mode
-route_design -directive HigherDelayCost
+# route_design -directive HigherDelayCost
 # route_design -directive HigherDelayCost -free_resource_mode
 # route_design -directive AdvancedSkewModeling
 write_checkpoint -force $ODIR/post_route
-write_verilog -force -quiet -mode timesim -sdf_anno true post_route.v
-write_sdf -force -quiet post_route.sdf
+# write_verilog -force -quiet -mode timesim -sdf_anno true post_route.v
+# write_sdf -force -quiet post_route.sdf
 
+#
 # STEP#4b: rerun router
 # place_design -directive ExtraNetDelay_high
 # place_design -directive ExtraPostPlacementOpt

@@ -3288,11 +3288,10 @@ begin
 	end if;
     end process;
 
-    pmod_jal(3) <= not ilu_led0;
-    pmod_jal(2) <= not ilu_led1;
-    pmod_jal(1) <= not ilu_led2;
+    pmod_jal(2) <= ilu_led0;
+    pmod_jal(3) <= ilu_led1;
 
-    pmod_jal(6) <= ilu_led3;
-    pmod_jal(5) <= ilu_led4;
+    pmod_jal(6) <= ilu_led2;
+    pmod_jal(7) <= ilu_led3;
 
 end RTL;
